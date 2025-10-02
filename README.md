@@ -183,6 +183,7 @@ Removing a feature?
 ## Documentation
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
+- **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents
 - **[EXAMPLES.md](EXAMPLES.md)** - Real examples from Tweeter project
 - **[QUICKSTART.md](extensions/QUICKSTART.md)** - 5-minute tutorial
 - **[Extension README](extensions/README.md)** - Detailed workflow documentation
@@ -195,11 +196,15 @@ Removing a feature?
 
 These extensions work with any AI agent that supports spec-kit:
 
-- ✅ **Claude Code** (fully tested)
-- ✅ **GitHub Copilot** (slash commands via `.github/copilot-instructions.md`)
-- ✅ **Gemini CLI** (via specify CLI)
+- ✅ **Claude Code** (fully tested, native commands)
+- ✅ **GitHub Copilot** (via `.github/copilot-instructions.md`)
 - ✅ **Cursor** (via `.cursorrules`)
 - ✅ **Windsurf** (via project rules)
+- ✅ **Gemini CLI** (via specify CLI)
+- ✅ **Other CLI tools** (Qwen, opencode, Codex)
+- ✅ **Any AI agent** (universal fallback via bash scripts)
+
+**See [AI-AGENTS.md](AI-AGENTS.md) for detailed setup guides for each agent.**
 
 ### spec-kit Versions
 

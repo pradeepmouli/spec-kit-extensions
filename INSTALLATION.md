@@ -243,20 +243,33 @@ chmod +x .specify/scripts/bash/create-*.sh
 
 **Solution**:
 
+Each AI agent requires different setup. See **[AI-AGENTS.md](AI-AGENTS.md)** for detailed setup guides for:
+- GitHub Copilot (with example `.github/copilot-instructions.md`)
+- Cursor (with example `.cursorrules`)
+- Windsurf (with project rules)
+- Gemini CLI and other CLI tools
+- Universal fallback for any agent
+
+**Quick fixes**:
+
 **For GitHub Copilot**:
 1. Create `.github/copilot-instructions.md`
 2. Add content from `.claude/commands/*.md`
 3. Format as Copilot instructions
+4. See [AI-AGENTS.md](AI-AGENTS.md#2-github-copilot) for complete example
 
 **For Cursor**:
 1. Create `.cursorrules` file
 2. Add command definitions as rules
+3. See [AI-AGENTS.md](AI-AGENTS.md#3-cursor) for complete example
 
-**For Manual Use**:
+**For Manual Use (any agent)**:
 - Run bash scripts directly:
   ```bash
   .specify/scripts/bash/create-bugfix.sh "bug description"
   ```
+- Then ask your AI agent to implement following the generated files
+- See [AI-AGENTS.md](AI-AGENTS.md#7-universal-fallback-any-ai-agent) for details
 
 ## Updating Extensions
 
