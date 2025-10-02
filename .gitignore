@@ -1,2 +1,52 @@
-.idea
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Documentation builds (if you add docs generation later)
+docs/_build/
+docs/.doctrees/
+
+# Test artifacts
+test-results/
+.test-project/
+/tmp/
+
+# User customizations (don't commit user-specific enabled workflows)
+# Note: We DO commit the default enabled.conf, users can override locally
+# extensions/enabled.conf.local
+
+# Backup files
+*.backup
+*~
+
+# Python (if you add Python tooling)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+
+# Node (if you add JS tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Distribution
+dist/
+build/
+*.egg-info/
