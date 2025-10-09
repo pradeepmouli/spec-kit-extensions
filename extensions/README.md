@@ -8,11 +8,11 @@ The extension system provides additional workflow types beyond the core `/specif
 - **`/specify`** - Create new features from scratch (greenfield development)
 
 ### Extension Workflows
-- **`/bugfix`** - Quick bug remediation with regression tests
-- **`/modify`** - Extend or modify existing features with impact analysis
-- **`/refactor`** - Improve code quality while preserving behavior
-- **`/hotfix`** - Emergency production fixes with expedited process
-- **`/deprecate`** - Planned sunset of features with migration guides
+- **`/speckit.bugfix`** - Bug remediation with regression-test-first approach
+- **`/speckit.modify`** - Extend or modify existing features with impact analysis
+- **`/speckit.refactor`** - Improve code quality while preserving behavior with metrics
+- **`/speckit.hotfix`** - Emergency production fixes with expedited checkpoint process
+- **`/speckit.deprecate`** - Planned sunset of features with 3-phase migration
 
 ## Enabling Extensions
 
@@ -23,19 +23,19 @@ Extensions are enabled by default in this project. To disable an extension, edit
 | Scenario | Use This Workflow |
 |----------|------------------|
 | Building new feature | `/specify` |
-| Fixing a bug | `/bugfix` |
-| Adding fields to existing feature | `/modify` |
-| Extracting duplicate code | `/refactor` |
-| Production is down | `/hotfix` |
-| Removing old feature | `/deprecate` |
+| Fixing a bug | `/speckit.bugfix` |
+| Adding fields to existing feature | `/speckit.modify` |
+| Extracting duplicate code | `/speckit.refactor` |
+| Production is down | `/speckit.hotfix` |
+| Removing old feature | `/speckit.deprecate` |
 
 ## Extension Structure
 
 Each workflow extension contains:
 - **Template files** - Markdown templates for specs and documentation
-- **Command definition** - `.claude/commands/{workflow}.md` for AI agents
+- **Command definition** - `.claude/commands/speckit.{workflow}.md` for AI agents
 - **Bash scripts** - `.specify/scripts/bash/create-{workflow}.sh` for automation
-- **Tasks template** - Customized task breakdown for the workflow type
+- **Checkpoint workflow** - Multi-phase approach with review points (plan → tasks → implement)
 
 ## Creating Custom Extensions
 
@@ -50,8 +50,8 @@ These extensions are designed to be:
 
 ## Version
 
-Extension System Version: 1.0.0
-Compatible with Specify Core: v0.0.30+
+Extension System Version: 2.0.0
+Compatible with Specify Core: v0.0.18+
 
 ## License
 

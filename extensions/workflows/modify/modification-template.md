@@ -99,7 +99,7 @@ If Yes, explain impact:
 - [ ] Deprecation warnings added if removing functionality
 
 ## Updated User Scenarios
-*Only scenarios that change - reference original spec for unchanged*
+*Filled during /speckit.plan - Only scenarios that change, reference original spec for unchanged*
 
 ### Modified Scenario: [Original Scenario Name]
 **Original**: [how it worked before]
@@ -116,6 +116,7 @@ If Yes, explain impact:
 **Migration**: [how users adapt]
 
 ## Updated Requirements
+*Filled during /speckit.plan*
 
 ### Modified Requirements
 - **Original FR-00X**: [original requirement]
@@ -144,6 +145,7 @@ If Yes, explain impact:
 [If any principle violated, explain why necessary and document trade-offs]
 
 ## Testing Strategy
+*Filled during /speckit.plan*
 
 ### Existing Tests
 - [ ] Run full original feature test suite
@@ -158,6 +160,7 @@ If Yes, explain impact:
 - [ ] Performance tests if behavior changes impact speed
 
 ## Rollout Strategy
+*Filled during /speckit.plan*
 
 **Phased Rollout**: [ ] Yes | [ ] No
 

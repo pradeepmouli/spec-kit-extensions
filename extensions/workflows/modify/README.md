@@ -72,9 +72,10 @@ specs/
 └── 014-edit-profile-form/
     └── modifications/
         └── 001-add-avatar-compression/
-            ├── modification.md   # Change documentation
-            ├── impact.md         # Auto-generated impact analysis
-            └── tasks.md          # Sequential tasks
+            ├── modification-spec.md  # Change documentation (created by /speckit.modify)
+            ├── impact-analysis.md    # Auto-generated impact analysis (created by /speckit.modify)
+            ├── plan.md               # Implementation plan (created by /speckit.plan after review)
+            └── tasks.md              # Task breakdown (created by /speckit.tasks after plan review)
 ```
 
 ## Command Usage
@@ -87,10 +88,20 @@ This will:
 1. Find original feature `014-edit-profile-form`
 2. Run impact analysis on feature files
 3. Create branch `014-mod-001-add-avatar-compression`
-4. Generate `modification.md` with template
-5. Generate `impact.md` with scan results
-6. Generate `tasks.md` with tasks
-7. Set `SPECIFY_MODIFICATION` environment variable
+4. Generate `modification-spec.md` with template
+5. Generate `impact-analysis.md` with scan results
+6. Set `SPECIFY_MODIFICATION` environment variable
+7. Show "Next Steps" for checkpoint-based workflow
+
+**Next steps after running the command:**
+1. Review `modification-spec.md` and `impact-analysis.md`
+2. Check affected files - are there dependencies you missed?
+3. Assess backward compatibility - will this break anything?
+4. Run `/speckit.plan` to create implementation plan
+5. Review the plan - is the migration strategy correct?
+6. Run `/speckit.tasks` to break down into tasks
+7. Review the tasks - are all affected files covered?
+8. Run `/speckit.implement` to execute the changes
 
 ## Example Modification Document
 
@@ -173,16 +184,31 @@ Tests referencing feature files:
 - `tests/integration/profile-flow.test.ts`
 ```
 
-## Task Breakdown
+## Checkpoint-Based Workflow
 
-The workflow generates 28 tasks across 6 phases:
+The modify workflow uses checkpoints to ensure you review the impact analysis and backward compatibility before making changes:
 
-- **T001-T004**: Analysis (impact scan, review contracts)
-- **T005-T008**: Planning (assess compatibility, plan migration)
-- **T009-T015**: Update Contracts
-- **T016-T020**: Update Implementation
-- **T021-T025**: Update Tests
-- **T026-T028**: Verification & Documentation
+### Phase 1: Impact Analysis
+- **Command**: `/speckit.modify 014 "description"`
+- **Creates**: `modification-spec.md` and auto-generated `impact-analysis.md`
+- **Checkpoint**: Review impacted files - did the scan catch everything? Are there hidden dependencies?
+
+### Phase 2: Implementation Planning
+- **Command**: `/speckit.plan`
+- **Creates**: `plan.md` with migration strategy and backward compatibility approach
+- **Checkpoint**: Review plan - is the migration path safe? Are breaking changes documented?
+
+### Phase 3: Task Breakdown
+- **Command**: `/speckit.tasks`
+- **Creates**: `tasks.md` with ordered tasks (contracts → tests → implementation)
+- **Checkpoint**: Review tasks - are all affected files included? Is order correct?
+
+### Phase 4: Implementation
+- **Command**: `/speckit.implement`
+- **Executes**: All tasks (update contracts, modify code, update tests, verify)
+- **Result**: Feature modified with all dependent code updated
+
+**Why checkpoints matter**: Impact analysis catches ~80% of affected files automatically, but review ensures you don't miss critical dependencies. Checkpoint before planning prevents breaking changes.
 
 ## Tips
 

@@ -26,7 +26,7 @@ User description: "$ARGUMENTS"
 **Environment**: [Browser/OS/Device if relevant, or N/A]
 
 ## Root Cause Analysis
-*Fill after investigation*
+*Filled during investigation (before running /speckit.plan)*
 
 **Technical Explanation**:
 [Why does this bug exist? What code/logic is wrong?]
@@ -39,7 +39,7 @@ User description: "$ARGUMENTS"
 [Link to specs/###-feature if this bug affects a specific feature]
 
 ## Fix Strategy
-*Fill before implementing fix*
+*Filled during /speckit.plan (planning phase)*
 
 **Approach**:
 [High-level explanation of how to fix - 2-3 sentences]
@@ -52,7 +52,7 @@ User description: "$ARGUMENTS"
 [If yes, explain impact and migration path]
 
 ## Regression Test
-*MUST be written BEFORE fix is applied*
+*Created during /speckit.tasks and /speckit.implement (BEFORE applying fix)*
 
 - [ ] Test written that reproduces bug (fails before fix)
 - [ ] Test passes after fix applied

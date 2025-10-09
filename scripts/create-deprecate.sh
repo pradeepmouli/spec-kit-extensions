@@ -141,23 +141,15 @@ fi
 DEPRECATE_DIR="$SPECS_DIR/${DEPRECATE_ID}-${FEATURE_SHORT}"
 mkdir -p "$DEPRECATE_DIR"
 
-# Copy templates
+# Copy template
 DEPRECATION_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/deprecate/deprecation-template.md"
-TASKS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/deprecate/tasks-template.md"
 
 DEPRECATION_FILE="$DEPRECATE_DIR/deprecation.md"
-TASKS_FILE="$DEPRECATE_DIR/tasks.md"
 
 if [ -f "$DEPRECATION_TEMPLATE" ]; then
     cp "$DEPRECATION_TEMPLATE" "$DEPRECATION_FILE"
 else
     echo "# Deprecation Plan" > "$DEPRECATION_FILE"
-fi
-
-if [ -f "$TASKS_TEMPLATE" ]; then
-    cp "$TASKS_TEMPLATE" "$TASKS_FILE"
-else
-    echo "# Tasks" > "$TASKS_FILE"
 fi
 
 # Run dependency scan
@@ -205,35 +197,16 @@ if [ -f "$DEPRECATION_FILE" ]; then
     rm -f "$DEPRECATION_FILE.bak"
 fi
 
-# Replace placeholders in tasks.md
-if [ -f "$TASKS_FILE" ]; then
-    sed -i.bak "s/\[FEATURE NAME\]/${FEATURE_SHORT}/g" "$TASKS_FILE" 2>/dev/null || \
-    sed -i '' "s/\[FEATURE NAME\]/${FEATURE_SHORT}/g" "$TASKS_FILE" 2>/dev/null || \
-    true
-
-    sed -i.bak "s/deprecate-###/${DEPRECATE_ID}/g" "$TASKS_FILE" 2>/dev/null || \
-    sed -i '' "s/deprecate-###/${DEPRECATE_ID}/g" "$TASKS_FILE" 2>/dev/null || \
-    true
-
-    ORIGINAL_FEATURE_LINK="Link to specs/${FEATURE_NAME}/"
-    sed -i.bak "s|\[Link to feature spec\]|${ORIGINAL_FEATURE_LINK}|g" "$TASKS_FILE" 2>/dev/null || \
-    sed -i '' "s|\[Link to feature spec\]|${ORIGINAL_FEATURE_LINK}|g" "$TASKS_FILE" 2>/dev/null || \
-    true
-
-    rm -f "$TASKS_FILE.bak"
-fi
-
 # Set environment variable
 export SPECIFY_DEPRECATE="$DEPRECATE_ID"
 
 if $JSON_MODE; then
-    printf '{\"DEPRECATE_ID\":\"%s\",\"BRANCH_NAME\":\"%s\",\"DEPRECATION_FILE\":\"%s\",\"TASKS_FILE\":\"%s\",\"DEPENDENCIES_FILE\":\"%s\",\"DEPRECATE_NUM\":\"%s\",\"FEATURE_NUM\":\"%s\",\"FEATURE_NAME\":\"%s\",\"REASON\":\"%s\"}\\n' \
-        "$DEPRECATE_ID" "$BRANCH_NAME" "$DEPRECATION_FILE" "$TASKS_FILE" "$DEPENDENCIES_FILE" "$DEPRECATE_NUM" "$FEATURE_NUM" "$FEATURE_NAME" "$REASON"
+    printf '{\"DEPRECATE_ID\":\"%s\",\"BRANCH_NAME\":\"%s\",\"DEPRECATION_FILE\":\"%s\",\"DEPENDENCIES_FILE\":\"%s\",\"DEPRECATE_NUM\":\"%s\",\"FEATURE_NUM\":\"%s\",\"FEATURE_NAME\":\"%s\",\"REASON\":\"%s\"}\\n' \
+        "$DEPRECATE_ID" "$BRANCH_NAME" "$DEPRECATION_FILE" "$DEPENDENCIES_FILE" "$DEPRECATE_NUM" "$FEATURE_NUM" "$FEATURE_NAME" "$REASON"
 else
     echo "DEPRECATE_ID: $DEPRECATE_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "DEPRECATION_FILE: $DEPRECATION_FILE"
-    echo "TASKS_FILE: $TASKS_FILE"
     echo "DEPENDENCIES_FILE: $DEPENDENCIES_FILE"
     echo "DEPRECATE_NUM: $DEPRECATE_NUM"
     echo "FEATURE_NUM: $FEATURE_NUM"

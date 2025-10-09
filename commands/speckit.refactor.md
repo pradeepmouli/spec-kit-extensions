@@ -8,7 +8,7 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/refactor` in the triggering message **is** the refactoring description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/speckit.refactor` in the triggering message **is** the refactoring description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 Given that refactoring description, do this:
 
@@ -30,16 +30,25 @@ Given that refactoring description, do this:
    - Document inputs and expected outputs
    - Create verification checklist
 
-5. Load `.specify/extensions/workflows/refactor/tasks-template.md` and create `tasks.md` in the refactor directory.
+5. Report completion with Next Steps:
 
-6. Report completion with:
-   - Refactor ID
-   - Branch name
-   - Refactor spec file path
-   - **CRITICAL REMINDER**: Must capture baseline metrics BEFORE changing any code:
-     ```bash
-     .specify/extensions/workflows/refactor/measure-metrics.sh --before
-     ```
-   - Next steps: capture metrics, document behaviors, begin refactoring
+```
+✅ Refactor workflow initialized
+
+**Refactor ID**: [REFACTOR_ID]
+**Branch**: [BRANCH_NAME]
+**Refactor Spec**: [REFACTOR_SPEC_FILE]
+**Behavioral Snapshot**: [BEHAVIORAL_SNAPSHOT]
+
+📋 **Next Steps:**
+1. Review refactoring goals and behaviors to preserve
+2. Capture baseline metrics:
+   .specify/extensions/workflows/refactor/measure-metrics.sh --before
+3. Run `/speckit.plan` to create refactoring plan
+4. Run `/speckit.tasks` to break down into tasks
+5. Run `/speckit.implement` to execute refactoring
+
+💡 **Reminder**: Behavior must not change - all tests must still pass
+```
 
 Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after.

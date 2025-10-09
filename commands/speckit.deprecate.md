@@ -8,11 +8,11 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/deprecate` in the triggering message can be:
-- `/deprecate <feature_number> "reason"` - Direct with feature number
-- `/deprecate "reason"` - Interactive (will prompt for feature selection)
+The text the user typed after `/speckit.deprecate` in the triggering message can be:
+- `/speckit.deprecate <feature_number> "reason"` - Direct with feature number
+- `/speckit.deprecate "reason"` - Interactive (will prompt for feature selection)
 
-For example: `/deprecate 014 "low usage and high maintenance burden"` or `/deprecate "low usage"`. Assume you always have it available even if `$ARGUMENTS` appears literally below.
+For example: `/speckit.deprecate 014 "low usage and high maintenance burden"` or `/speckit.deprecate "low usage"`. Assume you always have it available even if `$ARGUMENTS` appears literally below.
 
 **📦 DEPRECATION WORKFLOW - PHASED SUNSET**
 
@@ -59,24 +59,28 @@ Given that input, do this:
    - Document rollback plans for each phase
    - Assess risks (user impact, technical debt, business impact)
 
-7. Review the tasks.md file and ensure it aligns with the deprecation plan. The tasks cover:
-   - Phase 0: Planning & Preparation
-   - Phase 1: Warnings & Communication (no functionality removed)
-   - Phase 2: Disabled by Default (opt-in available)
-   - Phase 3: Complete Removal
-   - Phase 4: Post-Mortem & Lessons Learned
+7. Report completion with Next Steps:
 
-8. Report completion with:
-   - **STATUS**: Deprecation workflow initialized
-   - Deprecation ID
-   - Branch name
-   - Feature being deprecated
-   - Deprecation reason
-   - Deprecation file path
-   - Tasks file path
-   - Dependencies file path (with summary of risk level from scan)
-   - **NEXT STEPS**: Review dependency scan, set timeline, get stakeholder approvals (T001-T006)
-   - **REMINDER**: 3-phase approach ensures smooth user migration
+```
+📦 Deprecation workflow initialized
+
+**Deprecation ID**: [DEPRECATE_ID]
+**Feature**: specs/[FEATURE_NAME] (Feature [FEATURE_NUM])
+**Reason**: [REASON]
+**Branch**: [BRANCH_NAME]
+**Deprecation Plan**: [DEPRECATION_FILE]
+**Dependencies Scan**: [DEPENDENCIES_FILE]
+
+📋 **Next Steps:**
+1. Review deprecation plan and dependency scan
+2. Refine timeline for 3-phase sunset (typically 3-6 months)
+3. Get stakeholder approvals (Product, Engineering, Support)
+4. Run `/speckit.plan` to create detailed phase execution plans
+5. Run `/speckit.tasks` to break down each phase into tasks
+6. Run `/speckit.implement` to execute Phase 1 (warnings)
+
+💡 **Reminder**: 3-phase approach ensures smooth user migration
+```
 
 **Important Notes**:
 - Deprecation is a **multi-month process** - not a quick fix
@@ -88,5 +92,5 @@ Given that input, do this:
 - Get stakeholder sign-off before starting (Product, Engineering, Support)
 
 **Interactive Mode Usage Examples**:
-- User: `/deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
-- User: `/deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014
+- User: `/speckit.deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
+- User: `/speckit.deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014

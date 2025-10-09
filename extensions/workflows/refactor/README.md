@@ -80,11 +80,12 @@ This ensures you always have a working state to return to.
 ```
 specs/
 └── refactor-001-extract-tweet-service/
-    ├── refactor.md               # Refactoring plan
-    ├── tasks.md                  # 36 incremental tasks
-    ├── metrics-before.md         # Baseline metrics
-    ├── metrics-after.md          # Post-refactor metrics
-    └── behavioral-snapshot.md    # Behavior documentation
+    ├── refactor-spec.md          # Refactoring goals (created by /speckit.refactor)
+    ├── behavioral-snapshot.md    # Behavior documentation (created by /speckit.refactor)
+    ├── metrics-before.md         # Baseline metrics (created by /speckit.refactor)
+    ├── metrics-after.md          # Post-refactor metrics (placeholder)
+    ├── plan.md                   # Refactoring plan (created by /speckit.plan)
+    └── tasks.md                  # Incremental tasks (created by /speckit.tasks)
 ```
 
 ## Command Usage
@@ -95,10 +96,19 @@ specs/
 
 This will:
 1. Create branch `refactor/001-extract-tweet-service`
-2. Generate `refactor.md` with template
-3. Generate `tasks.md` with 36 tasks
-4. Create placeholder for metrics
-5. Set `SPECIFY_REFACTOR` environment variable
+2. Generate `refactor-spec.md` with template
+3. Generate `behavioral-snapshot.md` and `metrics-before.md` placeholders
+4. Set `SPECIFY_REFACTOR` environment variable
+5. Show "Next Steps" for checkpoint-based workflow
+
+**Next steps after running the command:**
+1. Capture baseline metrics: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
+2. Document behaviors to preserve in `behavioral-snapshot.md`
+3. Run `/speckit.plan` to create incremental refactoring plan
+4. Review the plan - are changes small enough? Tests after each?
+5. Run `/speckit.tasks` to break down into incremental tasks
+6. Review the tasks - tests must pass after EVERY task
+7. Run `/speckit.implement` to execute refactoring incrementally
 
 ## Example Refactor Document
 
@@ -219,16 +229,31 @@ The `measure-metrics.sh` script captures:
 - **Test Runtime**: 2.3s
 ```
 
-## Task Breakdown
+## Checkpoint-Based Workflow
 
-The workflow generates 36 tasks across 7 phases:
+The refactor workflow uses checkpoints with metrics to ensure code quality improves without breaking behavior:
 
-- **T001-T005**: Baseline Capture (metrics, snapshot, commit)
-- **T006-T010**: Planning (target metrics, risk assessment)
-- **T011-T025**: Incremental Refactoring (15 small steps, tests after each)
-- **T026-T030**: Verification (metrics comparison, behavior check)
-- **T031-T033**: Deployment (staging, production, monitoring)
-- **T034-T036**: Post-Deployment (metrics verification, documentation)
+### Phase 1: Baseline Capture
+- **Command**: `/speckit.refactor "description"`
+- **Creates**: `refactor-spec.md`, `behavioral-snapshot.md`, `metrics-before.md`
+- **Checkpoint**: Capture baseline metrics before ANY changes. Document behaviors to preserve.
+
+### Phase 2: Refactoring Planning
+- **Command**: `/speckit.plan`
+- **Creates**: `plan.md` with incremental refactoring steps
+- **Checkpoint**: Review plan - are steps small enough? Is there a test after EVERY change?
+
+### Phase 3: Task Breakdown
+- **Command**: `/speckit.tasks`
+- **Creates**: `tasks.md` with micro-tasks (one per refactoring step + test)
+- **Checkpoint**: Review tasks - every task must end with passing tests
+
+### Phase 4: Incremental Execution
+- **Command**: `/speckit.implement`
+- **Executes**: Tasks one at a time, running tests after each
+- **Result**: Refactored code with all tests passing, metrics improved
+
+**Why checkpoints matter**: Refactoring without baseline metrics or incremental testing leads to broken code. Checkpoints ensure you can always roll back to a working state.
 
 ## Tips
 

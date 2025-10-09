@@ -84,7 +84,8 @@ specs/
 └── hotfix-001-database-connection-pool/
     ├── hotfix.md                    # Incident log
     ├── post-mortem.md               # Required within 48 hours
-    ├── tasks.md                     # 28 emergency tasks
+    ├── plan.md                      # Expedited fix plan (created by /speckit.plan)
+    ├── tasks.md                     # Emergency tasks (created by /speckit.tasks)
     └── POST_MORTEM_REMINDER.txt     # Reminder file
 ```
 
@@ -98,9 +99,50 @@ This will:
 1. Create branch `hotfix/001-database-connection-pool`
 2. Generate `hotfix.md` with incident timestamp
 3. Generate `post-mortem.md` template
-4. Generate `tasks.md` with 28 tasks
-5. Create `POST_MORTEM_REMINDER.txt`
-6. Set `SPECIFY_HOTFIX` environment variable
+4. Create `POST_MORTEM_REMINDER.txt`
+5. Set `SPECIFY_HOTFIX` environment variable
+6. Show "Next Steps" for expedited emergency workflow
+
+**Next steps after running the command (URGENT):**
+1. Quick assessment - severity (P0/P1/P2), impact, affected users
+2. Notify stakeholders - incident commander, on-call team
+3. Run `/speckit.plan` to create fast-track fix plan (skip extensive analysis)
+4. Quick review - is the approach safe? Do we have rollback?
+5. Run `/speckit.tasks` to create immediate action tasks
+6. Run `/speckit.implement` to deploy fix
+7. **Post-deployment (within 24-48 hours)**: Write regression test, complete post-mortem
+
+## Checkpoint-Based Workflow
+
+The hotfix workflow uses an **expedited checkpoint approach** for emergencies while still providing critical review points:
+
+### Phase 1: Incident Response
+- **Command**: `/speckit.hotfix "incident description"`
+- **Creates**: `hotfix.md` with incident timestamp and `post-mortem.md` template
+- **Checkpoint**: Quick assessment - P0/P1/P2 severity? How many users affected? Notify stakeholders immediately.
+
+### Phase 2: Emergency Planning (FAST)
+- **Command**: `/speckit.plan`
+- **Creates**: `plan.md` with fast-track fix approach
+- **Checkpoint**: Quick review (2-5 minutes) - Is the fix safe? Do we have a rollback plan? For P0, this may be skipped.
+
+### Phase 3: Task Creation (URGENT)
+- **Command**: `/speckit.tasks`
+- **Creates**: `tasks.md` with immediate action tasks
+- **Checkpoint**: Quick sanity check - Are tasks in the right order? Critical steps covered?
+
+### Phase 4: Emergency Deployment
+- **Command**: `/speckit.implement`
+- **Executes**: Fix deployment with monitoring
+- **Result**: Issue resolved, service restored
+
+### Phase 5: Post-Incident (Required within 48 hours)
+- Write regression test (deferred from emergency)
+- Complete post-mortem document
+- Create prevention tasks
+- Update documentation
+
+**Why checkpoints matter for hotfixes**: Even in emergencies, a 2-minute review of the fix approach can prevent making the outage worse. The checkpoint before deployment ensures you have a rollback plan. Post-incident requirements ensure the issue is properly prevented from recurring.
 
 ## Example Hotfix Document
 

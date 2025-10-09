@@ -91,9 +91,10 @@ Use `/speckit.deprecate` when:
 ```
 specs/
 └── deprecate-001-edit-profile-form/
-    ├── deprecation.md      # Deprecation plan
-    ├── dependencies.md     # Auto-generated dependency scan
-    └── tasks.md            # 58 phased tasks
+    ├── deprecation.md      # Deprecation plan (created by /speckit.deprecate)
+    ├── dependencies.md     # Auto-generated dependency scan (created by /speckit.deprecate)
+    ├── plan.md             # Implementation plan (created by /speckit.plan after review)
+    └── tasks.md            # Phased tasks (created by /speckit.tasks after plan review)
 ```
 
 ## Command Usage
@@ -108,8 +109,19 @@ This will:
 3. Create branch `deprecate/001-edit-profile-form`
 4. Generate `deprecation.md` with plan template
 5. Generate `dependencies.md` with scan results
-6. Generate `tasks.md` with 58 tasks
-7. Set `SPECIFY_DEPRECATE` environment variable
+6. Set `SPECIFY_DEPRECATE` environment variable
+7. Show "Next Steps" for checkpoint-based workflow
+
+**Next steps after running the command:**
+1. Review `deprecation.md` and `dependencies.md` - are all dependencies identified?
+2. Assess business impact - get stakeholder approvals for deprecation
+3. Define 3-phase timeline - how long should each phase take?
+4. Create migration guide for users
+5. Run `/speckit.plan` to create phased implementation plan
+6. Review the plan - is timeline realistic? Communication strategy solid?
+7. Run `/speckit.tasks` to break down into phase-specific tasks
+8. Review the tasks - are all 3 phases covered? Communication tasks included?
+9. Run `/speckit.implement` to execute the deprecation (this will span months)
 
 ## Example Deprecation Plan
 
@@ -248,15 +260,31 @@ Files importing `app/components/EditProfileForm.tsx`:
 ✅ **Low Risk**: This feature appears mostly isolated. Deprecation should be straightforward.
 ```
 
-## Task Breakdown
+## Checkpoint-Based Workflow
 
-The workflow generates 58 tasks across 4 phases:
+The deprecation workflow uses checkpoints to ensure proper planning and stakeholder alignment before executing a multi-month sunset:
 
-- **T001-T006**: Phase 0 - Planning & Preparation (6 tasks)
-- **T007-T021**: Phase 1 - Warnings & Communication (15 tasks)
-- **T022-T034**: Phase 2 - Disabled by Default (13 tasks)
-- **T035-T055**: Phase 3 - Complete Removal (21 tasks)
-- **T056-T058**: Phase 4 - Post-Mortem & Lessons Learned (3 tasks)
+### Phase 1: Analysis & Dependency Scan
+- **Command**: `/speckit.deprecate 014 "reason"`
+- **Creates**: `deprecation.md` plan template and auto-generated `dependencies.md`
+- **Checkpoint**: Review dependencies and usage data - is deprecation justified? Are there hidden dependencies the scan missed?
+
+### Phase 2: Stakeholder Alignment & Timeline Planning
+- **Command**: `/speckit.plan`
+- **Creates**: `plan.md` with 3-phase timeline and communication strategy
+- **Checkpoint**: Review plan - get stakeholder approvals (Product, Engineering, Support). Is timeline realistic for user migration? Is communication strategy comprehensive?
+
+### Phase 3: Task Breakdown
+- **Command**: `/speckit.tasks`
+- **Creates**: `tasks.md` with phased tasks across all 3 deprecation phases
+- **Checkpoint**: Review tasks - are all 3 phases represented? Are communication tasks included for each phase? Migration guide creation planned?
+
+### Phase 4: Phased Execution (Spans 3-6 months)
+- **Command**: `/speckit.implement`
+- **Executes**: Tasks across months, one phase at a time
+- **Result**: Feature successfully sunset with users migrated to alternative
+
+**Why checkpoints matter for deprecation**: A poorly planned deprecation can damage user trust and cause churn. The checkpoint after dependency scan ensures you understand impact. The checkpoint after planning ensures stakeholder alignment. The multi-month execution ensures users have adequate time to migrate.
 
 ## Tips
 

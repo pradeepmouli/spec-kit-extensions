@@ -18,22 +18,22 @@ Extensions add specialized workflows to Specify for activities beyond feature de
 
 ```
 Building something new?
-└─ Use `/specify "description"`
+└─ Use `/speckit.specify "description"`
 
 Fixing broken behavior?
 ├─ Production emergency?
-│  └─ Use `/hotfix "incident description"`
+│  └─ Use `/speckit.hotfix "incident description"`
 └─ Non-urgent bug?
-   └─ Use `/bugfix "bug description"`
+   └─ Use `/speckit.bugfix "bug description"`
 
 Changing existing feature?
 ├─ Adding/modifying behavior?
-│  └─ Use `/modify 014 "change description"`
+│  └─ Use `/speckit.modify 014 "change description"`
 └─ Improving code without changing behavior?
-   └─ Use `/refactor "improvement description"`
+   └─ Use `/speckit.refactor "improvement description"`
 
 Removing a feature?
-└─ Use `/deprecate 014 "deprecation reason"`
+└─ Use `/speckit.deprecate 014 "deprecation reason"`
 ```
 
 ## 5-Minute Tutorial
@@ -41,130 +41,148 @@ Removing a feature?
 ### Example 1: Fix a Bug
 
 ```bash
-# Discover a bug: save button doesn't work
+# Step 1: Create bug report
 /speckit.bugfix "save button doesn't persist data"
+# Creates: bug-report.md with initial analysis
+# Shows: Next steps to review and investigate
 
-# This creates:
-# - Branch: bugfix/001-save-button-doesnt
-# - Files: bug-report.md, tasks.md
+# Step 2: Investigate and update bug-report.md with root cause
+# Review the bug report, reproduce the issue, identify the problem
 
-# Follow the tasks:
-# 1. Reproduce the bug
-# 2. Write failing test (BEFORE fixing)
-# 3. Apply fix
-# 4. Verify test passes
-# 5. Document prevention
+# Step 3: Create fix plan
+/speckit.plan
+# Creates: Detailed fix plan with regression test strategy
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (reproduce, write regression test, fix, verify)
+
+# Step 5: Execute fix
+/speckit.implement
+# Runs all tasks including regression-test-first approach
 ```
 
-**Key principle**: Test-first approach ensures bug won't recur.
+**Key principle**: Test-first approach with review checkpoints ensures bug won't recur.
 
 ### Example 2: Modify a Feature
 
 ```bash
-# Want to add avatar compression to feature 014
+# Step 1: Create modification spec with impact analysis
 /speckit.modify 014 "add avatar compression to reduce storage costs"
+# Creates: modification-spec.md + impact-analysis.md
+# Shows: Impact summary and next steps
 
-# This creates:
-# - Branch: 014-mod-001-add-avatar-compression
-# - Files: modification.md, impact.md (auto-scanned), tasks.md
-# - Impact analysis identifies affected files automatically
+# Step 2: Review modification spec and impact analysis
+# Check affected files, assess backward compatibility, refine requirements
 
-# Follow the tasks:
-# 1. Review impact analysis
-# 2. Plan backward compatibility
-# 3. Update contracts
-# 4. Implement changes
-# 5. Update dependent code
+# Step 3: Create implementation plan
+/speckit.plan
+# Creates: Detailed plan for implementing changes
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (update contracts, update tests, implement)
+
+# Step 5: Execute changes
+/speckit.implement
+# Runs all tasks in correct order
 ```
 
-**Key principle**: Impact analysis prevents breaking other features.
+**Key principle**: Impact analysis with review checkpoints prevents breaking other features.
 
 ### Example 3: Refactor Code
 
 ```bash
-# Extract tweet service to reduce duplication
+# Step 1: Create refactor spec
 /speckit.refactor "extract tweet submission into reusable service"
+# Creates: refactor-spec.md with behavioral snapshot
+# Shows: Next steps to capture baseline metrics
 
-# This creates:
-# - Branch: refactor/001-extract-tweet-service
-# - Files: refactor.md, tasks.md, metrics-before.md, metrics-after.md
+# Step 2: Review refactoring goals and capture baseline metrics
+.specify/extensions/workflows/refactor/measure-metrics.sh --before
 
-# Follow the tasks:
-# 1. Capture baseline metrics (BEFORE any changes)
-# 2. Make one small change
-# 3. Run tests (must pass)
-# 4. Commit
-# 5. Repeat steps 2-4 incrementally
-# 6. Capture final metrics
-# 7. Compare improvement
+# Step 3: Create refactoring plan
+/speckit.plan
+# Creates: Detailed incremental refactoring plan
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list with small, testable increments
+
+# Step 5: Execute refactoring
+/speckit.implement
+# Runs all tasks incrementally with tests between each step
 ```
 
-**Key principle**: Incremental changes with tests between each step.
+**Key principle**: Incremental changes with tests and review checkpoints between each step.
 
 ### Example 4: Emergency Hotfix
 
 ```bash
-# Production is down!
+# Step 1: Create hotfix documentation (URGENT!)
 /speckit.hotfix "database connection pool exhausted causing 503 errors"
+# Creates: hotfix.md and post-mortem.md
+# Shows: URGENT next steps
 
-# This creates:
-# - Branch: hotfix/001-database-connection-pool
-# - Files: hotfix.md, post-mortem.md, tasks.md
-# - Reminder: post-mortem due within 48 hours
+# Step 2: Quick assessment and stakeholder notification
+# Assess severity, notify team, begin investigation
 
-# Follow the URGENT tasks:
-# 1. Assess severity (P0/P1/P2)
-# 2. Notify stakeholders
-# 3. Find root cause quickly
-# 4. Apply fix (tests come AFTER - exception to TDD)
-# 5. Deploy immediately
-# 6. Monitor for 24-48 hours
-# 7. Write regression test (within 24 hours)
-# 8. Complete post-mortem (within 48 hours)
+# Step 3: Create expedited fix plan
+/speckit.plan
+# Creates: Fast-track fix plan (skip extensive analysis)
+
+# Step 4: Create immediate action tasks
+/speckit.tasks
+# Creates: Urgent task list (fix first, tests after)
+
+# Step 5: Execute emergency fix
+/speckit.implement
+# Apply fix immediately, deploy, monitor
+
+# Post-deployment (within 24-48 hours):
+# - Write regression test
+# - Complete post-mortem
 ```
 
-**Key principle**: Speed matters in emergencies - tests can wait, but post-mortem is mandatory.
+**Key principle**: Speed matters in emergencies - tests come after deployment, but post-mortem is mandatory.
 
 ### Example 5: Deprecate a Feature
 
 ```bash
-# Old profile editor has low usage, high maintenance
+# Step 1: Create deprecation plan with dependency analysis
 /speckit.deprecate 014 "low usage (< 1%) and high maintenance burden"
+# Creates: deprecation-plan.md + dependency-analysis.md
+# Shows: Impact summary and next steps
 
-# This creates:
-# - Branch: deprecate/001-edit-profile-form
-# - Files: deprecation.md, dependencies.md (auto-scanned), tasks.md
-# - Dependency scan shows what code will break
+# Step 2: Review deprecation plan and get stakeholder approval
+# Check affected users, review 3-phase timeline, get sign-off
 
-# Follow the 3-phase approach:
-# Phase 1 (1-3 months): Warnings
-#   - Add deprecation warnings
-#   - Email users
-#   - Publish migration guide
-#
-# Phase 2 (1-2 months): Disabled by default
-#   - Turn off for new users
-#   - Allow opt-in for existing users
-#   - Personal outreach to remaining users
-#
-# Phase 3 (final): Complete removal
-#   - Remove all code
-#   - Drop database tables
-#   - Archive documentation
+# Step 3: Create detailed implementation plan
+/speckit.plan
+# Creates: 3-phase rollout plan with specific actions
+
+# Step 4: Break down into phased tasks
+/speckit.tasks
+# Creates: Task list for Phase 1 (warnings), Phase 2 (disable), Phase 3 (remove)
+
+# Step 5: Execute Phase 1
+/speckit.implement
+# Implement warnings and migration guides
+# (Repeat steps 3-5 for Phase 2 and Phase 3 after appropriate waiting periods)
 ```
 
-**Key principle**: Gradual sunset gives users time to migrate.
+**Key principle**: Gradual 3-phase sunset with stakeholder approval gives users time to migrate.
 
 ## Workflow Cheat Sheet
 
 | Workflow | Command | When to Use | Key Feature |
 |----------|---------|-------------|-------------|
-| **Feature** | `/specify "..."` | New functionality | Full spec + TDD |
-| **Bugfix** | `/bugfix "..."` | Broken behavior | Regression test first |
-| **Modify** | `/modify 014 "..."` | Change existing | Impact analysis |
-| **Refactor** | `/refactor "..."` | Code quality | Metrics + incremental |
-| **Hotfix** | `/hotfix "..."` | Production emergency | Tests after (only exception) |
-| **Deprecate** | `/deprecate 014 "..."` | Remove feature | 3-phase sunset |
+| **Feature** | `/speckit.specify "..."` | New functionality | Full spec + TDD |
+| **Bugfix** | `/speckit.bugfix "..."` | Broken behavior | Regression test first |
+| **Modify** | `/speckit.modify 014 "..."` | Change existing | Impact analysis |
+| **Refactor** | `/speckit.refactor "..."` | Code quality | Metrics + incremental |
+| **Hotfix** | `/speckit.hotfix "..."` | Production emergency | Tests after (only exception) |
+| **Deprecate** | `/speckit.deprecate 014 "..."` | Remove feature | 3-phase sunset |
 
 ## Common Questions
 
@@ -203,25 +221,29 @@ specs/
 │   ├── tasks.md
 │   └── modifications/               # Modifications to feature 014
 │       └── 001-add-compression/
-│           ├── modification.md
-│           ├── impact.md
-│           └── tasks.md
+│           ├── modification-spec.md
+│           ├── impact-analysis.md
+│           ├── plan.md                # Created by /speckit.plan
+│           └── tasks.md               # Created by /speckit.tasks
 ├── bugfix-001-save-button/          # Standalone bugfix
 │   ├── bug-report.md
-│   └── tasks.md
+│   ├── plan.md                        # Created by /speckit.plan
+│   └── tasks.md                       # Created by /speckit.tasks
 ├── refactor-001-extract-service/    # Standalone refactor
-│   ├── refactor.md
-│   ├── metrics-before.md
-│   ├── metrics-after.md
-│   └── tasks.md
+│   ├── refactor-spec.md
+│   ├── behavioral-snapshot.md
+│   ├── plan.md                        # Created by /speckit.plan
+│   └── tasks.md                       # Created by /speckit.tasks
 ├── hotfix-001-connection-pool/      # Emergency hotfix
 │   ├── hotfix.md
 │   ├── post-mortem.md
-│   └── tasks.md
+│   ├── plan.md                        # Created by /speckit.plan
+│   └── tasks.md                       # Created by /speckit.tasks
 └── deprecate-001-old-editor/        # Feature deprecation
-    ├── deprecation.md
-    ├── dependencies.md
-    └── tasks.md
+    ├── deprecation-plan.md
+    ├── dependency-analysis.md
+    ├── plan.md                          # Created by /speckit.plan
+    └── tasks.md                         # Created by /speckit.tasks
 ```
 
 ## Next Steps
@@ -246,8 +268,8 @@ specs/
 ## Troubleshooting
 
 **Command doesn't work**: Ensure you're using the exact format:
-- ✅ `/bugfix "description"`
-- ❌ `/bugfix description` (missing quotes)
+- ✅ `/speckit.bugfix "description"`
+- ❌ `/speckit.bugfix description` (missing quotes)
 
 **Script fails**: Check you're in the repository root with `.specify/` directory
 

@@ -2,7 +2,7 @@
 
 These examples come from **Tweeter**, a production React Router v7 Twitter clone where these workflows were developed and validated.
 
-## Example 1: `/bugfix` - Profile Form Crash
+## Example 1: `/speckit.bugfix` - Profile Form Crash
 
 ### The Problem
 
@@ -16,7 +16,25 @@ Error: Invalid file type: application/octet-stream
 ### The Workflow
 
 ```bash
+# Step 1: Create bug report
 /speckit.bugfix "when submitting the profile edit form and only changing the bio, it results in: Error: Invalid file type: application/octet-stream"
+# Creates: bug-report.md with initial analysis
+# Shows: Next steps to review and investigate
+
+# Step 2: Investigate and update bug-report.md with root cause
+# Reproduced bug, identified uploadHandler validation issue
+
+# Step 3: Create fix plan
+/speckit.plan
+# Creates: Detailed fix plan with regression test strategy
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Phase-based task breakdown (regression test first, then fix)
+
+# Step 5: Execute fix
+/speckit.implement
+# Implements regression test, then applies fix
 ```
 
 ### What It Created
@@ -25,25 +43,18 @@ Error: Invalid file type: application/octet-stream
 - **Directory**: `specs/bugfix-001-when-submitting-the/`
 - **Files**:
   - `bug-report.md` - Detailed bug analysis
-  - `tasks.md` - Phase-based task breakdown
+  - `plan.md` - Fix strategy (created by /speckit.plan)
+  - `tasks.md` - Phase-based task breakdown (created by /speckit.tasks)
 
-### Key Tasks Enforced
+### Key Process Enforced
 
-The `/bugfix` workflow enforced **regression-test-first** approach:
+The `/speckit.bugfix` workflow with review checkpoints enforced **regression-test-first** approach:
 
-```markdown
-## Phase 2: Regression Test (MUST WRITE BEFORE FIX)
-
-- [ ] **T008** Create regression test file in appropriate test directory
-  - Test MUST fail initially (reproduces the bug)
-  - Test should be focused on the specific bug behavior
-- [ ] **T009** Run regression test to verify it fails as expected
-- [ ] **T010** Document test file path and description in bug-report.md
-
-## Phase 3: Fix Implementation (ONLY AFTER TEST EXISTS)
-
-- [ ] **T011** Implement fix based on root cause analysis
-```
+1. **Initial analysis** via `/speckit.bugfix`
+2. **User review** of bug report and investigation
+3. **Fix planning** via `/speckit.plan` - user reviews approach before implementation
+4. **Task breakdown** via `/speckit.tasks` - ensures test-before-fix order
+5. **Implementation** via `/speckit.implement` - executes with test-first discipline
 
 ### The Root Cause
 
@@ -81,16 +92,17 @@ async function uploadHandler(fileUpload: FileUpload) {
 
 ### Lessons Learned
 
-The regression-test-first approach caught edge cases:
-- Empty file inputs have unexpected MIME type
-- Form validation needs to handle "no selection" state
-- Browser behavior varies for file inputs
+The **checkpoint-based workflow** with regression-test-first approach proved valuable:
+- **Review checkpoint** before planning allowed verification of root cause
+- **Planning checkpoint** before implementation let user review fix approach
+- **Regression test written first** caught edge cases (empty file inputs, MIME types)
+- **User had control** over fix direction at each phase
 
-**Without this workflow**: Would have quickly patched the bug without test coverage, and it would likely recur in a refactor.
+**Without this workflow**: Would have quickly patched the bug without test coverage, and it would likely recur in a refactor. The previous version that auto-implemented fixes had a 0% success rate (2/2 failures) because the user couldn't review and adjust the fix approach.
 
 ---
 
-## Example 2: `/modify` - Making Profile Fields Optional
+## Example 2: `/speckit.modify` - Making Profile Fields Optional
 
 ### The Problem
 
@@ -103,7 +115,25 @@ Profile edit form forced users to provide all fields even when they only wanted 
 ### The Workflow
 
 ```bash
+# Step 1: Create modification spec with impact analysis
 /speckit.modify 014 "make profile fields optional and remove email from form"
+# Creates: modification-spec.md + impact-analysis.md (auto-scanned)
+# Shows: Impact summary and next steps
+
+# Step 2: Review modification spec and impact analysis
+# Verified: 4 files affected, no breaking changes, service layer already supports partial updates
+
+# Step 3: Create implementation plan
+/speckit.plan
+# Creates: Detailed plan for implementing changes with backward compatibility strategy
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (update contracts, update schema, update form, update tests)
+
+# Step 5: Execute changes
+/speckit.implement
+# Runs all tasks in correct order
 ```
 
 ### What It Created
@@ -113,7 +143,8 @@ Profile edit form forced users to provide all fields even when they only wanted 
 - **Files**:
   - `modification-spec.md` - Comprehensive change documentation
   - `impact-analysis.md` - **Auto-generated** file scan
-  - `tasks.md` - Modification task breakdown
+  - `plan.md` - Implementation plan (created by /speckit.plan)
+  - `tasks.md` - Modification task breakdown (created by /speckit.tasks)
 
 ### The Impact Analysis (Auto-Generated)
 
@@ -213,17 +244,17 @@ export async function updateProfileFields(
 
 ### Lessons Learned
 
-The automatic impact analysis was invaluable:
-- Caught all 4 files that needed updates
-- Identified that service layer already supported partial updates
-- Prevented breaking changes by highlighting contract changes
-- Showed which tests needed updates
+The **checkpoint-based workflow** with automatic impact analysis was invaluable:
+- **Impact analysis** caught all 4 files that needed updates automatically
+- **Review checkpoint** allowed verification that service layer already supported partial updates
+- **Planning checkpoint** ensured backward compatibility strategy before implementation
+- **User reviewed** contract changes before committing to implementation
 
-**Without this workflow**: Would have missed updating the contract schema, or forgotten to check if partial updates were supported.
+**Without this workflow**: Would have missed updating the contract schema, or forgotten to check if partial updates were supported. The review checkpoints prevented a potential breaking change.
 
 ---
 
-## Example 3: `/modify` - Fixing Image Removal UX Bug
+## Example 3: `/speckit.modify` - Fixing Image Removal UX Bug
 
 ### The Problem
 
@@ -232,14 +263,36 @@ After the first modification (making fields optional), users reported their prof
 ### The Workflow
 
 ```bash
+# Step 1: Create modification spec with impact analysis
 /speckit.modify 014 "make profile edits submit even if the user doesn't add a profile image"
+# Creates: modification-spec.md + impact-analysis.md
+# Shows: Impact summary - identified hidden field causing automatic removal
+
+# Step 2: Review modification spec and impact analysis
+# Found: Lines 181-184 in EditProfileForm.tsx have problematic hidden field
+
+# Step 3: Create implementation plan
+/speckit.plan
+# Creates: Plan to make image removal explicit via button
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (remove hidden field, update remove button handler, test)
+
+# Step 5: Execute changes
+/speckit.implement
+# Implements explicit removal pattern
 ```
 
 ### What It Created
 
 - **Branch**: `014-mod-002-make-profile-edits`
 - **Directory**: `specs/014-edit-profile-form/modifications/002-make-profile-edits/`
-- **Files**: `modification-spec.md`, `impact-analysis.md`, `tasks.md`
+- **Files**:
+  - `modification-spec.md` - Change documentation
+  - `impact-analysis.md` - Auto-scanned affected files
+  - `plan.md` - Implementation plan (created by /speckit.plan)
+  - `tasks.md` - Task breakdown (created by /speckit.tasks)
 
 ### The Root Cause
 
@@ -287,7 +340,7 @@ Now "Remove Image" button explicitly submits with `intent="remove-image"`, while
 
 ### Lessons Learned
 
-**Nesting modifications under parent feature** kept everything organized:
+**Nesting modifications under parent feature** with checkpoint-based workflow kept everything organized:
 
 ```
 specs/014-edit-profile-form/
@@ -298,20 +351,23 @@ specs/014-edit-profile-form/
     ├── 001-make-profile-fields/         # First modification
     │   ├── modification-spec.md
     │   ├── impact-analysis.md
-    │   └── tasks.md
+    │   ├── plan.md                      # Created by /speckit.plan
+    │   └── tasks.md                     # Created by /speckit.tasks
     └── 002-make-profile-edits/          # Second modification
         ├── modification-spec.md
         ├── impact-analysis.md
-        └── tasks.md
+        ├── plan.md                      # Created by /speckit.plan
+        └── tasks.md                     # Created by /speckit.tasks
 ```
 
-This structure makes it easy to:
+This structure with review checkpoints makes it easy to:
 - Track all changes to a feature over time
+- Review impact before implementation
 - See evolution of feature
 - Understand modification order (001 → 002)
 - Reference original feature spec when needed
 
-**Without this workflow**: Modifications would have been scattered, and we'd lose the connection between related changes.
+**Without this workflow**: Modifications would have been scattered, and we'd lose the connection between related changes. The review checkpoints prevented implementing the wrong solution.
 
 ---
 
@@ -319,51 +375,56 @@ This structure makes it easy to:
 
 Here's how the same work would have been done **without** vs **with** extensions:
 
-| Task | Without Extensions | With Extensions | Time Saved | Quality Impact |
-|------|-------------------|-----------------|------------|----------------|
-| **Profile form crash** | 1. Find bug<br>2. Quick fix<br>3. Push<br>4. Hope it doesn't recur | 1. `/bugfix`<br>2. Write regression test first<br>3. Fix<br>4. Tests pass | ~Same time | ✅ Regression prevented |
-| **Make fields optional** | 1. Change schema<br>2. Update form<br>3. Push<br>4. Discover broken contract<br>5. Fix contract<br>6. Push again | 1. `/modify 014`<br>2. Review impact analysis<br>3. Update all affected files<br>4. Push once | Saved 2 hours | ✅ No breaking changes |
-| **Fix image removal** | 1. Change code<br>2. Test manually<br>3. Push<br>4. Filed in wrong place | 1. `/modify 014` again<br>2. Automatically nested under feature<br>3. Impact analysis<br>4. Push | Saved 1 hour | ✅ Organized history |
+| Task | Without Extensions | With Extensions (Checkpoint-Based) | Time Saved | Quality Impact |
+|------|-------------------|-----------------------------------|------------|----------------|
+| **Profile form crash** | 1. Find bug<br>2. Quick fix<br>3. Push<br>4. Hope it doesn't recur | 1. `/speckit.bugfix`<br>2. Review root cause<br>3. `/speckit.plan` (review approach)<br>4. `/speckit.tasks`<br>5. `/speckit.implement` (test-first)<br>6. Tests pass | ~Same time | ✅ Regression prevented<br>✅ User reviewed fix approach |
+| **Make fields optional** | 1. Change schema<br>2. Update form<br>3. Push<br>4. Discover broken contract<br>5. Fix contract<br>6. Push again | 1. `/speckit.modify 014`<br>2. Review impact analysis<br>3. `/speckit.plan` (review backward compatibility)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Push once | Saved 2 hours | ✅ No breaking changes<br>✅ User reviewed before coding |
+| **Fix image removal** | 1. Change code<br>2. Test manually<br>3. Push<br>4. Filed in wrong place | 1. `/speckit.modify 014` again<br>2. Review impact analysis<br>3. `/speckit.plan` (review solution)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Auto-nested under feature | Saved 1 hour | ✅ Organized history<br>✅ Correct solution from review |
 
 **Cumulative impact over 3 modifications**:
 - ⏱️ **Time saved**: ~3 hours
 - 🐛 **Bugs prevented**: 1 regression, 1 breaking change
 - 📁 **Organization**: Perfect feature history
 - ✅ **Build success rate**: 100% (vs likely 60-70% without)
+- 🎯 **Fix success rate**: 100% (vs 0% with auto-implementation)
 
 ---
 
 ## Example 5: Pattern - Feature Evolution Timeline
 
-Here's the complete evolution of Feature 014 (Edit Profile):
+Here's the complete evolution of Feature 014 (Edit Profile) with checkpoint-based workflow:
 
 ```
-Iteration 1: /specify "edit profile form"
-├─ Original implementation
-├─ Full spec, plan, tasks
+Iteration 1: /speckit.specify "edit profile form"
+├─ Original implementation with full workflow
+├─ spec → plan → tasks → implement
 └─ Status: ✅ Complete
 
-Iteration 2: /modify 014 "make fields optional"
-├─ Identified need for partial updates
+Iteration 2: /speckit.modify 014 "make fields optional"
+├─ modify → review impact → plan → review approach → tasks → implement
 ├─ Impact analysis caught contract changes
+├─ User reviewed backward compatibility before coding
 └─ Status: ✅ Complete
 
-Iteration 3: /modify 014 "fix image removal UX"
-├─ Discovered unintended behavior
-├─ Made removal explicit
+Iteration 3: /speckit.modify 014 "fix image removal UX"
+├─ modify → review impact → plan → review solution → tasks → implement
+├─ Discovered unintended behavior via impact analysis
+├─ User reviewed fix approach before implementation
 └─ Status: ✅ Complete
 
-Iteration 4: /bugfix "form crash without image"
-├─ Production bug discovered
+Iteration 4: /speckit.bugfix "form crash without image"
+├─ bugfix → investigate → plan → review fix → tasks → implement
 ├─ Regression test written first
+├─ User reviewed root cause and fix approach
 └─ Status: ✅ Complete
 ```
 
-**This evolution shows the power of spec-kit + extensions**:
-1. Start with structured `/specify`
-2. Modify safely with `/modify` (automatic impact analysis)
-3. Fix bugs with `/bugfix` (regression tests prevent recurrence)
-4. All history is organized and traceable
+**This evolution shows the power of spec-kit + extensions with review checkpoints**:
+1. Start with structured `/speckit.specify`
+2. Modify safely with `/speckit.modify` (automatic impact analysis + review checkpoints)
+3. Fix bugs with `/speckit.bugfix` (regression tests + review before implementation)
+4. **User controls direction** at each checkpoint (prevents failed implementations)
+5. All history is organized and traceable
 
 ---
 
@@ -371,16 +432,18 @@ Iteration 4: /bugfix "form crash without image"
 
 ### What Worked Well
 
-1. **Regression Tests First** (`/bugfix`): Prevented bugs from recurring
-2. **Automatic Impact Analysis** (`/modify`): Caught dependencies we would have missed
-3. **Nested Modifications**: Kept feature history organized
-4. **Workflow Quality Gates**: Enforced best practices (test-first, impact analysis)
+1. **Review Checkpoints** (all workflows): User controls direction before implementation - **prevents failed fixes**
+2. **Regression Tests First** (`/speckit.bugfix`): Prevented bugs from recurring
+3. **Automatic Impact Analysis** (`/speckit.modify`): Caught dependencies we would have missed
+4. **Nested Modifications**: Kept feature history organized
+5. **Workflow Quality Gates**: Enforced best practices with user review at each stage
 
 ### Common Patterns
 
-- **Start with `/specify`** for new features
-- **Use `/modify`** for changes that affect behavior
-- **Use `/bugfix`** for production issues with regression tests
+- **Start with `/speckit.specify`** for new features
+- **Use `/speckit.modify`** for changes that affect behavior
+- **Use `/speckit.bugfix`** for production issues with regression tests
+- **Review before implementing**: Every workflow gives you checkpoints to review and adjust
 - **Modifications nest** under parent features (organized history)
 - **Impact analysis catches** ~80% of affected files automatically
 
@@ -403,8 +466,10 @@ Ready to try these workflows on your project?
 1. **Install**: [INSTALLATION.md](INSTALLATION.md)
 2. **Quick Start**: [QUICKSTART.md](extensions/QUICKSTART.md)
 3. **Pick a real task**:
-   - Have a bug? Try `/bugfix "description"`
-   - Need to modify a feature? Try `/modify NNN "change"`
-   - Want to refactor? Try `/refactor "improvement"`
+   - Have a bug? Try `/speckit.bugfix "description"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+   - Need to modify a feature? Try `/speckit.modify NNN "change"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+   - Want to refactor? Try `/speckit.refactor "improvement"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+
+**Remember**: The checkpoint-based workflow gives you control at each phase. Review and adjust before implementing!
 
 **Questions?** [Open a discussion](https://github.com/[your-username]/spec-kit-extensions/discussions)

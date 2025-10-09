@@ -92,11 +92,9 @@ fi
 BUG_DIR="$SPECS_DIR/${BUG_ID}-${WORDS}"
 mkdir -p "$BUG_DIR"
 
-# Copy templates
+# Copy template
 BUGFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/bugfix/bug-report-template.md"
-TASKS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/bugfix/tasks-template.md"
 BUG_REPORT_FILE="$BUG_DIR/bug-report.md"
-TASKS_FILE="$BUG_DIR/tasks.md"
 
 if [ -f "$BUGFIX_TEMPLATE" ]; then
     cp "$BUGFIX_TEMPLATE" "$BUG_REPORT_FILE"
@@ -104,23 +102,16 @@ else
     echo "# Bug Report" > "$BUG_REPORT_FILE"
 fi
 
-if [ -f "$TASKS_TEMPLATE" ]; then
-    cp "$TASKS_TEMPLATE" "$TASKS_FILE"
-else
-    echo "# Tasks" > "$TASKS_FILE"
-fi
-
 # Set environment variable for current session
 export SPECIFY_BUGFIX="$BUG_ID"
 
 if $JSON_MODE; then
-    printf '{"BUG_ID":"%s","BRANCH_NAME":"%s","BUG_REPORT_FILE":"%s","TASKS_FILE":"%s","BUG_NUM":"%s"}\n' \
-        "$BUG_ID" "$BRANCH_NAME" "$BUG_REPORT_FILE" "$TASKS_FILE" "$BUG_NUM"
+    printf '{"BUG_ID":"%s","BRANCH_NAME":"%s","BUG_REPORT_FILE":"%s","BUG_NUM":"%s"}\n' \
+        "$BUG_ID" "$BRANCH_NAME" "$BUG_REPORT_FILE" "$BUG_NUM"
 else
     echo "BUG_ID: $BUG_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "BUG_REPORT_FILE: $BUG_REPORT_FILE"
-    echo "TASKS_FILE: $TASKS_FILE"
     echo "BUG_NUM: $BUG_NUM"
     echo "SPECIFY_BUGFIX environment variable set to: $BUG_ID"
 fi

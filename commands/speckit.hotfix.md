@@ -8,7 +8,7 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/hotfix` in the triggering message **is** the incident description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/speckit.hotfix` in the triggering message **is** the incident description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 **⚠️  EMERGENCY WORKFLOW - EXPEDITED PROCESS ⚠️**
 
@@ -23,20 +23,34 @@ Given that incident description, do this:
    - Fill incident timeline with TIMESTAMP from script output
    - Assess severity from description (P0 = service down, P1 = major feature broken, P2 = workaround available)
    - Describe the incident clearly
-   - Leave "Immediate Fix Applied" section empty (to be filled during fix)
+   - Leave "Immediate Fix Applied" section empty (to be filled during planning)
    - Leave root cause analysis preliminary (to be refined)
    - Document impact assessment from description
 
-4. Load `.specify/extensions/workflows/hotfix/tasks-template.md` and create `tasks.md` in the hotfix directory.
+4. Report completion with Next Steps:
 
-5. Report completion with:
-   - **EMERGENCY STATUS**: Hotfix workflow initiated
-   - Hotfix ID
-   - Branch name
-   - Incident start timestamp
-   - Severity assessment
-   - Hotfix file path
-   - **URGENT**: Begin Phase 1 tasks immediately (assess, notify, investigate)
-   - **REMINDER**: Post-mortem REQUIRED within 48 hours of resolution
+```
+⚠️  HOTFIX WORKFLOW INITIATED (EXPEDITED)
+
+**Hotfix ID**: [HOTFIX_ID]
+**Branch**: [BRANCH_NAME]
+**Incident Time**: [TIMESTAMP]
+**Severity**: [P0/P1/P2]
+**Hotfix Report**: [HOTFIX_FILE]
+
+📋 **Next Steps (URGENT):**
+1. Review incident details and confirm severity
+2. Notify stakeholders of incident status
+3. Run `/speckit.plan` to create expedited fix plan
+4. Run `/speckit.tasks` to create minimal task breakdown
+5. Run `/speckit.implement` to apply hotfix immediately
+
+⚠️ **Post-Deployment:**
+- Monitor production after deployment
+- Schedule post-mortem within 24-48 hours
+- Create follow-up `/speckit.bugfix` for proper fix with tests
+
+💡 **Note**: This is the ONLY workflow that permits test-after approach due to emergency
+```
 
 Note: Hotfix workflow bypasses normal TDD process due to emergency nature. Tests must be added AFTER fix is deployed. This is the ONLY workflow that permits this deviation from the constitution.

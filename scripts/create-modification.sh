@@ -169,22 +169,14 @@ MOD_DIR="$MODIFICATIONS_DIR/${MOD_NUM}-${WORDS}"
 mkdir -p "$MOD_DIR"
 mkdir -p "$MOD_DIR/contracts"
 
-# Copy templates
+# Copy template
 MODIFY_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/modify/modification-template.md"
-TASKS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/modify/tasks-template.md"
 MOD_SPEC_FILE="$MOD_DIR/modification-spec.md"
-TASKS_FILE="$MOD_DIR/tasks.md"
 
 if [ -f "$MODIFY_TEMPLATE" ]; then
     cp "$MODIFY_TEMPLATE" "$MOD_SPEC_FILE"
 else
     echo "# Modification Spec" > "$MOD_SPEC_FILE"
-fi
-
-if [ -f "$TASKS_TEMPLATE" ]; then
-    cp "$TASKS_TEMPLATE" "$TASKS_FILE"
-else
-    echo "# Tasks" > "$TASKS_FILE"
 fi
 
 # Run impact analysis
@@ -207,14 +199,13 @@ fi
 export SPECIFY_MODIFICATION="$MOD_ID"
 
 if $JSON_MODE; then
-    printf '{"MOD_ID":"%s","BRANCH_NAME":"%s","MOD_SPEC_FILE":"%s","TASKS_FILE":"%s","IMPACT_FILE":"%s","FEATURE_NAME":"%s","MOD_NUM":"%s"}\n' \
-        "$MOD_ID" "$BRANCH_NAME" "$MOD_SPEC_FILE" "$TASKS_FILE" "$IMPACT_FILE" "$FEATURE_NAME" "$MOD_NUM"
+    printf '{"MOD_ID":"%s","BRANCH_NAME":"%s","MOD_SPEC_FILE":"%s","IMPACT_FILE":"%s","FEATURE_NAME":"%s","MOD_NUM":"%s"}\n' \
+        "$MOD_ID" "$BRANCH_NAME" "$MOD_SPEC_FILE" "$IMPACT_FILE" "$FEATURE_NAME" "$MOD_NUM"
 else
     echo "MOD_ID: $MOD_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "FEATURE_NAME: $FEATURE_NAME"
     echo "MOD_SPEC_FILE: $MOD_SPEC_FILE"
-    echo "TASKS_FILE: $TASKS_FILE"
     echo "IMPACT_FILE: $IMPACT_FILE"
     echo "MOD_NUM: $MOD_NUM"
     echo "SPECIFY_MODIFICATION environment variable set to: $MOD_ID"

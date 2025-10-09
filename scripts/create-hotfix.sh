@@ -85,11 +85,9 @@ mkdir -p "$HOTFIX_DIR"
 # Copy templates
 HOTFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/hotfix/hotfix-template.md"
 POSTMORTEM_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/hotfix/post-mortem-template.md"
-TASKS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/hotfix/tasks-template.md"
 
 HOTFIX_FILE="$HOTFIX_DIR/hotfix.md"
 POSTMORTEM_FILE="$HOTFIX_DIR/post-mortem.md"
-TASKS_FILE="$HOTFIX_DIR/tasks.md"
 
 if [ -f "$HOTFIX_TEMPLATE" ]; then
     cp "$HOTFIX_TEMPLATE" "$HOTFIX_FILE"
@@ -101,12 +99,6 @@ if [ -f "$POSTMORTEM_TEMPLATE" ]; then
     cp "$POSTMORTEM_TEMPLATE" "$POSTMORTEM_FILE"
 else
     echo "# Post-Mortem" > "$POSTMORTEM_FILE"
-fi
-
-if [ -f "$TASKS_TEMPLATE" ]; then
-    cp "$TASKS_TEMPLATE" "$TASKS_FILE"
-else
-    echo "# Tasks" > "$TASKS_FILE"
 fi
 
 # Add incident start timestamp to hotfix file
@@ -144,14 +136,13 @@ EOF
 export SPECIFY_HOTFIX="$HOTFIX_ID"
 
 if $JSON_MODE; then
-    printf '{"HOTFIX_ID":"%s","BRANCH_NAME":"%s","HOTFIX_FILE":"%s","POSTMORTEM_FILE":"%s","TASKS_FILE":"%s","HOTFIX_NUM":"%s","TIMESTAMP":"%s"}\n' \
-        "$HOTFIX_ID" "$BRANCH_NAME" "$HOTFIX_FILE" "$POSTMORTEM_FILE" "$TASKS_FILE" "$HOTFIX_NUM" "$TIMESTAMP"
+    printf '{"HOTFIX_ID":"%s","BRANCH_NAME":"%s","HOTFIX_FILE":"%s","POSTMORTEM_FILE":"%s","HOTFIX_NUM":"%s","TIMESTAMP":"%s"}\n' \
+        "$HOTFIX_ID" "$BRANCH_NAME" "$HOTFIX_FILE" "$POSTMORTEM_FILE" "$HOTFIX_NUM" "$TIMESTAMP"
 else
     echo "HOTFIX_ID: $HOTFIX_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "HOTFIX_FILE: $HOTFIX_FILE"
     echo "POSTMORTEM_FILE: $POSTMORTEM_FILE"
-    echo "TASKS_FILE: $TASKS_FILE"
     echo "HOTFIX_NUM: $HOTFIX_NUM"
     echo "INCIDENT_START: $TIMESTAMP"
     echo ""

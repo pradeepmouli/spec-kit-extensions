@@ -23,14 +23,25 @@ Given that bug description, do this:
    - Extract current behavior, expected behavior, and reproduction steps from description
    - Mark severity based on description keywords (crash/data loss = Critical, broken feature = High, etc.)
    - Leave root cause analysis empty (to be filled during investigation)
-   - Leave fix strategy empty (to be filled before implementation)
+   - Leave fix strategy empty (to be filled during planning)
 
-4. Load `.specify/extensions/workflows/bugfix/tasks-template.md` and create `tasks.md` in the bug directory with concrete task descriptions based on the bug.
+4. Report completion with Next Steps:
 
-5. Report completion with:
-   - Branch name
-   - Bug ID
-   - Bug report file path
-   - Reminder to investigate and write regression test BEFORE fixing
+```
+✅ Bug fix workflow initialized
+
+**Branch**: [BRANCH_NAME]
+**Bug ID**: [BUG_ID]
+**Bug Report**: [BUG_REPORT_FILE]
+
+📋 **Next Steps:**
+1. Review and investigate the bug
+2. Update bug-report.md with root cause analysis
+3. Run `/speckit.plan` to create fix plan (include regression test strategy)
+4. Run `/speckit.tasks` to break down the fix into tasks
+5. Run `/speckit.implement` to execute the fix
+
+💡 **Reminder**: Write regression test BEFORE implementing fix
+```
 
 Note: The script creates and checks out the new branch before writing files.

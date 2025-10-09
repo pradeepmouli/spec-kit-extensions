@@ -6,7 +6,7 @@ The bugfix workflow is designed for fixing defects in existing code. It enforces
 
 ## When to Use
 
-Use `/bugfix` when:
+Use `/speckit.bugfix` when:
 
 - A specific behavior is broken or incorrect
 - Users report unexpected behavior
@@ -65,8 +65,9 @@ Use `/bugfix` when:
 ```
 specs/
 └── bugfix-001-description/
-    ├── bug-report.md      # Bug documentation
-    └── tasks.md           # 21 sequential tasks
+    ├── bug-report.md      # Bug documentation (created by /speckit.bugfix)
+    ├── plan.md            # Fix plan (created by /speckit.plan after review)
+    └── tasks.md           # Task breakdown (created by /speckit.tasks after plan review)
 ```
 
 ## Command Usage
@@ -78,8 +79,17 @@ specs/
 This will:
 1. Create branch `bugfix/001-button-click-doesnt`
 2. Generate `bug-report.md` with template
-3. Generate `tasks.md` with 21 tasks
-4. Set `SPECIFY_BUGFIX` environment variable
+3. Set `SPECIFY_BUGFIX` environment variable
+4. Show "Next Steps" for checkpoint-based workflow
+
+**Next steps after running the command:**
+1. Review and investigate the bug
+2. Update `bug-report.md` with root cause analysis
+3. Run `/speckit.plan` to create fix plan (include regression test strategy)
+4. Review the plan - adjust approach if needed
+5. Run `/speckit.tasks` to break down the fix into tasks
+6. Review the tasks - ensure regression test comes before fix
+7. Run `/speckit.implement` to execute the fix
 
 ## Example Bug Report
 
@@ -109,15 +119,31 @@ The form submission handler is missing the `await` keyword before the database c
 File: `app/routes/profile.edit.tsx:45`
 ```
 
-## Task Breakdown
+## Checkpoint-Based Workflow
 
-The workflow generates 21 tasks across 5 phases:
+The bugfix workflow uses a checkpoint-based approach to ensure you review and approve the fix strategy before implementation:
 
-- **T001-T005**: Investigation (reproduce, document, identify)
-- **T006-T009**: Regression Test (write BEFORE fix)
-- **T010-T013**: Apply Fix
-- **T014-T017**: Verification (test, document)
-- **T018-T021**: Prevention (coverage, docs, patterns)
+### Phase 1: Initial Analysis
+- **Command**: `/speckit.bugfix "bug description"`
+- **Creates**: `bug-report.md` with initial analysis
+- **Checkpoint**: Review bug report, reproduce bug, identify root cause
+
+### Phase 2: Fix Planning
+- **Command**: `/speckit.plan`
+- **Creates**: `plan.md` with fix strategy and regression test approach
+- **Checkpoint**: Review plan - is the approach correct? Will regression test catch this?
+
+### Phase 3: Task Breakdown
+- **Command**: `/speckit.tasks`
+- **Creates**: `tasks.md` with sequential tasks
+- **Checkpoint**: Review tasks - is regression test BEFORE fix? Are tasks in correct order?
+
+### Phase 4: Implementation
+- **Command**: `/speckit.implement`
+- **Executes**: All tasks in sequence (reproduce, write test, apply fix, verify)
+- **Result**: Bug fixed with regression test preventing recurrence
+
+**Why checkpoints matter**: Previous auto-implementation had 0% success rate (2/2 failures) because users couldn't review/adjust the fix approach. Checkpoints give you control at each phase.
 
 ## Tips
 

@@ -82,22 +82,14 @@ fi
 REFACTOR_DIR="$SPECS_DIR/${REFACTOR_ID}-${WORDS}"
 mkdir -p "$REFACTOR_DIR"
 
-# Copy templates
+# Copy template
 REFACTOR_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/refactor/refactor-template.md"
-TASKS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/refactor/tasks-template.md"
 REFACTOR_SPEC_FILE="$REFACTOR_DIR/refactor-spec.md"
-TASKS_FILE="$REFACTOR_DIR/tasks.md"
 
 if [ -f "$REFACTOR_TEMPLATE" ]; then
     cp "$REFACTOR_TEMPLATE" "$REFACTOR_SPEC_FILE"
 else
     echo "# Refactor Spec" > "$REFACTOR_SPEC_FILE"
-fi
-
-if [ -f "$TASKS_TEMPLATE" ]; then
-    cp "$TASKS_TEMPLATE" "$TASKS_FILE"
-else
-    echo "# Tasks" > "$TASKS_FILE"
 fi
 
 # Create placeholder for metrics
@@ -174,13 +166,12 @@ EOF
 export SPECIFY_REFACTOR="$REFACTOR_ID"
 
 if $JSON_MODE; then
-    printf '{"REFACTOR_ID":"%s","BRANCH_NAME":"%s","REFACTOR_SPEC_FILE":"%s","TASKS_FILE":"%s","METRICS_BEFORE":"%s","METRICS_AFTER":"%s","BEHAVIORAL_SNAPSHOT":"%s","REFACTOR_NUM":"%s"}\n' \
-        "$REFACTOR_ID" "$BRANCH_NAME" "$REFACTOR_SPEC_FILE" "$TASKS_FILE" "$METRICS_BEFORE" "$METRICS_AFTER" "$BEHAVIORAL_SNAPSHOT" "$REFACTOR_NUM"
+    printf '{"REFACTOR_ID":"%s","BRANCH_NAME":"%s","REFACTOR_SPEC_FILE":"%s","METRICS_BEFORE":"%s","METRICS_AFTER":"%s","BEHAVIORAL_SNAPSHOT":"%s","REFACTOR_NUM":"%s"}\n' \
+        "$REFACTOR_ID" "$BRANCH_NAME" "$REFACTOR_SPEC_FILE" "$METRICS_BEFORE" "$METRICS_AFTER" "$BEHAVIORAL_SNAPSHOT" "$REFACTOR_NUM"
 else
     echo "REFACTOR_ID: $REFACTOR_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "REFACTOR_SPEC_FILE: $REFACTOR_SPEC_FILE"
-    echo "TASKS_FILE: $TASKS_FILE"
     echo "METRICS_BEFORE: $METRICS_BEFORE"
     echo "METRICS_AFTER: $METRICS_AFTER"
     echo "BEHAVIORAL_SNAPSHOT: $BEHAVIORAL_SNAPSHOT"

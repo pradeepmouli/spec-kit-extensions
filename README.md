@@ -138,35 +138,50 @@ Removing a feature?
 ### Example: Fix a Bug
 
 ```bash
+# Step 1: Create bug report
 /speckit.bugfix "profile form crashes when submitting without image upload"
+# Creates: bug-report.md with initial analysis
+# Shows: Next steps to review and investigate
 
-# This creates:
-# - Branch: bugfix/001-profile-form-crashes
-# - Directory: specs/bugfix-001-profile-form-crashes/
-# - Files: bug-report.md, tasks.md
+# Step 2: Investigate and update bug-report.md with root cause
 
-# Follow tasks.md:
-# 1. Reproduce bug
-# 2. Write failing test (BEFORE fix)
-# 3. Apply fix
-# 4. Verify test passes
-# 5. Document prevention measures
+# Step 3: Create fix plan
+/speckit.plan
+# Creates: Detailed fix plan with regression test strategy
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (reproduce, write regression test, fix, verify)
+
+# Step 5: Execute fix
+/speckit.implement
+# Runs all tasks including regression-test-first approach
 ```
 
 ### Example: Modify Existing Feature
 
 ```bash
+# Step 1: Create modification spec with impact analysis
 /speckit.modify 014 "make profile fields optional instead of required"
+# Creates: modification-spec.md + impact-analysis.md
+# Shows: Impact summary and next steps
 
-# This creates:
-# - Branch: 014-mod-001-make-profile-fields
-# - Directory: specs/014-edit-profile-form/modifications/001-make-profile-fields/
-# - Files: modification-spec.md, impact-analysis.md (auto-generated), tasks.md
+# Step 2: Review modification spec and impact analysis
+# - Check affected files and contracts
+# - Assess backward compatibility
+# - Refine requirements if needed
 
-# Impact analysis automatically identifies:
-# - Files that will need updates
-# - Backward compatibility concerns
-# - Dependent features
+# Step 3: Create implementation plan
+/speckit.plan
+# Creates: Detailed plan for implementing changes
+
+# Step 4: Break down into tasks
+/speckit.tasks
+# Creates: Task list (update contracts, update tests, implement)
+
+# Step 5: Execute changes
+/speckit.implement
+# Runs all tasks in correct order
 ```
 
 ## Workflow Cheat Sheet

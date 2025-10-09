@@ -55,17 +55,32 @@ Given that modification request, do this:
    - Fill "What's Changing?" sections (Added/Modified/Removed) based on description
    - Include impact analysis summary from IMPACT_FILE
    - Document backward compatibility considerations
-   - Leave detailed implementation sections for later refinement
+   - Leave detailed implementation sections for planning phase
 
-9. Load `.specify/extensions/workflows/modify/tasks-template.md` and create `tasks.md` in the modification directory with concrete task descriptions.
+9. Report completion with Next Steps:
 
-10. Report completion with:
-   - Modification ID
-   - Branch name
-   - Original feature name and link
-   - Modification spec file path
-   - Impact analysis summary (number of files affected, contracts changed, tests to update)
-   - Next steps: review impact analysis, update modification spec, begin implementation
+```
+✅ Modification workflow initialized
+
+**Modification ID**: [MOD_ID]
+**Original Feature**: specs/[FEATURE_NAME]
+**Modification Spec**: [MOD_SPEC_FILE]
+**Impact Analysis**: [IMPACT_FILE]
+
+📊 **Impact Summary:**
+- [X] files affected
+- [Y] contracts changed
+- [Z] tests need updates
+
+📋 **Next Steps:**
+1. Review modification spec and impact analysis
+2. Refine requirements if needed (edit modification-spec.md)
+3. Run `/speckit.plan` to create implementation plan
+4. Run `/speckit.tasks` to break down into tasks
+5. Run `/speckit.implement` to execute changes
+
+💡 **Reminder**: Consider backward compatibility and migration strategy
+```
 
 Note: The script creates and checks out the new branch, runs impact analysis, and prepares directory structure before writing.
 
