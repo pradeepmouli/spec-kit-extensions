@@ -238,6 +238,7 @@ These extensions work with any AI agent that supports spec-kit:
 
 ### spec-kit Versions
 
+- ✅ **spec-kit v0.0.80+** (includes VS Code agent config support with handoffs)
 - ✅ **spec-kit v0.0.18+** (updated for new `/speckit.` prefix)
 - ✅ Fully compatible with core spec-kit workflows
 - ✅ Non-breaking (can be added/removed without affecting existing features)

@@ -1,5 +1,14 @@
 ---
 description: Modify an existing feature with impact analysis and backward compatibility tracking.
+handoffs: 
+  - label: Create Implementation Plan
+    agent: speckit.plan
+    prompt: Create a plan for the modification. I am modifying...
+    send: true
+  - label: Break Down Into Tasks
+    agent: speckit.tasks
+    prompt: Break the modification plan into tasks
+    send: true
 scripts:
   sh: scripts/bash/create-modification.sh --json "{ARGS}"
 ---

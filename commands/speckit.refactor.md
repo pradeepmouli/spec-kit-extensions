@@ -1,5 +1,16 @@
 ---
 description: Create a refactoring workflow with metrics tracking and behavior preservation validation.
+handoffs: 
+  - label: Create Implementation Plan
+    agent: speckit.plan
+    prompt: Create a plan for the refactoring. I am refactoring...
+    send: true
+  - label: Break Down Into Tasks
+    agent: speckit.tasks
+    prompt: Break the refactoring plan into tasks
+    send: true
+scripts:
+  sh: scripts/bash/create-refactor.sh --json "{ARGS}"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
