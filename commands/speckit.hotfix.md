@@ -1,5 +1,16 @@
 ---
 description: Create an emergency hotfix workflow with expedited process and mandatory post-mortem.
+handoffs:
+  - label: Create Expedited Plan
+    agent: speckit.plan
+    prompt: Create an expedited plan for the hotfix. This is an emergency...
+    send: true
+  - label: Break Down Into Tasks
+    agent: speckit.tasks
+    prompt: Break the hotfix plan into minimal tasks
+    send: true
+scripts:
+  sh: scripts/bash/create-hotfix.sh --json "{ARGS}"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).

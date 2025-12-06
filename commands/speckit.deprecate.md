@@ -1,5 +1,16 @@
 ---
 description: Initiate a feature deprecation workflow with phased sunset process (warnings → disabled → removed).
+handoffs:
+  - label: Create Deprecation Plan
+    agent: speckit.plan
+    prompt: Create a detailed plan for the deprecation phases. I am deprecating...
+    send: true
+  - label: Break Down Into Tasks
+    agent: speckit.tasks
+    prompt: Break the deprecation plan into tasks for each phase
+    send: true
+scripts:
+  sh: scripts/bash/create-deprecate.sh --json "{ARGS}"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).

@@ -5,6 +5,21 @@ All notable changes to the Specify Extension System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-12-05
+
+### ✨ Added
+
+- **VS Code Agent Config Support** - Added `handoffs` frontmatter to all command files to align with spec-kit v0.0.80+ and enable VS Code agent integration support
+  - All five extension commands (`bugfix`, `modify`, `refactor`, `hotfix`, `deprecate`) now include handoff configurations
+  - Handoffs provide quick navigation to next steps (`speckit.plan`, `speckit.tasks`) directly from within supported AI agents
+  - Improves workflow continuity and discoverability for users
+
+### 🔧 Technical Details
+
+- **Compatible Spec Kit Version**: v0.0.80+ (was v0.0.18+)
+- **Affected Files**: All 5 command files in `commands/` directory
+- **Feature**: Handoffs enable AI agents to suggest natural next steps in the workflow
+
 ## [2.0.0] - 2025-10-08
 
 ### 🎯 Major Changes

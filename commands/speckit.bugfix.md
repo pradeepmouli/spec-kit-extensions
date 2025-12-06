@@ -1,5 +1,14 @@
 ---
 description: Create a bug fix workflow with regression test and minimal documentation.
+handoffs:
+  - label: Create Implementation Plan
+    agent: speckit.plan
+    prompt: Create a plan for the bugfix. I am fixing...
+    send: true
+  - label: Break Down Into Tasks
+    agent: speckit.tasks
+    prompt: Break the bugfix plan into tasks
+    send: true
 scripts:
   sh: scripts/bash/create-bugfix.sh --json "{ARGS}"
 ---
