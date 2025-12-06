@@ -181,13 +181,20 @@ validate_speckit_installation() {
 # Get script directory
 get_script_dir() {
     local script_path="${BASH_SOURCE[0]}"
+    local count=0
+    local max_iterations=10
     
-    # Follow symlinks if necessary
-    while [ -L "$script_path" ]; do
+    # Follow symlinks if necessary (with loop protection)
+    while [ -L "$script_path" ] && [ $count -lt $max_iterations ]; do
         local dir="$(cd -P "$(dirname "$script_path")" && pwd)"
         script_path="$(readlink "$script_path")"
         [[ $script_path != /* ]] && script_path="$dir/$script_path"
+        count=$((count + 1))
     done
+    
+    if [ $count -ge $max_iterations ]; then
+        fatal "Too many symlink levels (possible circular symlink)"
+    fi
     
     cd -P "$(dirname "$script_path")" && pwd
 }
@@ -249,6 +256,11 @@ install_claude_commands() {
     
     info "Installing Claude Code commands..."
     
+    # Check if .claude directory exists, warn if creating new one
+    if [ ! -d "$repo_root/.claude" ]; then
+        warn "Creating new .claude directory (Claude Code not detected initially)"
+    fi
+    
     mkdir -p "$repo_root/.claude/commands"
     
     for ext in "${extensions[@]}"; do
@@ -269,6 +281,11 @@ install_copilot_instructions() {
     local extensions=("${@:3}")
     
     info "Installing GitHub Copilot instructions..."
+    
+    # Check if .github directory exists, warn if creating new one
+    if [ ! -d "$repo_root/.github" ]; then
+        warn "Creating new .github directory (GitHub Copilot not detected initially)"
+    fi
     
     mkdir -p "$repo_root/.github"
     
@@ -303,9 +320,9 @@ EOF
         
         cat >> "$instructions_file" << EOF
 
-## /$ext
+## spec-kit-extensions: /$ext workflow
 
-When user types \`/$ext\`:
+When user requests a \`/$ext\` workflow or mentions fixing a bug/modifying a feature:
 
 1. Execute the bash script:
    \`\`\`bash
@@ -317,6 +334,12 @@ When user types \`/$ext\`:
 3. Follow the tasks.md file for implementation
 
 4. Respect the quality gates for this workflow
+
+**Example prompts that should trigger this workflow:**
+- "Fix the login bug where users can't sign in"
+- "Create a $ext for [description]"
+- "Run the $ext workflow"
+
 
 EOF
     done
@@ -563,12 +586,14 @@ main() {
             ;;
         copilot)
             echo "  1. Reload VS Code or restart Copilot"
-            echo "  2. Use in Copilot Chat: /bugfix \"test bug\""
-            echo "  3. Read the docs: .specify/extensions/README.md"
+            echo "  2. In Copilot Chat, ask: \"Fix the login bug\" or \"Create a bugfix for...\""
+            echo "  3. Copilot will execute .specify/scripts/bash/create-bugfix.sh automatically"
+            echo "  4. Read the docs: .specify/extensions/README.md"
             ;;
         cursor)
-            echo "  1. Ask Cursor to: /bugfix \"test bug\""
-            echo "  2. Read the docs: .specify/extensions/README.md"
+            echo "  1. Ask Cursor: \"Fix the login bug\" or \"Create a bugfix for...\""
+            echo "  2. Cursor will execute .specify/scripts/bash/create-bugfix.sh automatically"
+            echo "  3. Read the docs: .specify/extensions/README.md"
             ;;
         *)
             echo "  1. Run: .specify/scripts/bash/create-bugfix.sh \"test bug\""
