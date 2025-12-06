@@ -24,14 +24,18 @@ specify init .
 
 # 2. Install specify-extend (choose one method)
 
-# Method A: Install with pip
-pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+# Method A: Install with pip from PyPI (Recommended)
+pip install specify-extend
 specify-extend --all
 
 # Method B: Use with uvx (no installation)
-uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+uvx specify-extend --all
 
-# Method C: Run Python script directly
+# Method C: Install from GitHub (for development or latest unreleased features)
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+specify-extend --all
+
+# Method D: Run Python script directly from source
 git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
 python3 /tmp/spec-kit-extensions/specify_extend.py --all
 rm -rf /tmp/spec-kit-extensions

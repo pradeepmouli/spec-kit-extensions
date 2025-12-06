@@ -69,11 +69,11 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 cd your-project
 specify init .
 
-# 2. Install specify-extend tool
-pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+# 2. Install specify-extend tool from PyPI
+pip install specify-extend
 
 # Or use with uvx (no installation needed)
-uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+uvx specify-extend --all
 
 # Or run directly with Python
 python -m specify_extend --all
