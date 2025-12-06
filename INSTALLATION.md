@@ -18,22 +18,28 @@ Before installing, ensure you have:
 **The `specify-extend` tool is the easiest way to install extensions:**
 
 ```bash
-# 1. Clone spec-kit-extensions
-git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
-
-# 2. In your project, initialize spec-kit (if not already done)
+# 1. In your project, initialize spec-kit (if not already done)
 cd your-project
 specify init .
 
-# 3. Run specify-extend to install extensions
-/tmp/spec-kit-extensions/specify-extend --all
+# 2. Install specify-extend (choose one method)
 
-# 4. Clean up
+# Method A: Install with pip
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+specify-extend --all
+
+# Method B: Use with uvx (no installation)
+uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+
+# Method C: Run Python script directly
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+python3 /tmp/spec-kit-extensions/specify_extend.py --all
 rm -rf /tmp/spec-kit-extensions
 ```
 
 **What it does:**
-- ✅ Automatically detects your AI agent (Claude Code, Copilot, Cursor, etc.)
+- ✅ Downloads latest extensions from GitHub releases
+- ✅ Automatically detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
 - ✅ Installs appropriate extensions and commands
 - ✅ Updates constitution with quality gates
 - ✅ Makes scripts executable
@@ -45,8 +51,6 @@ See [specify-extend documentation](docs/specify-extend.md) for advanced usage.
 If you prefer manual installation or need more control, choose one of these methods:
 
 ### Method 1: Add to Existing spec-kit Project
-
-**Use this if:** You already have a spec-kit project and want to add extensions
 
 **Use this if:** You already have a spec-kit project and want to add extensions manually
 

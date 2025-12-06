@@ -26,9 +26,14 @@ specify-extend --dry-run --all
 | Agent | Detection Marker | Installed To |
 |-------|-----------------|--------------|
 | **Claude Code** | `.claude/commands/` directory | `.claude/commands/speckit.*.md` |
-| **GitHub Copilot** | `.github/copilot-instructions.md` file | Appends to `.github/copilot-instructions.md` |
-| **Cursor** | `.cursorrules` file | Appends to `.cursorrules` |
-| **Windsurf** | `.windsurf/` directory | `.windsurf/rules.md` |
+| **GitHub Copilot** | `.github/agents/` directory | `.github/agents/speckit.{extension}.md` |
+| **Cursor** | `.cursor/commands/` directory | `.cursor/commands/speckit.{extension}.md` |
+| **Gemini CLI** | `.gemini/commands/` directory | `.gemini/commands/speckit.{extension}.toml` |
+| **Qwen Code** | `.qwen/commands/` directory | `.qwen/commands/speckit.{extension}.toml` |
+| **opencode** | `.opencode/commands/` directory | `.opencode/commands/speckit.{extension}.md` |
+| **Codex CLI** | `.codex/commands/` directory | `.codex/commands/speckit.{extension}.md` |
+| **Amazon Q** | `.q/commands/` directory | `.q/commands/speckit.{extension}.md` |
+| **Windsurf** | `.windsurf/` directory | `.windsurf/workflows/speckit.{extension}.md` (coming soon) |
 | **Manual/Generic** | None of the above | Scripts only (use manually) |
 
 ### 2. Installs Extensions
@@ -42,8 +47,14 @@ Based on detected agent, it installs:
 
 **Agent-specific:**
 - **Claude Code**: Command files → `.claude/commands/speckit.{extension}.md`
-- **GitHub Copilot**: Instructions → `.github/copilot-instructions.md` (appended)
-- **Cursor**: Rules → `.cursorrules` (appended)
+- **GitHub Copilot**: Command files → `.github/agents/speckit.{extension}.md`  
+- **Cursor**: Command files → `.cursor/commands/speckit.{extension}.md`
+- **Gemini CLI**: Command files → `.gemini/commands/speckit.{extension}.toml`
+- **Qwen Code**: Command files → `.qwen/commands/speckit.{extension}.toml`
+- **opencode**: Command files → `.opencode/commands/speckit.{extension}.md`
+- **Codex CLI**: Command files → `.codex/commands/speckit.{extension}.md`
+- **Amazon Q**: Command files → `.q/commands/speckit.{extension}.md`
+- **Windsurf**: Command files → `.windsurf/workflows/` (coming soon)
 - **Manual**: Usage instructions printed to console
 
 ### 3. Validates Installation
@@ -371,9 +382,17 @@ Future versions may support:
 
 ## Version History
 
+### 2.0.0 (2025-12-06)
+- **Major**: Converted to Python CLI tool (from bash)
+- **Feature**: Downloads latest extensions from GitHub releases
+- **Feature**: Support for all agents from spec-kit (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, Windsurf)
+- **Improvement**: Better error messages and validation
+- **Improvement**: Proper packaging for installation via `uv tool install`
+- Note: Windsurf support marked as "coming soon" pending full implementation
+
 ### 1.0.0 (2025-12-06)
-- Initial release
-- Auto-detection of Claude Code, GitHub Copilot, Cursor, Windsurf
+- Initial bash version release
+- Auto-detection of Claude Code, GitHub Copilot, Cursor
 - Support for all 5 extension workflows
 - Dry-run mode
 - Force agent option

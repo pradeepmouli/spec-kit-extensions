@@ -69,15 +69,25 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 cd your-project
 specify init .
 
-# 2. Install extensions (auto-detects your agent)
-/path/to/spec-kit-extensions/specify-extend --all
+# 2. Install specify-extend tool
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+
+# Or use with uvx (no installation needed)
+uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+
+# Or run directly with Python
+python -m specify_extend --all
+
+# 3. Install extensions (auto-detects your agent)
+specify-extend --all
 
 # Or install specific extensions
-/path/to/spec-kit-extensions/specify-extend bugfix modify refactor
+specify-extend bugfix modify refactor
 ```
 
 The `specify-extend` tool automatically:
-- ✅ Detects your AI agent (Claude Code, Copilot, Cursor, etc.)
+- ✅ Downloads latest extensions from GitHub
+- ✅ Detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
 - ✅ Installs extensions matching your setup
 - ✅ Configures agent-specific commands
 - ✅ Updates constitution with quality gates
