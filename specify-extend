@@ -289,6 +289,12 @@ EOF
     for ext in "${extensions[@]}"; do
         info "Adding instructions for /$ext command"
         
+        # Get script name (handle special case for modify)
+        local script_name="create-${ext}.sh"
+        if [ "$ext" = "modify" ]; then
+            script_name="create-modification.sh"
+        fi
+        
         cat >> "$instructions_file" << EOF
 
 ## /$ext
@@ -297,7 +303,7 @@ When user types \`/$ext\`:
 
 1. Execute the bash script:
    \`\`\`bash
-   .specify/scripts/bash/create-${ext}.sh [arguments]
+   .specify/scripts/bash/${script_name} [arguments]
    \`\`\`
 
 2. Read the generated files in the created directory
@@ -342,11 +348,17 @@ EOF
     for ext in "${extensions[@]}"; do
         info "Adding rules for /$ext command"
         
+        # Get script name (handle special case for modify)
+        local script_name="create-${ext}.sh"
+        if [ "$ext" = "modify" ]; then
+            script_name="create-modification.sh"
+        fi
+        
         cat >> "$rules_file" << EOF
 
 ## /$ext
 
-Execute: .specify/scripts/bash/create-${ext}.sh [arguments]
+Execute: .specify/scripts/bash/${script_name} [arguments]
 
 Read generated files and follow tasks.md for implementation.
 Respect workflow quality gates from .specify/memory/constitution.md.
