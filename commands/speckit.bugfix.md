@@ -1,6 +1,6 @@
 ---
 description: Create a bug fix workflow with regression test and minimal documentation.
-handoffs: 
+handoffs:
   - label: Create Implementation Plan
     agent: speckit.plan
     prompt: Create a plan for the bugfix. I am fixing...
