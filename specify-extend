@@ -63,7 +63,7 @@ OPTIONS:
     -v, --version           Show version
     --list                  List available extensions
     --all                   Install all available extensions
-    --agent AGENT           Force specific agent (claude, copilot, cursor, windsurf, manual)
+    --agent AGENT           Force specific agent (claude, copilot, cursor, manual)
     --dry-run               Show what would be installed without installing
 
 EXTENSIONS:
@@ -153,11 +153,11 @@ detect_agent() {
         return
     fi
     
-    # Check for Windsurf (looks for windsurf config)
-    if [ -f "$repo_root/.windsurf/rules.md" ] || [ -d "$repo_root/.windsurf" ]; then
-        echo "windsurf"
-        return
-    fi
+    # Windsurf support coming soon - for now treat as manual
+    # if [ -d "$repo_root/.windsurf" ]; then
+    #     echo "windsurf"
+    #     return
+    # fi
     
     # Default to manual (just spec-kit without specific agent)
     echo "manual"
@@ -214,8 +214,17 @@ install_extension_files() {
     # Copy extension workflow templates
     if [ -d "$script_dir/extensions" ]; then
         # Copy base extension files
-        cp "$script_dir/extensions/README.md" "$repo_root/.specify/extensions/" 2>/dev/null || true
-        cp "$script_dir/extensions/enabled.conf" "$repo_root/.specify/extensions/" 2>/dev/null || true
+        if [ -f "$script_dir/extensions/README.md" ]; then
+            cp "$script_dir/extensions/README.md" "$repo_root/.specify/extensions/"
+        else
+            warn "extensions/README.md not found, skipping"
+        fi
+        
+        if [ -f "$script_dir/extensions/enabled.conf" ]; then
+            cp "$script_dir/extensions/enabled.conf" "$repo_root/.specify/extensions/"
+        else
+            warn "extensions/enabled.conf not found, skipping"
+        fi
         
         # Copy specific workflow directories
         for ext in "${extensions[@]}"; do
@@ -465,10 +474,6 @@ install_extensions() {
         cursor)
             install_cursor_rules "$repo_root" "$script_dir" "${extensions[@]}"
             ;;
-        windsurf)
-            warn "Windsurf configuration not yet implemented"
-            install_manual "$repo_root"
-            ;;
         manual)
             install_manual "$repo_root"
             ;;
@@ -512,6 +517,9 @@ main() {
                 shift
                 ;;
             --agent)
+                if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
+                    fatal "--agent requires an argument (claude, copilot, cursor, manual)"
+                fi
                 force_agent="$2"
                 shift 2
                 ;;
