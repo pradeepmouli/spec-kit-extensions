@@ -1,6 +1,6 @@
 ---
 description: Modify an existing feature with impact analysis and backward compatibility tracking.
-handoffs: 
+handoffs:
   - label: Create Implementation Plan
     agent: speckit.plan
     prompt: Create a plan for the modification. I am modifying...
