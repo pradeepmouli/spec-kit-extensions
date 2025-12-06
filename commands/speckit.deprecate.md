@@ -1,6 +1,6 @@
 ---
 description: Initiate a feature deprecation workflow with phased sunset process (warnings → disabled → removed).
-handoffs: 
+handoffs:
   - label: Create Deprecation Plan
     agent: speckit.plan
     prompt: Create a detailed plan for the deprecation phases. I am deprecating...
