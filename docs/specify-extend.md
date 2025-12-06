@@ -1,13 +1,29 @@
 # specify-extend: Installation Tool
 
-`specify-extend` is an installation tool that works alongside GitHub's [spec-kit](https://github.com/github/spec-kit) to seamlessly install spec-kit-extensions. It automatically detects your existing spec-kit installation and agent configuration, then mirrors it when installing extensions.
+`specify-extend` is a Python CLI tool that works alongside GitHub's [spec-kit](https://github.com/github/spec-kit) to seamlessly install spec-kit-extensions. It automatically:
+- Downloads the latest extensions from GitHub releases
+- Detects your existing spec-kit installation and agent configuration
+- Installs extensions matching your setup
+
+## Installation
+
+```bash
+# Method 1: Install with pip
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+
+# Method 2: Use with uvx (no installation needed)
+uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+
+# Method 3: Run directly with Python
+python -m specify_extend --all
+```
 
 ## Quick Start
 
 After running `specify init` in your project:
 
 ```bash
-# Install all extensions (auto-detects your agent)
+# Install all extensions (auto-detects your agent, downloads latest from GitHub)
 specify-extend --all
 
 # Install specific extensions
@@ -384,14 +400,17 @@ Future versions may support:
 
 ### 2.0.0 (2025-12-06)
 - **Major**: Converted to Python CLI tool (from bash)
+- **Major**: Bash version removed (use Python version)
 - **Feature**: Downloads latest extensions from GitHub releases
 - **Feature**: Support for all agents from spec-kit (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, Windsurf)
+- **Feature**: Can be installed via pip, uvx, or run directly with Python
 - **Improvement**: Better error messages and validation
-- **Improvement**: Proper packaging for installation via `uv tool install`
+- **Improvement**: Proper packaging with pyproject.toml
 - Note: Windsurf support marked as "coming soon" pending full implementation
+- Note: Gemini and Qwen use markdown files as fallback (TOML generation coming soon)
 
-### 1.0.0 (2025-12-06)
-- Initial bash version release
+### 1.0.0 (2025-12-06) [DEPRECATED]
+- Initial bash version release (deprecated in favor of 2.0.0)
 - Auto-detection of Claude Code, GitHub Copilot, Cursor
 - Support for all 5 extension workflows
 - Dry-run mode

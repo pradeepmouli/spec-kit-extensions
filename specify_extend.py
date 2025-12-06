@@ -363,8 +363,17 @@ def install_agent_commands(
     console.print(f"[blue]ℹ[/blue] Installing {agent_name} commands...")
     
     folder = agent_info["folder"]
+    file_ext = agent_info["file_extension"]
+    
     if not folder:
         return
+    
+    # Check if this agent needs TOML files (not yet supported)
+    if file_ext == "toml":
+        console.print(
+            f"[yellow]⚠[/yellow] {agent_name} requires TOML command files (not yet implemented)"
+        )
+        console.print("  [dim]Will install markdown files as fallback[/dim]")
     
     commands_dir = repo_root / folder
     
@@ -374,11 +383,13 @@ def install_agent_commands(
     source_commands = source_dir / "commands"
     
     for ext in extensions:
+        # For now, we only have markdown files
         source_file = source_commands / f"speckit.{ext}.md"
+        dest_file = commands_dir / f"speckit.{ext}.{file_ext or 'md'}"
         
         if source_file.exists():
             if not dry_run:
-                shutil.copy(source_file, commands_dir / f"speckit.{ext}.md")
+                shutil.copy(source_file, dest_file)
             console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
         else:
             console.print(f"[yellow]⚠[/yellow] Command file for {ext} not found")
