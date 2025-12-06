@@ -1,0 +1,569 @@
+#!/usr/bin/env bash
+
+# specify-extend: Installation tool for spec-kit-extensions
+# Works alongside GitHub spec-kit's `specify init` command
+# Detects agent configuration and mirrors the installation
+
+set -e
+
+VERSION="1.0.0"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Helper functions
+info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
+success() {
+    echo -e "${GREEN}✓${NC} $1"
+}
+
+warn() {
+    echo -e "${YELLOW}⚠${NC} $1"
+}
+
+error() {
+    echo -e "${RED}✗${NC} $1" >&2
+}
+
+fatal() {
+    error "$1"
+    exit 1
+}
+
+show_usage() {
+    cat << EOF
+Usage: specify-extend [OPTIONS] [EXTENSIONS...]
+
+Installation tool for spec-kit-extensions that detects your existing
+spec-kit installation and mirrors the agent configuration.
+
+OPTIONS:
+    -h, --help              Show this help message
+    -v, --version           Show version
+    --list                  List available extensions
+    --all                   Install all available extensions
+    --agent AGENT           Force specific agent (claude, copilot, cursor, windsurf, manual)
+    --dry-run               Show what would be installed without installing
+
+EXTENSIONS:
+    bugfix                  Bug remediation with regression-test-first
+    modify                  Modify existing features with impact analysis
+    refactor                Improve code quality with metrics
+    hotfix                  Emergency production fixes
+    deprecate               Planned feature sunset
+
+EXAMPLES:
+    # Install all extensions (auto-detect agent)
+    specify-extend --all
+
+    # Install specific extensions
+    specify-extend bugfix modify refactor
+
+    # Force Claude Code configuration
+    specify-extend --agent claude --all
+
+    # Preview installation
+    specify-extend --dry-run --all
+
+WORKFLOW:
+    1. Run 'specify init' in your project
+    2. Run 'specify-extend' with desired extensions
+    3. Extensions will be installed matching your agent setup
+
+For more information: https://github.com/pradeepmouli/spec-kit-extensions
+EOF
+}
+
+show_version() {
+    echo "specify-extend version $VERSION"
+}
+
+list_extensions() {
+    cat << EOF
+Available Extensions:
+
+  bugfix      - Bug remediation with regression-test-first approach
+                Quality Gate: Write regression test BEFORE fix
+                
+  modify      - Modify existing features with automatic impact analysis
+                Quality Gate: Review impact analysis before changes
+                
+  refactor    - Improve code quality while preserving behavior
+                Quality Gate: Tests pass after EVERY incremental change
+                
+  hotfix      - Emergency production fixes with expedited process
+                Quality Gate: Post-mortem required within 48 hours
+                
+  deprecate   - Planned feature sunset with 3-phase rollout
+                Quality Gate: Follow 3-phase sunset process
+
+Use: specify-extend [extension names...] or specify-extend --all
+EOF
+}
+
+# Detect repository root
+get_repo_root() {
+    if git rev-parse --show-toplevel >/dev/null 2>&1; then
+        git rev-parse --show-toplevel
+    else
+        pwd
+    fi
+}
+
+# Detect which agent is configured
+detect_agent() {
+    local repo_root="$1"
+    
+    # Check for Claude Code
+    if [ -d "$repo_root/.claude/commands" ]; then
+        echo "claude"
+        return
+    fi
+    
+    # Check for GitHub Copilot
+    if [ -f "$repo_root/.github/copilot-instructions.md" ]; then
+        echo "copilot"
+        return
+    fi
+    
+    # Check for Cursor
+    if [ -f "$repo_root/.cursorrules" ]; then
+        echo "cursor"
+        return
+    fi
+    
+    # Check for Windsurf (looks for windsurf config)
+    if [ -f "$repo_root/.windsurf/rules.md" ] || [ -d "$repo_root/.windsurf" ]; then
+        echo "windsurf"
+        return
+    fi
+    
+    # Default to manual (just spec-kit without specific agent)
+    echo "manual"
+}
+
+# Validate spec-kit installation
+validate_speckit_installation() {
+    local repo_root="$1"
+    
+    if [ ! -d "$repo_root/.specify" ]; then
+        fatal "No .specify directory found. Please run 'specify init' first."
+    fi
+    
+    if [ ! -d "$repo_root/.specify/scripts" ]; then
+        warn ".specify/scripts directory not found - this might be a minimal installation"
+    fi
+    
+    success "Found spec-kit installation at $repo_root/.specify"
+}
+
+# Get script directory
+get_script_dir() {
+    local script_path="${BASH_SOURCE[0]}"
+    
+    # Follow symlinks if necessary
+    while [ -L "$script_path" ]; do
+        local dir="$(cd -P "$(dirname "$script_path")" && pwd)"
+        script_path="$(readlink "$script_path")"
+        [[ $script_path != /* ]] && script_path="$dir/$script_path"
+    done
+    
+    cd -P "$(dirname "$script_path")" && pwd
+}
+
+# Install extension files
+install_extension_files() {
+    local repo_root="$1"
+    local script_dir="$2"
+    local extensions=("${@:3}")
+    
+    info "Installing extension files..."
+    
+    # Create directories
+    mkdir -p "$repo_root/.specify/extensions/workflows"
+    mkdir -p "$repo_root/.specify/scripts/bash"
+    
+    # Copy extension workflow templates
+    if [ -d "$script_dir/extensions" ]; then
+        # Copy base extension files
+        cp "$script_dir/extensions/README.md" "$repo_root/.specify/extensions/" 2>/dev/null || true
+        cp "$script_dir/extensions/enabled.conf" "$repo_root/.specify/extensions/" 2>/dev/null || true
+        
+        # Copy specific workflow directories
+        for ext in "${extensions[@]}"; do
+            if [ -d "$script_dir/extensions/workflows/$ext" ]; then
+                cp -r "$script_dir/extensions/workflows/$ext" "$repo_root/.specify/extensions/workflows/"
+                success "Copied $ext workflow templates"
+            else
+                warn "Workflow directory for $ext not found"
+            fi
+        done
+    else
+        fatal "Extensions directory not found at $script_dir/extensions"
+    fi
+    
+    # Copy bash scripts
+    if [ -d "$script_dir/scripts" ]; then
+        for ext in "${extensions[@]}"; do
+            local script_name="create-${ext}.sh"
+            # Handle special case for modify
+            if [ "$ext" = "modify" ]; then
+                script_name="create-modification.sh"
+            fi
+            
+            if [ -f "$script_dir/scripts/$script_name" ]; then
+                cp "$script_dir/scripts/$script_name" "$repo_root/.specify/scripts/bash/"
+                chmod +x "$repo_root/.specify/scripts/bash/$script_name"
+                success "Copied $script_name script"
+            else
+                warn "Script $script_name not found"
+            fi
+        done
+    else
+        fatal "Scripts directory not found at $script_dir/scripts"
+    fi
+}
+
+# Install agent-specific commands for Claude Code
+install_claude_commands() {
+    local repo_root="$1"
+    local script_dir="$2"
+    local extensions=("${@:3}")
+    
+    info "Installing Claude Code commands..."
+    
+    mkdir -p "$repo_root/.claude/commands"
+    
+    for ext in "${extensions[@]}"; do
+        local cmd_file="speckit.$ext.md"
+        if [ -f "$script_dir/commands/$cmd_file" ]; then
+            cp "$script_dir/commands/$cmd_file" "$repo_root/.claude/commands/"
+            success "Installed /$ext command"
+        else
+            warn "Command file $cmd_file not found"
+        fi
+    done
+}
+
+# Install instructions for GitHub Copilot
+install_copilot_instructions() {
+    local repo_root="$1"
+    local script_dir="$2"
+    local extensions=("${@:3}")
+    
+    info "Installing GitHub Copilot instructions..."
+    
+    mkdir -p "$repo_root/.github"
+    
+    local instructions_file="$repo_root/.github/copilot-instructions.md"
+    
+    # Check if file already exists
+    if [ -f "$instructions_file" ]; then
+        warn "copilot-instructions.md already exists"
+        info "Appending extension commands..."
+        echo "" >> "$instructions_file"
+        echo "# spec-kit-extensions Commands" >> "$instructions_file"
+    else
+        # Create new file
+        cat > "$instructions_file" << 'EOF'
+# Custom Workflow Commands
+
+This file defines custom commands for spec-kit-extensions.
+
+## Workflow Quality Gates
+
+All workflows follow quality gates defined in `.specify/memory/constitution.md` Section VI.
+When implementing any workflow, read the constitution and follow the appropriate quality gates.
+
+EOF
+    fi
+    
+    # Add each extension's instructions
+    for ext in "${extensions[@]}"; do
+        info "Adding instructions for /$ext command"
+        
+        cat >> "$instructions_file" << EOF
+
+## /$ext
+
+When user types \`/$ext\`:
+
+1. Execute the bash script:
+   \`\`\`bash
+   .specify/scripts/bash/create-${ext}.sh [arguments]
+   \`\`\`
+
+2. Read the generated files in the created directory
+
+3. Follow the tasks.md file for implementation
+
+4. Respect the quality gates for this workflow
+
+EOF
+    done
+    
+    success "Copilot instructions updated at .github/copilot-instructions.md"
+}
+
+# Install rules for Cursor
+install_cursor_rules() {
+    local repo_root="$1"
+    local script_dir="$2"
+    local extensions=("${@:3}")
+    
+    info "Installing Cursor rules..."
+    
+    local rules_file="$repo_root/.cursorrules"
+    
+    # Check if file exists
+    if [ -f "$rules_file" ]; then
+        warn ".cursorrules already exists"
+        info "Appending extension commands..."
+        echo "" >> "$rules_file"
+        echo "# spec-kit-extensions Workflows" >> "$rules_file"
+    else
+        cat > "$rules_file" << 'EOF'
+# spec-kit-extensions Workflows
+
+When user requests any of these commands, execute the corresponding bash script
+and follow the generated specifications.
+
+EOF
+    fi
+    
+    # Add each extension's rules
+    for ext in "${extensions[@]}"; do
+        info "Adding rules for /$ext command"
+        
+        cat >> "$rules_file" << EOF
+
+## /$ext
+
+Execute: .specify/scripts/bash/create-${ext}.sh [arguments]
+
+Read generated files and follow tasks.md for implementation.
+Respect workflow quality gates from .specify/memory/constitution.md.
+
+EOF
+    done
+    
+    success "Cursor rules updated at .cursorrules"
+}
+
+# Install for manual/generic setup
+install_manual() {
+    local repo_root="$1"
+    
+    info "Installing for manual/generic agent setup..."
+    
+    # Just install the files, no agent-specific configuration
+    success "Extension files installed"
+    info "To use extensions, run bash scripts directly:"
+    info "  .specify/scripts/bash/create-bugfix.sh \"description\""
+    info "  .specify/scripts/bash/create-modification.sh NNN \"description\""
+    info "Or ask your AI agent to run these scripts when needed."
+}
+
+# Update constitution with quality gates
+update_constitution() {
+    local repo_root="$1"
+    local script_dir="$2"
+    
+    info "Updating constitution with quality gates..."
+    
+    local constitution_file="$repo_root/.specify/memory/constitution.md"
+    
+    # Check if constitution exists
+    if [ ! -f "$constitution_file" ]; then
+        warn "Constitution file not found, creating it..."
+        mkdir -p "$repo_root/.specify/memory"
+        touch "$constitution_file"
+    fi
+    
+    # Check if already has extension quality gates
+    if grep -q "Section VI: Workflow Selection and Quality Gates" "$constitution_file" 2>/dev/null; then
+        warn "Constitution already contains quality gates section"
+        return
+    fi
+    
+    # Append quality gates from template
+    if [ -f "$script_dir/docs/constitution-template.md" ]; then
+        echo "" >> "$constitution_file"
+        cat "$script_dir/docs/constitution-template.md" >> "$constitution_file"
+        success "Constitution updated with quality gates"
+    else
+        warn "Constitution template not found"
+    fi
+}
+
+# Main installation function
+install_extensions() {
+    local repo_root="$1"
+    local agent="$2"
+    local script_dir="$3"
+    shift 3
+    local extensions=("$@")
+    
+    info "Installing extensions: ${extensions[*]}"
+    info "Detected agent: $agent"
+    
+    # Install core extension files (always needed)
+    install_extension_files "$repo_root" "$script_dir" "${extensions[@]}"
+    
+    # Install agent-specific configuration
+    case "$agent" in
+        claude)
+            install_claude_commands "$repo_root" "$script_dir" "${extensions[@]}"
+            ;;
+        copilot)
+            install_copilot_instructions "$repo_root" "$script_dir" "${extensions[@]}"
+            ;;
+        cursor)
+            install_cursor_rules "$repo_root" "$script_dir" "${extensions[@]}"
+            ;;
+        windsurf)
+            warn "Windsurf configuration not yet implemented"
+            install_manual "$repo_root"
+            ;;
+        manual)
+            install_manual "$repo_root"
+            ;;
+        *)
+            fatal "Unknown agent: $agent"
+            ;;
+    esac
+    
+    # Update constitution
+    update_constitution "$repo_root" "$script_dir"
+    
+    success "Installation complete!"
+}
+
+# Main script
+main() {
+    local repo_root
+    local agent=""
+    local force_agent=""
+    local dry_run=false
+    local install_all=false
+    local extensions=()
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                show_usage
+                exit 0
+                ;;
+            -v|--version)
+                show_version
+                exit 0
+                ;;
+            --list)
+                list_extensions
+                exit 0
+                ;;
+            --all)
+                install_all=true
+                shift
+                ;;
+            --agent)
+                force_agent="$2"
+                shift 2
+                ;;
+            --dry-run)
+                dry_run=true
+                shift
+                ;;
+            -*)
+                fatal "Unknown option: $1"
+                ;;
+            *)
+                extensions+=("$1")
+                shift
+                ;;
+        esac
+    done
+    
+    # Get repo root
+    repo_root=$(get_repo_root)
+    
+    # Validate spec-kit installation
+    validate_speckit_installation "$repo_root"
+    
+    # Detect or use forced agent
+    if [ -n "$force_agent" ]; then
+        agent="$force_agent"
+        info "Using forced agent: $agent"
+    else
+        agent=$(detect_agent "$repo_root")
+        info "Detected agent: $agent"
+    fi
+    
+    # Determine which extensions to install
+    if [ "$install_all" = true ]; then
+        extensions=("bugfix" "modify" "refactor" "hotfix" "deprecate")
+    elif [ ${#extensions[@]} -eq 0 ]; then
+        error "No extensions specified. Use --all or specify extension names."
+        echo ""
+        show_usage
+        exit 1
+    fi
+    
+    # Get script directory (where this script and the extensions are)
+    local script_dir
+    script_dir=$(get_script_dir)
+    
+    if [ "$dry_run" = true ]; then
+        info "DRY RUN - Would install:"
+        info "  Repository: $repo_root"
+        info "  Agent: $agent"
+        info "  Extensions: ${extensions[*]}"
+        exit 0
+    fi
+    
+    # Perform installation
+    install_extensions "$repo_root" "$agent" "$script_dir" "${extensions[@]}"
+    
+    # Print summary
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    success "spec-kit-extensions installed successfully!"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    info "Installed extensions: ${extensions[*]}"
+    info "Configured for: $agent"
+    echo ""
+    info "Next steps:"
+    case "$agent" in
+        claude)
+            echo "  1. Try a command: /speckit.bugfix \"test bug\""
+            echo "  2. Read the docs: .specify/extensions/README.md"
+            ;;
+        copilot)
+            echo "  1. Reload VS Code or restart Copilot"
+            echo "  2. Use in Copilot Chat: /bugfix \"test bug\""
+            echo "  3. Read the docs: .specify/extensions/README.md"
+            ;;
+        cursor)
+            echo "  1. Ask Cursor to: /bugfix \"test bug\""
+            echo "  2. Read the docs: .specify/extensions/README.md"
+            ;;
+        *)
+            echo "  1. Run: .specify/scripts/bash/create-bugfix.sh \"test bug\""
+            echo "  2. Ask your AI agent to implement following the generated files"
+            echo "  3. Read the docs: .specify/extensions/README.md"
+            ;;
+    esac
+    echo ""
+}
+
+# Run main function
+main "$@"
