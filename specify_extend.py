@@ -5,7 +5,6 @@
 #     "typer",
 #     "rich",
 #     "httpx",
-#     "truststore>=0.10.4",
 # ]
 # ///
 """
@@ -38,16 +37,14 @@ from enum import Enum
 import typer
 import httpx
 import ssl
-import truststore
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 __version__ = "2.0.0"
 
-# Set up SSL context for GitHub API requests
-ssl_context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-client = httpx.Client(verify=ssl_context, follow_redirects=True)
+# Set up HTTPS client for GitHub API requests
+client = httpx.Client(follow_redirects=True)
 
 # Initialize Rich console
 console = Console()
