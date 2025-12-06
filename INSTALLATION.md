@@ -13,47 +13,46 @@ Before installing, ensure you have:
 - ✅ **Git** repository initialized
 - ✅ **AI coding agent** (Claude Code, GitHub Copilot, etc.) - optional but recommended
 
-## Installation Methods
+## Quick Install (Recommended)
 
-Choose the method that fits your situation:
-
-### Method 1: New Project from Template
-
-**Use this if:** Starting a new project and want everything pre-configured
+**The `specify-extend` tool is the easiest way to install extensions:**
 
 ```bash
-# 1. Use GitHub's "Use this template" button, OR clone manually:
-git clone https://github.com/[your-username]/spec-kit-extensions.git my-project
-cd my-project
+# 1. Clone spec-kit-extensions
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
 
-# 2. Remove template's git history
-rm -rf .git
-git init
-
-# 3. Initialize spec-kit
+# 2. In your project, initialize spec-kit (if not already done)
+cd your-project
 specify init .
 
-# 4. Move extension files to correct locations
-mkdir -p .specify/extensions .specify/scripts/bash .claude/commands
-mv extensions/* .specify/extensions/
-mv scripts/* .specify/scripts/bash/
-mv commands/* .claude/commands/
-mv docs/constitution-template.md .specify/memory/constitution.md
+# 3. Run specify-extend to install extensions
+/tmp/spec-kit-extensions/specify-extend --all
 
-# 5. Clean up template directories
-rmdir extensions scripts commands
-
-# 6. Verify installation
-/bugfix --help
+# 4. Clean up
+rm -rf /tmp/spec-kit-extensions
 ```
 
-### Method 2: Add to Existing spec-kit Project
+**What it does:**
+- ✅ Automatically detects your AI agent (Claude Code, Copilot, Cursor, etc.)
+- ✅ Installs appropriate extensions and commands
+- ✅ Updates constitution with quality gates
+- ✅ Makes scripts executable
+
+See [specify-extend documentation](docs/specify-extend.md) for advanced usage.
+
+## Manual Installation Methods
+
+If you prefer manual installation or need more control, choose one of these methods:
+
+### Method 1: Add to Existing spec-kit Project
 
 **Use this if:** You already have a spec-kit project and want to add extensions
 
+**Use this if:** You already have a spec-kit project and want to add extensions manually
+
 ```bash
 # 1. Clone extensions repo to temporary location
-git clone https://github.com/[your-username]/spec-kit-extensions.git /tmp/spec-kit-extensions
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
 
 # 2. Navigate to your project
 cd your-project
@@ -81,14 +80,14 @@ rm -rf /tmp/spec-kit-extensions
 /bugfix --help
 ```
 
-### Method 3: Git Submodule (For Teams)
+### Method 2: Git Submodule (For Teams)
 
 **Use this if:** You want to track updates to extensions or share across multiple projects
 
 ```bash
 # 1. Add as submodule
 cd your-project
-git submodule add https://github.com/[your-username]/spec-kit-extensions.git .specify/extension-source
+git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .specify/extension-source
 
 # 2. Create symlinks to extension files
 ln -s ..extension-source/extensions .specify/extensions

@@ -63,20 +63,35 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Installation
 
-**Option 1: Use as Template (New Projects)**
+**Recommended: Use specify-extend (Automatic)**
 ```bash
-# Create new project from this template
-git clone https://github.com/[your-username]/spec-kit-extensions.git my-project
-cd my-project
-rm -rf .git
-git init
-# Rearrange files per INSTALLATION.md
+# 1. Initialize spec-kit in your project
+cd your-project
+specify init .
+
+# 2. Install extensions (auto-detects your agent)
+/path/to/spec-kit-extensions/specify-extend --all
+
+# Or install specific extensions
+/path/to/spec-kit-extensions/specify-extend bugfix modify refactor
 ```
 
-**Option 2: Copy into Existing Project**
+The `specify-extend` tool automatically:
+- ✅ Detects your AI agent (Claude Code, Copilot, Cursor, etc.)
+- ✅ Installs extensions matching your setup
+- ✅ Configures agent-specific commands
+- ✅ Updates constitution with quality gates
+
+See [specify-extend documentation](docs/specify-extend.md) for details.
+
+**Alternative: Manual Installation**
+
+If you prefer manual installation or need more control:
+
+**Option 1: Copy into Existing Project**
 ```bash
 # Clone this repo
-git clone https://github.com/[your-username]/spec-kit-extensions.git /tmp/extensions
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/extensions
 
 # Copy files into your project
 cd your-project
@@ -91,14 +106,14 @@ cat /tmp/extensions/docs/constitution-template.md >> .specify/memory/constitutio
 rm -rf /tmp/extensions
 ```
 
-**Option 3: Git Submodule (Team Projects)**
+**Option 2: Git Submodule (Team Projects)**
 ```bash
 cd your-project
-git submodule add https://github.com/[your-username]/spec-kit-extensions.git .specify/extensions-source
+git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .specify/extensions-source
 # Create symlinks per INSTALLATION.md
 ```
 
-See [INSTALLATION.md](INSTALLATION.md) for detailed instructions.
+See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instructions.
 
 ### Verify Installation
 
