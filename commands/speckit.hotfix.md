@@ -1,6 +1,6 @@
 ---
 description: Create an emergency hotfix workflow with expedited process and mandatory post-mortem.
-handoffs: 
+handoffs:
   - label: Create Expedited Plan
     agent: speckit.plan
     prompt: Create an expedited plan for the hotfix. This is an emergency...
