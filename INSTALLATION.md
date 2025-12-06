@@ -13,47 +13,50 @@ Before installing, ensure you have:
 - ✅ **Git** repository initialized
 - ✅ **AI coding agent** (Claude Code, GitHub Copilot, etc.) - optional but recommended
 
-## Installation Methods
+## Quick Install (Recommended)
 
-Choose the method that fits your situation:
-
-### Method 1: New Project from Template
-
-**Use this if:** Starting a new project and want everything pre-configured
+**The `specify-extend` tool is the easiest way to install extensions:**
 
 ```bash
-# 1. Use GitHub's "Use this template" button, OR clone manually:
-git clone https://github.com/[your-username]/spec-kit-extensions.git my-project
-cd my-project
-
-# 2. Remove template's git history
-rm -rf .git
-git init
-
-# 3. Initialize spec-kit
+# 1. In your project, initialize spec-kit (if not already done)
+cd your-project
 specify init .
 
-# 4. Move extension files to correct locations
-mkdir -p .specify/extensions .specify/scripts/bash .claude/commands
-mv extensions/* .specify/extensions/
-mv scripts/* .specify/scripts/bash/
-mv commands/* .claude/commands/
-mv docs/constitution-template.md .specify/memory/constitution.md
+# 2. Install specify-extend (choose one method)
 
-# 5. Clean up template directories
-rmdir extensions scripts commands
+# Method A: Install with pip
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+specify-extend --all
 
-# 6. Verify installation
-/bugfix --help
+# Method B: Use with uvx (no installation)
+uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+
+# Method C: Run Python script directly
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+python3 /tmp/spec-kit-extensions/specify_extend.py --all
+rm -rf /tmp/spec-kit-extensions
 ```
 
-### Method 2: Add to Existing spec-kit Project
+**What it does:**
+- ✅ Downloads latest extensions from GitHub releases
+- ✅ Automatically detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
+- ✅ Installs appropriate extensions and commands
+- ✅ Updates constitution with quality gates
+- ✅ Makes scripts executable
 
-**Use this if:** You already have a spec-kit project and want to add extensions
+See [specify-extend documentation](docs/specify-extend.md) for advanced usage.
+
+## Manual Installation Methods
+
+If you prefer manual installation or need more control, choose one of these methods:
+
+### Method 1: Add to Existing spec-kit Project
+
+**Use this if:** You already have a spec-kit project and want to add extensions manually
 
 ```bash
 # 1. Clone extensions repo to temporary location
-git clone https://github.com/[your-username]/spec-kit-extensions.git /tmp/spec-kit-extensions
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
 
 # 2. Navigate to your project
 cd your-project
@@ -81,14 +84,14 @@ rm -rf /tmp/spec-kit-extensions
 /bugfix --help
 ```
 
-### Method 3: Git Submodule (For Teams)
+### Method 2: Git Submodule (For Teams)
 
 **Use this if:** You want to track updates to extensions or share across multiple projects
 
 ```bash
 # 1. Add as submodule
 cd your-project
-git submodule add https://github.com/[your-username]/spec-kit-extensions.git .specify/extension-source
+git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .specify/extension-source
 
 # 2. Create symlinks to extension files
 ln -s ..extension-source/extensions .specify/extensions

@@ -63,20 +63,45 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Installation
 
-**Option 1: Use as Template (New Projects)**
+**Recommended: Use specify-extend (Automatic)**
 ```bash
-# Create new project from this template
-git clone https://github.com/[your-username]/spec-kit-extensions.git my-project
-cd my-project
-rm -rf .git
-git init
-# Rearrange files per INSTALLATION.md
+# 1. Initialize spec-kit in your project
+cd your-project
+specify init .
+
+# 2. Install specify-extend tool
+pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
+
+# Or use with uvx (no installation needed)
+uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
+
+# Or run directly with Python
+python -m specify_extend --all
+
+# 3. Install extensions (auto-detects your agent)
+specify-extend --all
+
+# Or install specific extensions
+specify-extend bugfix modify refactor
 ```
 
-**Option 2: Copy into Existing Project**
+The `specify-extend` tool automatically:
+- ✅ Downloads latest extensions from GitHub
+- ✅ Detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
+- ✅ Installs extensions matching your setup
+- ✅ Configures agent-specific commands
+- ✅ Updates constitution with quality gates
+
+See [specify-extend documentation](docs/specify-extend.md) for details.
+
+**Alternative: Manual Installation**
+
+If you prefer manual installation or need more control:
+
+**Option 1: Copy into Existing Project**
 ```bash
 # Clone this repo
-git clone https://github.com/[your-username]/spec-kit-extensions.git /tmp/extensions
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/extensions
 
 # Copy files into your project
 cd your-project
@@ -91,14 +116,14 @@ cat /tmp/extensions/docs/constitution-template.md >> .specify/memory/constitutio
 rm -rf /tmp/extensions
 ```
 
-**Option 3: Git Submodule (Team Projects)**
+**Option 2: Git Submodule (Team Projects)**
 ```bash
 cd your-project
-git submodule add https://github.com/[your-username]/spec-kit-extensions.git .specify/extensions-source
+git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .specify/extensions-source
 # Create symlinks per INSTALLATION.md
 ```
 
-See [INSTALLATION.md](INSTALLATION.md) for detailed instructions.
+See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instructions.
 
 ### Verify Installation
 
@@ -316,8 +341,8 @@ Built with ❤️ for the spec-kit community by developers who wanted structured
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/[your-username]/spec-kit-extensions/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/[your-username]/spec-kit-extensions/discussions)
+- **Issues**: [GitHub Issues](https://github.com/pradeepmouli/spec-kit-extensions/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/pradeepmouli/spec-kit-extensions/discussions)
 - **spec-kit**: [Original spec-kit repo](https://github.com/github/spec-kit)
 
 ---

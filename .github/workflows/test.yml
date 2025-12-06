@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+    
+    - name: Test installation
+      run: |
+        specify-extend --version
+        specify-extend --help
+        specify-extend --list
+    
+    - name: Test dry-run mode
+      run: |
+        mkdir -p test-project/.specify/scripts/bash
+        cd test-project
+        git init
+        git config user.email "test@example.com"
+        git config user.name "Test User"
+        specify-extend --dry-run --all
+      shell: bash
+    
+    - name: Lint with ruff (optional)
+      run: |
+        pip install ruff
+        ruff check specify_extend.py
+      continue-on-error: true
