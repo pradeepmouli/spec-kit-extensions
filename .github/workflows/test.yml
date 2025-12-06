@@ -43,8 +43,8 @@ jobs:
         specify-extend --dry-run --all
       shell: bash
     
-    - name: Lint with ruff (if available)
+    - name: Lint with ruff (optional)
       run: |
-        pip install ruff || true
-        ruff check specify_extend.py || true
+        pip install ruff
+        ruff check specify_extend.py
       continue-on-error: true
