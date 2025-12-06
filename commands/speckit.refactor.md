@@ -1,6 +1,6 @@
 ---
 description: Create a refactoring workflow with metrics tracking and behavior preservation validation.
-handoffs: 
+handoffs:
   - label: Create Implementation Plan
     agent: speckit.plan
     prompt: Create a plan for the refactoring. I am refactoring...
