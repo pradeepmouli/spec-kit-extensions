@@ -398,23 +398,17 @@ Future versions may support:
 
 ## Version History
 
-### 2.0.0 (2025-12-06)
-- **Major**: Converted to Python CLI tool (from bash)
-- **Major**: Bash version removed (use Python version)
-- **Feature**: Downloads latest extensions from GitHub releases
-- **Feature**: Support for all agents from spec-kit (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, Windsurf)
-- **Feature**: Can be installed via pip, uvx, or run directly with Python
-- **Improvement**: Better error messages and validation
-- **Improvement**: Proper packaging with pyproject.toml
+### 1.0.0 (2025-12-06)
+- **Python CLI tool**: Built with `typer` framework, installable via pip, uvx, or runnable directly
+- **GitHub Download**: Automatically downloads latest extensions from GitHub releases
+- **Multi-agent Support**: Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, Windsurf
+- **Auto-detection**: Identifies agent by examining project structure
+- **Agent-specific installation**: Installs commands matching detected agent format
+- **Features**: `--all`, `--dry-run`, `--agent` options
+- **Validation**: Extension name and agent validation with clear error messages
+- **Compatibility**: Python 3.11+
 - Note: Windsurf support marked as "coming soon" pending full implementation
 - Note: Gemini and Qwen use markdown files as fallback (TOML generation coming soon)
-
-### 1.0.0 (2025-12-06) [DEPRECATED]
-- Initial bash version release (deprecated in favor of 2.0.0)
-- Auto-detection of Claude Code, GitHub Copilot, Cursor
-- Support for all 5 extension workflows
-- Dry-run mode
-- Force agent option
 
 ## Contributing
 
