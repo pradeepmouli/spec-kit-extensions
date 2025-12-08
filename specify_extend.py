@@ -215,7 +215,11 @@ def int_to_roman(num: int) -> str:
         for _ in range(num // val[i]):
             roman_num += syms[i]
             num -= val[i]
-        i += 1
+    
+    Note:
+        Section headers with malformed Roman numerals (e.g., "IIV", "VVV") will be silently skipped
+        and not counted, rather than raising an error. Only valid Roman numerals are considered.
+    
     
     return roman_num
 
