@@ -605,7 +605,11 @@ def update_constitution(
             
             # Check if workflow selection content already exists
             if detect_workflow_selection_section(content):
-                console.print(
+            if numbering_style == 'roman' and highest_number == 0:
+                # Malformed Roman numerals detected, fall back to no numbering
+                formatted_template = template_content
+                console.print("[yellow]⚠[/yellow] Detected malformed Roman numerals, using template as-is")
+            elif numbering_style and highest_number:
                     "[yellow]⚠[/yellow] Constitution already contains workflow selection and quality gates"
                 )
                 return
