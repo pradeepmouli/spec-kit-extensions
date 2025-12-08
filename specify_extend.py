@@ -195,7 +195,20 @@ def roman_to_int(roman: str) -> int:
 
 
 def int_to_roman(num: int) -> str:
-    """Convert integer to Roman numeral"""
+    """Convert integer to Roman numeral
+    
+    Args:
+        num: Positive integer to convert
+        
+    Returns:
+        Roman numeral representation
+        
+    Raises:
+        ValueError: If num is less than or equal to 0
+    """
+    if num <= 0:
+        raise ValueError(f"Cannot convert {num} to Roman numeral (must be positive)")
+    
     val = [
         1000, 900, 500, 400,
         100, 90, 50, 40,
@@ -215,11 +228,7 @@ def int_to_roman(num: int) -> str:
         for _ in range(num // val[i]):
             roman_num += syms[i]
             num -= val[i]
-    
-    Note:
-        Section headers with malformed Roman numerals (e.g., "IIV", "VVV") will be silently skipped
-        and not counted, rather than raising an error. Only valid Roman numerals are considered.
-    
+        i += 1
     
     return roman_num
 
@@ -235,6 +244,14 @@ def parse_constitution_sections(content: str) -> Tuple[Optional[str], Optional[i
         Tuple of (numbering_style, highest_number)
         numbering_style can be: 'roman', 'numeric', or None
         highest_number is the integer value of the highest section found
+        
+    Note:
+        - Section headers with malformed Roman numerals (e.g., "IIV", "VVV") will be 
+          silently skipped and not counted. Only valid Roman numerals are considered.
+        - If a constitution contains BOTH Roman and numeric section headers (mixed styles),
+          the function returns the style with non-zero sections, preferring Roman numerals
+          if both are present. Mixed numbering styles in a single document would be unusual
+          and may indicate inconsistent formatting.
     """
     highest_roman = 0
     highest_numeric = 0
@@ -312,29 +329,43 @@ def detect_workflow_selection_section(content: str) -> bool:
     Returns True if both section header and workflow command thresholds are met,
     indicating existing workflow content.
     
-    Uses configurable thresholds to reduce false positives.
+    Uses regex patterns to match section headers specifically (not just text mentions)
+    and configurable thresholds to reduce false positives.
     """
-    # Look for specific section headers that are unique to our template
-    section_headers = [
-        "Workflow Selection",
-        "Development Workflow", 
-        "Quality Gates by Workflow"
+    # Look for specific section headers using regex to match actual headers
+    # Pattern matches ## or ### headers containing these terms
+    section_patterns = [
+        r'^##\s+.*Workflow Selection',
+        r'^##\s+.*Development Workflow',
+        r'^##\s+.*Quality Gates by Workflow'
     ]
     
-    # Look for workflow command patterns
-    workflow_commands = [
-        "/bugfix",
-        "/modify", 
-        "/refactor",
-        "/hotfix",
-        "/deprecate"
+    # Look for workflow command patterns in their expected context
+    # Match them as list items, in tables, or in backticks
+    workflow_patterns = [
+        r'`/bugfix[^`]*`',
+        r'`/modify[^`]*`',
+        r'`/refactor[^`]*`',
+        r'`/hotfix[^`]*`',
+        r'`/deprecate[^`]*`'
     ]
     
     # Check if we have the main section headers
-    has_sections = sum(1 for header in section_headers if header in content)
+    has_sections = 0
+    for pattern in section_patterns:
+        if re.search(pattern, content, re.MULTILINE):
+            has_sections += 1
     
-    # Check if we have workflow commands mentioned
-    has_workflows = sum(1 for cmd in workflow_commands if cmd in content)
+    # Check if we have workflow commands in expected format
+    workflow_commands_found = set()
+    for pattern in workflow_patterns:
+        matches = re.findall(pattern, content, re.MULTILINE)
+        if matches:
+            # Extract which workflow this is
+            workflow_name = re.search(r'/(bugfix|modify|refactor|hotfix|deprecate)', pattern)
+            if workflow_name:
+                workflow_commands_found.add(workflow_name.group(1))
+    has_workflows = len(workflow_commands_found)
     
     # Return True if both thresholds are met
     return has_sections >= MIN_SECTION_HEADERS and has_workflows >= MIN_WORKFLOW_COMMANDS
@@ -602,6 +633,7 @@ def update_constitution(
             return
         
         template_content = template_file.read_text()
+        is_new_file = not constitution_file.exists()
         
         # Check if already has quality gates
         if constitution_file.exists():
@@ -609,11 +641,7 @@ def update_constitution(
             
             # Check if workflow selection content already exists
             if detect_workflow_selection_section(content):
-            if numbering_style == 'roman' and highest_number == 0:
-                # Malformed Roman numerals detected, fall back to no numbering
-                formatted_template = template_content
-                console.print("[yellow]⚠[/yellow] Detected malformed Roman numerals, using template as-is")
-            elif numbering_style and highest_number:
+                console.print(
                     "[yellow]⚠[/yellow] Constitution already contains workflow selection and quality gates"
                 )
                 return
@@ -621,31 +649,42 @@ def update_constitution(
             # Parse existing constitution to find section numbering
             numbering_style, highest_number = parse_constitution_sections(content)
             
-            if numbering_style and highest_number:
+            # Check for malformed Roman numerals case
+            if numbering_style == 'roman' and highest_number == 0:
+                # Malformed Roman numerals detected, fall back to no numbering
+                formatted_template = template_content
+                console.print("[yellow]⚠[/yellow] Detected malformed Roman numerals, using template as-is")
+            elif numbering_style and highest_number:
                 # Found existing numbered sections, continue the numbering
                 next_number = highest_number + 1
-                formatted_template = format_template_with_sections(
-                    template_content, 
-                    numbering_style, 
-                    next_number
-                )
-                console.print(
-                    f"[blue]ℹ[/blue] Detected {numbering_style} numbering, adding sections starting at "
-                    f"{int_to_roman(next_number) if numbering_style == 'roman' else next_number}"
-                )
+                try:
+                    formatted_template = format_template_with_sections(
+                        template_content, 
+                        numbering_style, 
+                        next_number
+                    )
+                    console.print(
+                        f"[blue]ℹ[/blue] Detected {numbering_style} numbering, adding sections starting at "
+                        f"{int_to_roman(next_number) if numbering_style == 'roman' else next_number}"
+                    )
+                except ValueError as e:
+                    # Handle edge case where int_to_roman might fail
+                    console.print(f"[yellow]⚠[/yellow] Error formatting sections: {e}, using template as-is")
+                    formatted_template = template_content
             else:
                 # No existing numbering found, use template as-is
                 formatted_template = template_content
                 console.print("[blue]ℹ[/blue] No section numbering detected, using template as-is")
         else:
-            # New constitution file
-            constitution_file.touch()
+            # New constitution file - no numbering, no leading newlines
             formatted_template = template_content
             console.print("[blue]ℹ[/blue] Creating new constitution file")
         
         # Append formatted template to constitution
         with open(constitution_file, "a") as f:
-            f.write(SECTION_SEPARATOR)
+            # Only add separator for existing files
+            if not is_new_file:
+                f.write(SECTION_SEPARATOR)
             f.write(formatted_template)
         
         console.print("[green]✓[/green] Constitution updated with quality gates")
