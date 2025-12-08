@@ -5,7 +5,7 @@
 - Detects your existing spec-kit installation and agent configuration
 - Installs extensions matching your setup
 
-**Version**: v1.0.1 (CLI tool is versioned separately from extension templates)
+**Version**: v1.1.0 (CLI tool is versioned separately from extension templates)
 
 ## Installation
 
@@ -461,6 +461,18 @@ Future versions may support:
 | 1 | Error (see error message) |
 
 ## Version History
+
+### 1.1.0 (2025-12-08)
+- **LLM-Enhanced Constitution Updates**: New `--llm-enhance` flag for intelligent constitution merging using AI
+  - Creates one-time prompt/command that leverages AI to intelligently merge quality gates
+  - For GitHub Copilot: Creates both `.github/agents/` and `.github/prompts/` files
+  - For other agents: Creates command file for invocation
+  - Self-destruct instructions to prevent accidental re-use
+- **GitHub Copilot Agent + Prompt Support**: Proper dual-file installation matching spec-kit pattern
+  - All workflow commands create both agent and prompt files for Copilot
+  - Prompt files are lightweight pointers (`agent: speckit.{workflow}`)
+  - Follows spec-kit's implementation for better integration
+- **Documentation**: Comprehensive guide for `--llm-enhance` feature and Copilot-specific patterns
 
 ### 1.0.1 (2025-12-08)
 - **Intelligent Section Numbering**: Auto-detects and continues Roman numeral (I, II, III) or numeric (1, 2, 3) section numbering in constitutions

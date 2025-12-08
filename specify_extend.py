@@ -42,7 +42,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 # Set up HTTPS client for GitHub API requests
 client = httpx.Client(follow_redirects=True)

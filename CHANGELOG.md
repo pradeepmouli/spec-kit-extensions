@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.0.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.1.0
 
 ---
 
@@ -30,6 +30,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (specify-extend)
+
+### [1.1.0] - 2025-12-08
+
+#### ✨ Added
+
+- **LLM-Enhanced Constitution Updates** - New `--llm-enhance` flag for intelligent constitution merging
+  - Creates one-time prompt/command that uses AI to intelligently merge quality gates
+  - For GitHub Copilot: Creates both `.github/agents/` and `.github/prompts/` files (matching spec-kit pattern)
+  - For other agents: Creates command file (e.g., `.claude/commands/speckit.enhance-constitution.md`)
+  - Prompt files for regular workflows are pointers to agent files (`agent: speckit.{workflow}`)
+  - Self-destruct instructions included to prevent accidental re-use
+
+- **GitHub Copilot Agent + Prompt Support** - Proper dual-file installation for GitHub Copilot
+  - All workflow commands now create both `.github/agents/` and `.github/prompts/` files
+  - Prompt files are lightweight pointers to agent files (following spec-kit pattern)
+  - Matches spec-kit's implementation for better Copilot integration
+
+#### 📝 Documentation
+
+- Added comprehensive documentation for `--llm-enhance` feature
+- Updated examples to show Copilot-specific usage patterns
+- Clarified difference between prompt files and agent files
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.1.0
+- **Installation**: `pip install specify-extend` or `uvx specify-extend`
 
 ### [1.0.1] - 2025-12-08
 
