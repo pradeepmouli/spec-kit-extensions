@@ -5,7 +5,7 @@
 - Detects your existing spec-kit installation and agent configuration
 - Installs extensions matching your setup
 
-**Version**: v1.1.0 (CLI tool is versioned separately from extension templates)
+**Version**: v1.1.1 (CLI tool is versioned separately from extension templates)
 
 ## Installation
 
@@ -44,7 +44,7 @@ specify-extend --dry-run --all
 | Agent | Detection Marker | Installed To |
 |-------|-----------------|--------------|
 | **Claude Code** | `.claude/commands/` directory | `.claude/commands/speckit.*.md` |
-| **GitHub Copilot** | `.github/agents/` directory | `.github/agents/speckit.{extension}.md` |
+| **GitHub Copilot** | `.github/agents/` directory | `.github/agents/speckit.{extension}.md` + `.github/prompts/speckit.{extension}.prompt.md` |
 | **Cursor** | `.cursor/commands/` directory | `.cursor/commands/speckit.{extension}.md` |
 | **Gemini CLI** | `.gemini/commands/` directory | `.gemini/commands/speckit.{extension}.toml` |
 | **Qwen Code** | `.qwen/commands/` directory | `.qwen/commands/speckit.{extension}.toml` |
@@ -65,7 +65,7 @@ Based on detected agent, it installs:
 
 **Agent-specific:**
 - **Claude Code**: Command files → `.claude/commands/speckit.{extension}.md`
-- **GitHub Copilot**: Command files → `.github/agents/speckit.{extension}.md`
+- **GitHub Copilot**: Agent files → `.github/agents/speckit.{extension}.md` + Prompt files → `.github/prompts/speckit.{extension}.prompt.md`
 - **Cursor**: Command files → `.cursor/commands/speckit.{extension}.md`
 - **Gemini CLI**: Command files → `.gemini/commands/speckit.{extension}.toml`
 - **Qwen Code**: Command files → `.qwen/commands/speckit.{extension}.toml`
@@ -153,7 +153,7 @@ specify-extend --all --llm-enhance
 **How it works:**
 
 1. **Creates a one-time prompt/command**:
-   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.md` and `.github/prompts/speckit.enhance-constitution.md` (matching spec-kit pattern)
+   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.md` and `.github/prompts/speckit.enhance-constitution.prompt.md` (matching spec-kit pattern)
    - For **other agents** (Claude, Cursor, etc.): Creates a command like `/speckit.enhance-constitution`
 2. **You invoke it**:
    - **GitHub Copilot**: Reference the prompt in Copilot Chat or use as agent
@@ -165,7 +165,7 @@ specify-extend --all --llm-enhance
    - Continue existing section numbering schemes
    - Avoid duplicating content
 4. **Self-destructs**: The prompt/command includes instructions to delete itself after use to prevent confusion
-   - **GitHub Copilot**: Delete both `.github/prompts/` and `.github/agents/` files
+   - **GitHub Copilot**: Delete both `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.md`
 
 **When to use `--llm-enhance`:**
 
@@ -188,8 +188,8 @@ specify-extend --all --llm-enhance
 
 # For GitHub Copilot users:
 # In Copilot Chat, reference the prompt:
-# "Review and apply .github/prompts/speckit.enhance-constitution.md"
-# Then delete both .github/prompts/speckit.enhance-constitution.md
+# "Review and apply .github/prompts/speckit.enhance-constitution.prompt.md"
+# Then delete both .github/prompts/speckit.enhance-constitution.prompt.md
 # and .github/agents/speckit.enhance-constitution.md
 
 # For Claude Code users:
@@ -270,12 +270,25 @@ your-project/
 │   │   └── create-deprecate.sh
 │   └── memory/
 │       └── constitution.md      # ← Updated with quality gates
-└── .claude/commands/            # ← If using Claude Code
-    ├── speckit.bugfix.md
-    ├── speckit.modify.md
-    ├── speckit.refactor.md
-    ├── speckit.hotfix.md
-    └── speckit.deprecate.md
+├── .claude/commands/            # ← If using Claude Code
+│   ├── speckit.bugfix.md
+│   ├── speckit.modify.md
+│   ├── speckit.refactor.md
+│   ├── speckit.hotfix.md
+│   └── speckit.deprecate.md
+└── .github/                     # ← If using GitHub Copilot
+    ├── agents/
+    │   ├── speckit.bugfix.md
+    │   ├── speckit.modify.md
+    │   ├── speckit.refactor.md
+    │   ├── speckit.hotfix.md
+    │   └── speckit.deprecate.md
+    └── prompts/
+        ├── speckit.bugfix.prompt.md
+        ├── speckit.modify.prompt.md
+        ├── speckit.refactor.prompt.md
+        ├── speckit.hotfix.prompt.md
+        └── speckit.deprecate.prompt.md
 ```
 
 ## Troubleshooting
@@ -461,6 +474,11 @@ Future versions may support:
 | 1 | Error (see error message) |
 
 ## Version History
+
+### 1.1.1 (2025-12-08)
+- **GitHub Copilot Prompt File Naming**: Corrected prompt file naming pattern to `speckit.*.prompt.md` to match GitHub Copilot's expected convention
+- **Removed Unsupported Scripts Section**: Removed `scripts:` frontmatter from all command files (GitHub Copilot does not support it)
+- **Explicit Script Paths**: Replaced `{SCRIPT}` template variables with explicit script paths in command files
 
 ### 1.1.0 (2025-12-08)
 - **LLM-Enhanced Constitution Updates**: New `--llm-enhance` flag for intelligent constitution merging using AI
