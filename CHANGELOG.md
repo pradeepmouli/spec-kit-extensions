@@ -5,6 +5,34 @@ All notable changes to the Specify Extension System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2025-12-08
+
+### 🔧 Improved
+
+- **Constitution Template Streamlining** - Reduced `constitution-template.md` to workflow-specific content only, removing redundant sections already present in base constitutions
+  - Removed 70+ lines of duplicate content (metadata, project structure, etc.)
+  - Template now focuses on workflow selection and quality gates sections only
+  - Results in cleaner, more maintainable constitution files
+
+- **Intelligent Section Numbering** - Enhanced `specify_extend.py` to detect and continue existing section numbering schemes
+  - Automatically detects Roman numerals (I, II, III) or numeric (1, 2, 3) section numbering
+  - Continues the sequence when adding workflow selection and quality gates sections
+  - Ensures proper integration with existing project constitutions without manual renumbering
+
+### 🐛 Fixed
+
+- **Edge Case Handling** - Improved section detection and parsing robustness in `specify_extend.py`
+  - Better handling of edge cases in section formatting
+  - Enhanced error handling for malformed constitution files
+  - More reliable section insertion logic
+
+### 📝 Documentation
+
+- **Code Quality Improvements** - Refactored `specify_extend.py` with named constants and enhanced documentation
+  - Added clear constant definitions for better code maintainability
+  - Improved inline documentation and code comments
+  - Better structured code for future enhancements
+
 ## [2.1.0] - 2025-12-05
 
 ### ✨ Added

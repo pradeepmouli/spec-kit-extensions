@@ -50,7 +50,7 @@ These extensions are designed to be:
 
 ## Version
 
-Extension System Version: 2.0.0
+Extension System Version: v2.1.1
 Compatible with Specify Core: v0.0.18+
 
 ## License
