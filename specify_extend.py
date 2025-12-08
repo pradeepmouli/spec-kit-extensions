@@ -42,7 +42,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 # Set up HTTPS client for GitHub API requests
 client = httpx.Client(follow_redirects=True)
@@ -612,7 +612,7 @@ def install_agent_commands(
                 if agent == "copilot":
                     prompts_dir = repo_root / ".github" / "prompts"
                     prompts_dir.mkdir(parents=True, exist_ok=True)
-                    prompt_file = prompts_dir / f"speckit.{ext}.md"
+                    prompt_file = prompts_dir / f"speckit.{ext}.prompt.md"
                     # Prompt file is just a pointer to the agent file
                     prompt_content = f"---\nagent: speckit.{ext}\n---\n"
                     prompt_file.write_text(prompt_content)
@@ -672,8 +672,8 @@ def create_constitution_enhance_command(
         agent_dir = repo_root / ".github" / "agents"
         prompt_dir = repo_root / ".github" / "prompts"
         agent_file = agent_dir / "speckit.enhance-constitution.md"
-        prompt_file = prompt_dir / "speckit.enhance-constitution.md"
-        file_location = ".github/prompts/speckit.enhance-constitution.md (and .github/agents/speckit.enhance-constitution.md)"
+        prompt_file = prompt_dir / "speckit.enhance-constitution.prompt.md"
+        file_location = ".github/prompts/speckit.enhance-constitution.prompt.md (and .github/agents/speckit.enhance-constitution.md)"
     else:
         # For other agents, use their command directories
         prompt_dir = repo_root / folder
@@ -705,7 +705,7 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
    - Ensure smooth integration without jarring transitions
 
 4. **Self-destruct**: After updating the constitution, DELETE both files
-   - Prompt: `.github/prompts/speckit.enhance-constitution.md`
+   - Prompt: `.github/prompts/speckit.enhance-constitution.prompt.md`
    - Agent: `.github/agents/speckit.enhance-constitution.md`
    - This prevents accidental re-use
 

@@ -51,7 +51,7 @@ These extensions are designed to be:
 ## Version
 
 Extension Templates Version: v2.1.1
-CLI Tool Version: v1.1.0
+CLI Tool Version: v1.1.1
 Compatible with Specify Core: v0.0.18+
 
 ## License

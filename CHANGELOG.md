@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.1.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.1.1
 
 ---
 
@@ -30,6 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (specify-extend)
+
+### [1.1.1] - 2025-12-08
+
+#### 🐛 Fixed
+
+- **GitHub Copilot Prompt File Naming** - Corrected prompt file naming pattern to `speckit.*.prompt.md`
+  - Previous: `.github/prompts/speckit.{workflow}.md`
+  - Now: `.github/prompts/speckit.{workflow}.prompt.md`
+  - Matches GitHub Copilot's expected naming convention
+
+- **Removed Unsupported Scripts Section** - Removed `scripts:` frontmatter from all command files
+  - GitHub Copilot does not support the `scripts:` section in agent/prompt files
+  - Replaced `{SCRIPT}` template variables with explicit script paths
+  - Commands now reference scripts directly (e.g., `.specify/scripts/bash/create-bugfix.sh`)
 
 ### [1.1.0] - 2025-12-08
 

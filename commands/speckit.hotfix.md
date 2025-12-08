@@ -9,8 +9,6 @@ handoffs:
     agent: speckit.tasks
     prompt: Break the hotfix plan into minimal tasks
     send: true
-scripts:
-  sh: scripts/bash/create-hotfix.sh --json "{ARGS}"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).

@@ -9,8 +9,6 @@ handoffs:
     agent: speckit.tasks
     prompt: Break the modification plan into tasks
     send: true
-scripts:
-  sh: scripts/bash/create-modification.sh --json "{ARGS}"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -32,7 +30,7 @@ Given that modification request, do this:
    - If no leading digits (e.g., "add compression"), treat as description-only (interactive mode)
 
 2. **If interactive mode** (no feature number provided):
-   a. Run `{SCRIPT} --list-features "<description>"` to get list of features
+   a. Run `.specify/scripts/bash/create-modification.sh --list-features "<description>"` to get list of features
    b. Parse the JSON output which contains: `{"mode":"list","description":"...","features":[...]}`
    c. Present the features list to the user in a clear, numbered format:
       ```
@@ -50,7 +48,7 @@ Given that modification request, do this:
    f. Continue to step 3 with the selected feature number
 
 3. **Normal workflow** (feature number now available):
-   Run the script `{SCRIPT} --json <feature-number> "<description>"` from repo root and parse its JSON output for MOD_ID, BRANCH_NAME, MOD_SPEC_FILE, IMPACT_FILE, and FEATURE_NAME. All file paths must be absolute.
+   Run the script `.specify/scripts/bash/create-modification.sh --json <feature-number> "<description>"` from repo root and parse its JSON output for MOD_ID, BRANCH_NAME, MOD_SPEC_FILE, IMPACT_FILE, and FEATURE_NAME. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once per feature selection. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 5. Read the impact analysis from IMPACT_FILE to understand what files and contracts are affected.
