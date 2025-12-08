@@ -5,35 +5,81 @@ All notable changes to the Specify Extension System will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.1] - 2025-12-08
+**Note**: This project has two versioned components:
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.0.1
 
-### 🔧 Improved
+---
+
+## Extension Templates
+
+### [2.1.1] - 2025-12-08
+
+#### 🔧 Improved
 
 - **Constitution Template Streamlining** - Reduced `constitution-template.md` to workflow-specific content only, removing redundant sections already present in base constitutions
   - Removed 70+ lines of duplicate content (metadata, project structure, etc.)
   - Template now focuses on workflow selection and quality gates sections only
   - Results in cleaner, more maintainable constitution files
 
+#### 📦 Components
+
+- **Extension Templates Version**: v2.1.1
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
+
+## CLI Tool (specify-extend)
+
+### [1.0.1] - 2025-12-08
+
+#### 🔧 Improved
+
 - **Intelligent Section Numbering** - Enhanced `specify_extend.py` to detect and continue existing section numbering schemes
   - Automatically detects Roman numerals (I, II, III) or numeric (1, 2, 3) section numbering
   - Continues the sequence when adding workflow selection and quality gates sections
   - Ensures proper integration with existing project constitutions without manual renumbering
 
-### 🐛 Fixed
+#### 🐛 Fixed
 
-- **Edge Case Handling** - Improved section detection and parsing robustness in `specify_extend.py`
+- **Edge Case Handling** - Improved section detection and parsing robustness
   - Better handling of edge cases in section formatting
   - Enhanced error handling for malformed constitution files
   - More reliable section insertion logic
 
-### 📝 Documentation
+#### 📝 Documentation
 
-- **Code Quality Improvements** - Refactored `specify_extend.py` with named constants and enhanced documentation
+- **Code Quality Improvements** - Refactored with named constants and enhanced documentation
   - Added clear constant definitions for better code maintainability
   - Improved inline documentation and code comments
   - Better structured code for future enhancements
 
-## [2.1.0] - 2025-12-05
+#### 📦 Components
+
+- **CLI Tool Version**: v1.0.1
+- **Installation**: `pip install specify-extend` or `uvx specify-extend`
+
+### [1.0.0] - 2025-12-06
+
+#### ✨ Added
+
+- Initial release of `specify-extend` CLI tool
+- PyPI package publication
+- Automatic agent detection and installation
+- GitHub release integration
+- Constitution update with section numbering
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.0.0
+
+---
+
+## Combined Release History
+
+Prior to v2.1.1/v1.0.1, templates and CLI were versioned together.
+
+### [2.1.0] - 2025-12-05
 
 ### ✨ Added
 

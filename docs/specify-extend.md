@@ -5,6 +5,8 @@
 - Detects your existing spec-kit installation and agent configuration
 - Installs extensions matching your setup
 
+**Version**: v1.0.1 (CLI tool is versioned separately from extension templates)
+
 ## Installation
 
 ```bash
@@ -63,7 +65,7 @@ Based on detected agent, it installs:
 
 **Agent-specific:**
 - **Claude Code**: Command files → `.claude/commands/speckit.{extension}.md`
-- **GitHub Copilot**: Command files → `.github/agents/speckit.{extension}.md`  
+- **GitHub Copilot**: Command files → `.github/agents/speckit.{extension}.md`
 - **Cursor**: Command files → `.cursor/commands/speckit.{extension}.md`
 - **Gemini CLI**: Command files → `.gemini/commands/speckit.{extension}.toml`
 - **Qwen Code**: Command files → `.qwen/commands/speckit.{extension}.toml`
@@ -239,7 +241,7 @@ chmod +x specify-extend
 
 **Problem**: Running specify-extend from wrong location
 
-**Solution**: 
+**Solution**:
 ```bash
 # Option 1: Install specify-extend globally
 cp specify-extend /usr/local/bin/
@@ -265,7 +267,7 @@ specify-extend --agent cursor --all
 
 ### Already Existing Files
 
-**Behavior**: 
+**Behavior**:
 - **Extension files**: Overwritten (safe - templates)
 - **Copilot instructions**: Appended (preserves existing)
 - **Cursor rules**: Appended (preserves existing)
@@ -397,6 +399,12 @@ Future versions may support:
 | 1 | Error (see error message) |
 
 ## Version History
+
+### 1.0.1 (2025-12-08)
+- **Intelligent Section Numbering**: Auto-detects and continues Roman numeral (I, II, III) or numeric (1, 2, 3) section numbering in constitutions
+- **Edge Case Handling**: Improved section detection and parsing robustness for malformed constitution files
+- **Code Quality**: Refactored with named constants and enhanced documentation
+- **Bug Fixes**: More reliable section insertion logic with better error handling
 
 ### 1.0.0 (2025-12-06)
 - **Python CLI tool**: Built with `typer` framework, installable via pip, uvx, or runnable directly

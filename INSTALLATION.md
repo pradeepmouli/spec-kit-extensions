@@ -280,7 +280,40 @@ Each AI agent requires different setup. See **[AI-AGENTS.md](AI-AGENTS.md)** for
 
 ## Updating Extensions
 
-### Update from Git (Method 2)
+### Check Current Versions
+
+```bash
+# Check CLI tool version
+specify-extend --version
+
+# Check template version
+cat .specify/extensions/README.md | grep "Extension Templates Version"
+```
+
+**Note**: This project has two independently versioned components:
+- **Extension Templates** (workflows, commands, scripts) - Currently v2.1.1
+- **CLI Tool** (`specify-extend`) - Currently v1.0.1
+
+### Update CLI Tool
+
+```bash
+# Update from PyPI
+pip install --upgrade specify-extend
+
+# Or with uvx (always uses latest)
+uvx specify-extend --all
+```
+
+### Update Templates
+
+```bash
+# Use specify-extend to update templates
+specify-extend --all
+
+# This will download the latest template version from GitHub releases
+```
+
+### Update from Git (Manual Method)
 
 ```bash
 # Pull latest version

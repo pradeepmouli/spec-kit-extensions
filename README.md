@@ -256,6 +256,18 @@ These extensions work with any AI agent that supports spec-kit:
 - ✅ Non-breaking (can be added/removed without affecting existing features)
 - ⚠️ **Breaking change from v0.0.17**: All commands now use `/speckit.` prefix
 
+### Component Versions
+
+This project has two independently versioned components:
+
+- **Extension Templates** (v2.1.1) - Workflow templates, commands, and scripts
+  - See [CHANGELOG.md](CHANGELOG.md) for template version history
+- **CLI Tool** (v1.0.1) - `specify-extend` installation tool
+  - Check version with `specify-extend --version`
+  - See [CHANGELOG.md](CHANGELOG.md) for CLI version history
+
+Both components are released together but versioned separately to allow independent updates.
+
 ## Project Structure
 
 After installation, your project will have:
