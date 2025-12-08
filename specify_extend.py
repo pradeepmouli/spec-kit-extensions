@@ -228,7 +228,9 @@ def parse_constitution_sections(content: str) -> Tuple[Optional[str], Optional[i
         roman_match = re.match(roman_pattern, line.strip())
         if roman_match:
             roman_value = roman_to_int(roman_match.group(1))
-            highest_roman = max(highest_roman, roman_value)
+            # Only count valid Roman numerals (non-zero values)
+            if roman_value > 0:
+                highest_roman = max(highest_roman, roman_value)
         
         # Check for numeric
         numeric_match = re.match(numeric_pattern, line.strip())
@@ -266,10 +268,11 @@ def format_template_with_sections(template_content: str, numbering_style: Option
     current_section = start_number
     
     for line in lines:
-        # Check if this is a ## header (main section)
-        if line.strip().startswith('## ') and not line.strip().startswith('### '):
-            # Extract the section title
-            title = line.strip()[3:]  # Remove '## '
+        # Check if this is exactly a ## header (not ### or more)
+        stripped = line.strip()
+        if stripped.startswith('## ') and len(stripped) > 3 and stripped[2] != '#':
+            # Extract the section title (remove '## ')
+            title = stripped[3:]
             
             # Format the section number
             if numbering_style == 'roman':
