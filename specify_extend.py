@@ -62,6 +62,14 @@ AVAILABLE_EXTENSIONS = ["bugfix", "modify", "refactor", "hotfix", "deprecate"]
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
 MIN_WORKFLOW_COMMANDS = 3  # Minimum workflow commands to detect existing workflow content
 
+# Section header patterns for parsing constitutions
+ROMAN_NUMERAL_PATTERN = r'^###\s+([IVXLCDM]+)\.'
+NUMERIC_SECTION_PATTERN = r'^###\s+(\d+)\.'
+
+# Markdown formatting constants
+HEADER_PREFIX_LENGTH = 3  # Length of '## ' prefix
+SECTION_SEPARATOR = '\n\n'  # Separator between constitution sections
+
 # Agent configuration based on spec-kit AGENTS.md
 AGENT_CONFIG = {
     "claude": {
@@ -213,25 +221,23 @@ def int_to_roman(num: int) -> str:
 
 
 def parse_constitution_sections(content: str) -> Tuple[Optional[str], Optional[int]]:
-    """
-    Parse constitution to find the highest section number and numbering style.
+    """Parse constitution to find the highest section number and numbering style.
+    
+    Args:
+        content: Constitution file content with section headers in the format
+                '### N. Title' where N is either a Roman numeral or number
     
     Returns:
         Tuple of (numbering_style, highest_number)
         numbering_style can be: 'roman', 'numeric', or None
         highest_number is the integer value of the highest section found
     """
-    # Pattern for section headers with Roman numerals (### I., ### II., etc.)
-    roman_pattern = r'^###\s+([IVXLCDM]+)\.'
-    # Pattern for section headers with numeric (### 1., ### 2., etc.)
-    numeric_pattern = r'^###\s+(\d+)\.'
-    
     highest_roman = 0
     highest_numeric = 0
     
     for line in content.split('\n'):
         # Check for Roman numerals
-        roman_match = re.match(roman_pattern, line.strip())
+        roman_match = re.match(ROMAN_NUMERAL_PATTERN, line.strip())
         if roman_match:
             roman_value = roman_to_int(roman_match.group(1))
             # Only count valid Roman numerals (non-zero values)
@@ -239,7 +245,7 @@ def parse_constitution_sections(content: str) -> Tuple[Optional[str], Optional[i
                 highest_roman = max(highest_roman, roman_value)
         
         # Check for numeric
-        numeric_match = re.match(numeric_pattern, line.strip())
+        numeric_match = re.match(NUMERIC_SECTION_PATTERN, line.strip())
         if numeric_match:
             numeric_value = int(numeric_match.group(1))
             highest_numeric = max(highest_numeric, numeric_value)
@@ -277,9 +283,9 @@ def format_template_with_sections(template_content: str, numbering_style: Option
         # Check if this is exactly a ## header (not ### or ####)
         stripped = line.strip()
         # Must start with '## ' and the character after '## ' must not be '#'
-        if stripped.startswith('## ') and len(stripped) > 3 and stripped[3] != '#':
+        if stripped.startswith('## ') and len(stripped) > HEADER_PREFIX_LENGTH and stripped[HEADER_PREFIX_LENGTH] != '#':
             # Extract the section title (remove '## ')
-            title = stripped[3:]
+            title = stripped[HEADER_PREFIX_LENGTH:]
             
             # Format the section number
             if numbering_style == 'roman':
@@ -299,7 +305,10 @@ def format_template_with_sections(template_content: str, numbering_style: Option
 def detect_workflow_selection_section(content: str) -> bool:
     """Check if the constitution already contains workflow selection content
     
-    Uses configurable thresholds to detect if workflow content is already present.
+    Returns True if both section header and workflow command thresholds are met,
+    indicating existing workflow content.
+    
+    Uses configurable thresholds to reduce false positives.
     """
     # Look for specific section headers that are unique to our template
     section_headers = [
@@ -323,8 +332,7 @@ def detect_workflow_selection_section(content: str) -> bool:
     # Check if we have workflow commands mentioned
     has_workflows = sum(1 for cmd in workflow_commands if cmd in content)
     
-    # If we have enough section headers AND workflow commands, 
-    # it's very likely the template is already there
+    # Return True if both thresholds are met
     return has_sections >= MIN_SECTION_HEADERS and has_workflows >= MIN_WORKFLOW_COMMANDS
 
 
@@ -629,7 +637,7 @@ def update_constitution(
         
         # Append formatted template to constitution
         with open(constitution_file, "a") as f:
-            f.write("\n\n")
+            f.write(SECTION_SEPARATOR)
             f.write(formatted_template)
         
         console.print("[green]✓[/green] Constitution updated with quality gates")
