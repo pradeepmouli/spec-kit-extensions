@@ -1,17 +1,3 @@
-# Workflow Selection and Quality Gates
-
-## Workflow Selection
-Development activities SHALL use the appropriate workflow type based on the nature of the work. Each workflow enforces specific quality gates and documentation requirements tailored to its purpose:
-
-- **Feature Development** (`/specify`): New functionality - requires full specification, planning, and TDD approach
-- **Bug Fixes** (`/bugfix`): Defect remediation - requires regression test BEFORE applying fix
-- **Modifications** (`/modify`): Changes to existing features - requires impact analysis and backward compatibility assessment
-- **Refactoring** (`/refactor`): Code quality improvements - requires baseline metrics, behavior preservation guarantee, and incremental validation
-- **Hotfixes** (`/hotfix`): Emergency production issues - expedited process with deferred testing and mandatory post-mortem
-- **Deprecation** (`/deprecate`): Feature sunset - requires phased rollout (warnings → disabled → removed), migration guide, and stakeholder approvals
-
-The wrong workflow SHALL NOT be used - features must not bypass specification, bugs must not skip regression tests, and refactorings must not alter behavior.
-
 ## Development Workflow
 
 ### Core Workflow (Feature Development)
@@ -27,6 +13,18 @@ The wrong workflow SHALL NOT be used - features must not bypass specification, b
 - **Refactor**: `/refactor "<description>"` → refactor.md + baseline metrics + incremental tasks.md
 - **Hotfix**: `/hotfix "<incident>"` → hotfix.md + expedited tasks.md + post-mortem.md (within 48 hours)
 - **Deprecation**: `/deprecate <feature_num> "<reason>"` → deprecation.md + dependency scan + phased tasks.md
+
+### Workflow Selection
+Development activities SHALL use the appropriate workflow type based on the nature of the work. Each workflow enforces specific quality gates and documentation requirements tailored to its purpose:
+
+- **Feature Development** (`/specify`): New functionality - requires full specification, planning, and TDD approach
+- **Bug Fixes** (`/bugfix`): Defect remediation - requires regression test BEFORE applying fix
+- **Modifications** (`/modify`): Changes to existing features - requires impact analysis and backward compatibility assessment
+- **Refactoring** (`/refactor`): Code quality improvements - requires baseline metrics, behavior preservation guarantee, and incremental validation
+- **Hotfixes** (`/hotfix`): Emergency production issues - expedited process with deferred testing and mandatory post-mortem
+- **Deprecation** (`/deprecate`): Feature sunset - requires phased rollout (warnings → disabled → removed), migration guide, and stakeholder approvals
+
+The wrong workflow SHALL NOT be used - features must not bypass specification, bugs must not skip regression tests, and refactorings must not alter behavior.
 
 ### Quality Gates by Workflow
 
@@ -49,10 +47,10 @@ The wrong workflow SHALL NOT be used - features must not bypass specification, b
 - Migration path MUST be documented if breaking changes
 
 **Refactor**:
-- Baseline metrics MUST be captured before any changes
+- Baseline metrics MUST be captured before any changes unless explicitly exempted
 - Tests MUST pass after EVERY incremental change
 - Behavior preservation MUST be guaranteed (tests unchanged)
-- Target metrics MUST show measurable improvement
+- Target metrics MUST show measurable improvement unless explicitly exempted
 
 **Hotfix**:
 - Severity MUST be assessed (P0/P1/P2)

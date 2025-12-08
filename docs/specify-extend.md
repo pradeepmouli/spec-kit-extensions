@@ -98,6 +98,7 @@ specify-extend [OPTIONS] [EXTENSIONS...]
 | `--all` | Install all available extensions |
 | `--agent AGENT` | Force specific agent configuration |
 | `--dry-run` | Preview installation without making changes |
+| `--llm-enhance` | Create one-time command for LLM-enhanced constitution update |
 
 ### Available Extensions
 
@@ -138,6 +139,67 @@ specify-extend bugfix hotfix
 
 # See all available extensions
 specify-extend --list
+```
+
+### LLM-Enhanced Constitution Updates
+
+By default, `specify-extend` appends quality gates to your constitution using simple text formatting. For a more intelligent merge that adapts to your existing constitution style, use `--llm-enhance`:
+
+```bash
+# Install with LLM-enhanced constitution update
+specify-extend --all --llm-enhance
+```
+
+**How it works:**
+
+1. **Creates a one-time prompt/command**:
+   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.md` and `.github/prompts/speckit.enhance-constitution.md` (matching spec-kit pattern)
+   - For **other agents** (Claude, Cursor, etc.): Creates a command like `/speckit.enhance-constitution`
+2. **You invoke it**:
+   - **GitHub Copilot**: Reference the prompt in Copilot Chat or use as agent
+   - **Other agents**: Run the command (e.g., `/speckit.enhance-constitution`)
+3. **Intelligent merging**: The prompt/command instructs the AI to:
+   - Preserve all existing constitution content
+   - Intelligently merge workflow quality gates
+   - Match your existing writing style and tone
+   - Continue existing section numbering schemes
+   - Avoid duplicating content
+4. **Self-destructs**: The prompt/command includes instructions to delete itself after use to prevent confusion
+   - **GitHub Copilot**: Delete both `.github/prompts/` and `.github/agents/` files
+
+**When to use `--llm-enhance`:**
+
+- ✅ You have a heavily customized constitution
+- ✅ You want quality gates integrated naturally with your existing content
+- ✅ Your constitution uses specific writing style/formatting
+- ✅ You want to avoid simple append-to-end behavior
+
+**When NOT to use:**
+
+- ❌ Fresh project with minimal constitution (default works fine)
+- ❌ You prefer deterministic, predictable updates
+- ❌ You don't have an AI agent configured
+
+**Examples:**
+
+```bash
+# Install with LLM enhancement
+specify-extend --all --llm-enhance
+
+# For GitHub Copilot users:
+# In Copilot Chat, reference the prompt:
+# "Review and apply .github/prompts/speckit.enhance-constitution.md"
+# Then delete both .github/prompts/speckit.enhance-constitution.md
+# and .github/agents/speckit.enhance-constitution.md
+
+# For Claude Code users:
+/speckit.enhance-constitution
+
+# The prompt/command will:
+# 1. Read your existing constitution
+# 2. Intelligently merge quality gates
+# 3. Update .specify/memory/constitution.md
+# 4. Instruct you to delete itself
 ```
 
 ### Agent-Specific Examples

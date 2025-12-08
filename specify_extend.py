@@ -607,17 +607,220 @@ def install_agent_commands(
         if source_file.exists():
             if not dry_run:
                 shutil.copy(source_file, dest_file)
-            console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
+
+                # For GitHub Copilot, also create a prompt file that points to the agent
+                if agent == "copilot":
+                    prompts_dir = repo_root / ".github" / "prompts"
+                    prompts_dir.mkdir(parents=True, exist_ok=True)
+                    prompt_file = prompts_dir / f"speckit.{ext}.md"
+                    # Prompt file is just a pointer to the agent file
+                    prompt_content = f"---\nagent: speckit.{ext}\n---\n"
+                    prompt_file.write_text(prompt_content)
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
+                else:
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
+            else:
+                if agent == "copilot":
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
+                else:
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
         else:
             console.print(f"[yellow]⚠[/yellow] Command file for {ext} not found")
+
+
+def create_constitution_enhance_command(
+    repo_root: Path,
+    source_dir: Path,
+    agent: str,
+    dry_run: bool = False,
+) -> None:
+    """Create a one-time-use command to LLM-enhance constitution update"""
+
+    agent_info = AGENT_CONFIG.get(agent, AGENT_CONFIG["manual"])
+    agent_name = agent_info["name"]
+
+    if agent == "manual":
+        console.print(
+            "[yellow]⚠[/yellow] LLM-enhance requires an AI agent configuration. "
+            "Falling back to standard constitution update."
+        )
+        return
+
+    console.print(f"[blue]ℹ[/blue] Creating one-time constitution enhancement prompt...")
+
+    # Read the constitution template
+    template_file = source_dir / "docs" / "constitution-template.md"
+    if not template_file.exists():
+        console.print("[yellow]⚠[/yellow] Constitution template not found")
+        return
+
+    template_content = template_file.read_text()
+
+    # Determine file locations based on agent
+    folder = agent_info["folder"]
+    file_ext = agent_info["file_extension"]
+
+    if not folder:
+        console.print(
+            "[yellow]⚠[/yellow] LLM-enhance not supported for this agent. "
+            "Falling back to standard constitution update."
+        )
+        return
+
+    # For GitHub Copilot, create both agent and prompt files
+    if agent == "copilot":
+        agent_dir = repo_root / ".github" / "agents"
+        prompt_dir = repo_root / ".github" / "prompts"
+        agent_file = agent_dir / "speckit.enhance-constitution.md"
+        prompt_file = prompt_dir / "speckit.enhance-constitution.md"
+        file_location = ".github/prompts/speckit.enhance-constitution.md (and .github/agents/speckit.enhance-constitution.md)"
+    else:
+        # For other agents, use their command directories
+        prompt_dir = repo_root / folder
+        prompt_file = prompt_dir / f"speckit.enhance-constitution.{file_ext or 'md'}"
+        agent_file = None
+        file_location = f"{folder}/speckit.enhance-constitution.{file_ext or 'md'}"
+
+    # Create the one-time prompt content
+    # For GitHub Copilot, we use a simpler format without frontmatter
+    if agent == "copilot":
+        command_content = f"""# Constitution Enhancement (One-Time Use)
+
+**IMPORTANT**: This is a one-time prompt. After using it, delete this file to prevent accidental re-use.
+
+## Your Task
+
+You are enhancing the project's constitution file (`.specify/memory/constitution.md`) with workflow-specific quality gates.
+
+### Steps:
+
+1. **Read the current constitution**: `.specify/memory/constitution.md`
+2. **Review the template below**: Contains workflow selection guidelines and quality gates
+3. **Intelligently merge the content**:
+   - Preserve all existing constitution content
+   - Add missing workflow selection guidance
+   - Add missing quality gates for each workflow type
+   - Match the existing writing style, tone, and section numbering
+   - Avoid duplicating content that already exists
+   - Ensure smooth integration without jarring transitions
+
+4. **Self-destruct**: After updating the constitution, DELETE both files
+   - Prompt: `.github/prompts/speckit.enhance-constitution.md`
+   - Agent: `.github/agents/speckit.enhance-constitution.md`
+   - This prevents accidental re-use
+
+## Template Content to Integrate
+
+```markdown
+{template_content}
+```
+
+## Important Notes
+
+- **Preserve existing content**: Don't remove or significantly alter existing constitution sections
+- **Match style**: Adapt template language to match existing constitution's tone
+- **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
+- **No duplication**: If workflow guidance already exists, enhance rather than duplicate
+- **One-time only**: This prompt deletes itself after use to prevent confusion
+
+---
+
+**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+"""
+    else:
+        # For other agents (Claude, Cursor, etc.), use command format with frontmatter
+        command_content = f"""---
+name: speckit.enhance-constitution
+description: One-time command to enhance constitution with workflow quality gates using LLM intelligence
+handoffs:
+  - speckit.plan
+  - speckit.tasks
+---
+
+# Constitution Enhancement (One-Time Use)
+
+You are enhancing the project's constitution file (`.specify/memory/constitution.md`) with workflow-specific quality gates.
+
+## Your Task
+
+1. **Read the current constitution**: `.specify/memory/constitution.md`
+2. **Review the template below**: Contains workflow selection guidelines and quality gates
+3. **Intelligently merge**: Use `/specify.constitution` to:
+   - Preserve all existing constitution content
+   - Add missing workflow selection guidance
+   - Add missing quality gates for each workflow type
+   - Match the existing writing style, tone, and section numbering
+   - Avoid duplicating content that already exists
+   - Ensure smooth integration without jarring transitions
+
+4. **Self-destruct**: After updating the constitution, DELETE this command file
+   - Location: `{file_location}`
+   - This prevents accidental re-use
+
+## Template Content to Integrate
+
+```markdown
+{template_content}
+```
+
+## Instructions
+
+1. First, run `/specify.constitution` with instructions to merge the above template content intelligently
+2. Review the updated constitution to ensure quality
+3. Then delete this command file: `{file_location}`
+
+## Important Notes
+
+- **Preserve existing content**: Don't remove or significantly alter existing constitution sections
+- **Match style**: Adapt template language to match existing constitution's tone
+- **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
+- **No duplication**: If workflow guidance already exists, enhance rather than duplicate
+- **One-time only**: This command deletes itself after use to prevent confusion
+
+---
+
+**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+"""
+
+    if not dry_run:
+        prompt_dir.mkdir(parents=True, exist_ok=True)
+        prompt_file.write_text(command_content)
+
+        # For Copilot, also create the agent file
+        if agent == "copilot":
+            agent_dir.mkdir(parents=True, exist_ok=True)
+            agent_file.write_text(command_content)
+            console.print(f"[green]✓[/green] Created constitution enhancement agent and prompt")
+            console.print(f"[blue]ℹ[/blue] Reference the prompt in GitHub Copilot Chat or use as an agent")
+        else:
+            console.print(f"[green]✓[/green] Created /speckit.enhance-constitution command")
+            console.print(f"[blue]ℹ[/blue] Run this command to intelligently merge constitution updates")
+        console.print(f"[dim]  Location: {file_location}[/dim]")
+        console.print(f"[yellow]⚠[/yellow] This will self-destruct after use")
+    else:
+        console.print(f"  [dim]Would create {file_location}[/dim]")
 
 
 def update_constitution(
     repo_root: Path,
     source_dir: Path,
+    agent: str = "manual",
     dry_run: bool = False,
+    llm_enhance: bool = False,
 ) -> None:
-    """Update constitution with quality gates, intelligently numbering sections"""
+    """Update constitution with quality gates, intelligently numbering sections
+
+    Args:
+        repo_root: Root directory of the repository
+        source_dir: Source directory containing templates
+        agent: Detected agent type
+        dry_run: Whether to perform a dry run
+        llm_enhance: If True, create one-time LLM enhancement command instead of direct update
+    """
+
+    if llm_enhance:
+        create_constitution_enhance_command(repo_root, source_dir, agent, dry_run)
+        return
 
     console.print("[blue]ℹ[/blue] Updating constitution with quality gates...")
 
@@ -724,6 +927,11 @@ def main(
         "--list",
         help="List available extensions",
     ),
+    llm_enhance: bool = typer.Option(
+        False,
+        "--llm-enhance",
+        help="Create one-time command for LLM-enhanced constitution update (uses /specify.constitution)",
+    ),
 ) -> None:
     """
     Installation tool for spec-kit-extensions that detects your existing
@@ -819,7 +1027,7 @@ def main(
 
         install_extension_files(repo_root, source_dir, extensions_to_install, dry_run)
         install_agent_commands(repo_root, source_dir, detected_agent, extensions_to_install, dry_run)
-        update_constitution(repo_root, source_dir, dry_run)
+        update_constitution(repo_root, source_dir, detected_agent, dry_run, llm_enhance)
 
     # Success message
     console.print("\n" + "━" * 60)
@@ -834,7 +1042,19 @@ def main(
     agent_info = AGENT_CONFIG.get(detected_agent, AGENT_CONFIG["manual"])
     agent_name = agent_info["name"]
 
-    if detected_agent == "claude":
+    if llm_enhance and detected_agent != "manual":
+        if detected_agent == "copilot":
+            console.print("  [bold yellow]1. Reference the constitution enhancement prompt[/bold yellow]")
+            console.print("     [dim]In Copilot Chat, reference .github/prompts/speckit.enhance-constitution.md[/dim]")
+            console.print("     [dim]This uses LLM intelligence to merge quality gates into your existing constitution[/dim]")
+            console.print("     [dim]Delete both .github/prompts/ and .github/agents/ files after use[/dim]")
+        else:
+            console.print("  [bold yellow]1. Run /speckit.enhance-constitution to update your constitution[/bold yellow]")
+            console.print("     [dim]This uses LLM intelligence to merge quality gates into your existing constitution[/dim]")
+            console.print("     [dim]The command will self-destruct after use[/dim]")
+        console.print("  2. Try a workflow command after constitution is updated")
+        console.print("  3. Read the docs: .specify/extensions/README.md")
+    elif detected_agent == "claude":
         console.print("  1. Try a command: /speckit.bugfix \"test bug\"")
         console.print("  2. Read the docs: .specify/extensions/README.md")
     elif detected_agent == "copilot":

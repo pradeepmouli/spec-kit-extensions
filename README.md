@@ -92,6 +92,19 @@ The `specify-extend` tool automatically:
 - ✅ Configures agent-specific commands
 - ✅ Updates constitution with quality gates
 
+**Optional: LLM-Enhanced Constitution Updates**
+
+For intelligent merging of quality gates into your existing constitution (instead of simple appending):
+
+```bash
+specify-extend --all --llm-enhance
+```
+
+This creates a one-time prompt that uses your AI agent to intelligently merge quality gates while preserving your constitution's style and structure. The prompt/command includes instructions to delete itself after use.
+
+**GitHub Copilot**: Reference `.github/prompts/speckit.enhance-constitution.md` in Copilot Chat (also creates matching agent file)
+**Other agents**: Run `/speckit.enhance-constitution`
+
 See [specify-extend documentation](docs/specify-extend.md) for details.
 
 **Alternative: Manual Installation**
