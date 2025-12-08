@@ -1,18 +1,3 @@
-<!-- Sync Impact Report
-Version Change: 1.0.0 → 1.1.0 (Extension System)
-Modified Principles: Added Section VI (Workflow Selection), Updated Quality Gates
-Added Sections: VI. Workflow Selection
-Removed Sections: N/A
-Templates Requiring Updates:
-- plan-template.md: ✅ Constitution Check section references all principles
-- spec-template.md: ✅ Compatible with current structure
-- tasks-template.md: ✅ Supports all workflow task categories
-- CLAUDE.md: ✅ Already references constitution authority
-- Extension workflows: ✅ All 5 new workflows comply with existing principles
-Follow-up TODOs: None
-Amendment Rationale: Added support for 5 new workflow types (bugfix, modify, refactor, hotfix, deprecate) to extend specification-first development to all software lifecycle activities.
--->
-
 # Tweeter Constitution
 
 ## Core Principles
