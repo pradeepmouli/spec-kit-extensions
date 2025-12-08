@@ -153,7 +153,11 @@ def get_script_name(extension: str) -> str:
 
 
 def roman_to_int(roman: str) -> int:
-    """Convert Roman numeral to integer"""
+    """Convert Roman numeral to integer
+    
+    Returns 0 for invalid or malformed Roman numerals to handle
+    real-world constitution headers gracefully.
+    """
     roman_values = {
         'I': 1, 'V': 5, 'X': 10, 'L': 50,
         'C': 100, 'D': 500, 'M': 1000
@@ -164,6 +168,9 @@ def roman_to_int(roman: str) -> int:
     
     for char in reversed(roman.upper()):
         value = roman_values.get(char, 0)
+        if value == 0:
+            # Invalid character, return 0 to skip this header
+            return 0
         if value < prev_value:
             total -= value
         else:
@@ -281,19 +288,31 @@ def format_template_with_sections(template_content: str, numbering_style: Option
 
 def detect_workflow_selection_section(content: str) -> bool:
     """Check if the constitution already contains workflow selection content"""
-    markers = [
+    # Look for specific section headers that are unique to our template
+    section_headers = [
         "Workflow Selection",
-        "Quality Gates by Workflow",
+        "Development Workflow", 
+        "Quality Gates by Workflow"
+    ]
+    
+    # Look for workflow command patterns
+    workflow_commands = [
         "/bugfix",
-        "/modify",
+        "/modify", 
         "/refactor",
         "/hotfix",
         "/deprecate"
     ]
     
-    # If multiple markers are found, it's likely already there
-    found_count = sum(1 for marker in markers if marker in content)
-    return found_count >= 3
+    # Check if we have the main section headers
+    has_sections = sum(1 for header in section_headers if header in content)
+    
+    # Check if we have workflow commands mentioned
+    has_workflows = sum(1 for cmd in workflow_commands if cmd in content)
+    
+    # If we have at least 2 section headers AND at least 3 workflow commands, 
+    # it's very likely the template is already there
+    return has_sections >= 2 and has_workflows >= 3
 
 
 def detect_agent(repo_root: Path) -> str:
