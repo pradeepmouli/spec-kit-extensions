@@ -57,7 +57,10 @@ GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
 AVAILABLE_EXTENSIONS = ["bugfix", "modify", "refactor", "hotfix", "deprecate"]
-CONSTITUTION_SECTION = "Section VI: Workflow Selection and Quality Gates"
+
+# Detection thresholds for workflow selection content
+MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
+MIN_WORKFLOW_COMMANDS = 3  # Minimum workflow commands to detect existing workflow content
 
 # Agent configuration based on spec-kit AGENTS.md
 AGENT_CONFIG = {
@@ -156,7 +159,10 @@ def roman_to_int(roman: str) -> int:
     """Convert Roman numeral to integer
     
     Returns 0 for invalid or malformed Roman numerals to handle
-    real-world constitution headers gracefully.
+    real-world constitution headers gracefully. This intentionally
+    allows malformed Roman numerals (e.g., 'IXI') and returns a
+    best-effort conversion, as we're parsing user content that may
+    not follow strict Roman numeral rules.
     """
     roman_values = {
         'I': 1, 'V': 5, 'X': 10, 'L': 50,
@@ -268,9 +274,10 @@ def format_template_with_sections(template_content: str, numbering_style: Option
     current_section = start_number
     
     for line in lines:
-        # Check if this is exactly a ## header (not ### or more)
+        # Check if this is exactly a ## header (not ### or ####)
         stripped = line.strip()
-        if stripped.startswith('## ') and len(stripped) > 3 and stripped[2] != '#':
+        # Must start with '## ' and the character after '## ' must not be '#'
+        if stripped.startswith('## ') and len(stripped) > 3 and stripped[3] != '#':
             # Extract the section title (remove '## ')
             title = stripped[3:]
             
@@ -290,7 +297,10 @@ def format_template_with_sections(template_content: str, numbering_style: Option
 
 
 def detect_workflow_selection_section(content: str) -> bool:
-    """Check if the constitution already contains workflow selection content"""
+    """Check if the constitution already contains workflow selection content
+    
+    Uses configurable thresholds to detect if workflow content is already present.
+    """
     # Look for specific section headers that are unique to our template
     section_headers = [
         "Workflow Selection",
@@ -313,9 +323,9 @@ def detect_workflow_selection_section(content: str) -> bool:
     # Check if we have workflow commands mentioned
     has_workflows = sum(1 for cmd in workflow_commands if cmd in content)
     
-    # If we have at least 2 section headers AND at least 3 workflow commands, 
+    # If we have enough section headers AND workflow commands, 
     # it's very likely the template is already there
-    return has_sections >= 2 and has_workflows >= 3
+    return has_sections >= MIN_SECTION_HEADERS and has_workflows >= MIN_WORKFLOW_COMMANDS
 
 
 def detect_agent(repo_root: Path) -> str:
