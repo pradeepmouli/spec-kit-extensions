@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.1.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.1.2
 
 ---
 
@@ -30,6 +30,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (specify-extend)
+
+### [1.1.2] - 2025-12-12
+
+#### 🔒 Security & Reliability
+
+- **SSL/TLS Verification** - Added proper SSL certificate verification for HTTPS connections
+  - Created default SSL context using `ssl.create_default_context()`
+  - Updated httpx Client to use SSL verification
+  - Matches spec-kit's secure connection handling
+
+- **GitHub Authentication** - Added comprehensive GitHub token authentication support
+  - New `--github-token` CLI option for authenticated requests
+  - Checks `GH_TOKEN` and `GITHUB_TOKEN` environment variables
+  - Authenticated requests get 5,000/hour rate limit vs 60/hour unauthenticated
+  - Bearer token authorization headers
+
+- **Rate Limit Handling** - Improved error handling with detailed rate limit information
+  - Parse and display GitHub rate limit headers
+  - Show remaining requests and reset time in local timezone
+  - User-friendly error messages with troubleshooting tips
+  - Guidance for CI/corporate environments
+
+- **HTTP Improvements** - Enhanced reliability of network requests
+  - Added timeout parameters (30s for API, 60s for downloads)
+  - Better error handling with status code validation
+  - JSON parsing error handling
+  - Detailed error messages with Rich Panel formatting
 
 ### [1.1.1] - 2025-12-08
 
