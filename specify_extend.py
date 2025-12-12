@@ -34,6 +34,7 @@ import re
 from pathlib import Path
 from typing import Optional, List, Tuple
 from enum import Enum
+from datetime import datetime, timezone
 
 import typer
 import httpx
@@ -44,11 +45,14 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 __version__ = "1.1.1"
 
-# Set up HTTPS client for GitHub API requests
-client = httpx.Client(follow_redirects=True)
-
 # Initialize Rich console
 console = Console()
+
+# Set up SSL context for HTTPS requests
+ssl_context = ssl.create_default_context()
+
+# Set up HTTPS client for GitHub API requests with SSL verification
+client = httpx.Client(follow_redirects=True, verify=ssl_context)
 
 # Constants
 GITHUB_REPO_OWNER = "pradeepmouli"
@@ -133,6 +137,74 @@ AGENT_CONFIG = {
         "requires_cli": False,
     },
 }
+
+
+def _github_token(cli_token: str | None = None) -> str | None:
+    """Return GitHub token from CLI arg, GH_TOKEN, or GITHUB_TOKEN env vars."""
+    return (
+        cli_token
+        or os.getenv("GH_TOKEN", "").strip()
+        or os.getenv("GITHUB_TOKEN", "").strip()
+    ) or None
+
+
+def _github_auth_headers(cli_token: str | None = None) -> dict:
+    """Return Authorization header dict only when a non-empty token exists."""
+    token = _github_token(cli_token)
+    return {"Authorization": f"Bearer {token}"} if token else {}
+
+
+def _parse_rate_limit_headers(headers: httpx.Headers) -> dict:
+    """Extract and parse GitHub rate-limit headers."""
+    info = {}
+    
+    # Standard GitHub rate-limit headers
+    if "X-RateLimit-Limit" in headers:
+        info["limit"] = headers.get("X-RateLimit-Limit")
+    if "X-RateLimit-Remaining" in headers:
+        info["remaining"] = headers.get("X-RateLimit-Remaining")
+    if "X-RateLimit-Reset" in headers:
+        reset_epoch = int(headers.get("X-RateLimit-Reset", "0"))
+        if reset_epoch:
+            reset_time = datetime.fromtimestamp(reset_epoch, tz=timezone.utc)
+            info["reset_epoch"] = reset_epoch
+            info["reset_local"] = reset_time.astimezone()
+    
+    # Retry-After header (for 429 responses)
+    if "Retry-After" in headers:
+        info["retry_after_seconds"] = headers.get("Retry-After")
+    
+    return info
+
+
+def _format_rate_limit_error(status_code: int, headers: httpx.Headers, url: str) -> str:
+    """Format a user-friendly error message with rate-limit information."""
+    rate_info = _parse_rate_limit_headers(headers)
+    
+    lines = [f"GitHub API returned status {status_code} for {url}"]
+    lines.append("")
+    
+    if rate_info:
+        lines.append("[bold]Rate Limit Information:[/bold]")
+        if "limit" in rate_info:
+            lines.append(f"  • Rate Limit: {rate_info['limit']} requests/hour")
+        if "remaining" in rate_info:
+            lines.append(f"  • Remaining: {rate_info['remaining']}")
+        if "reset_local" in rate_info:
+            reset_str = rate_info["reset_local"].strftime("%Y-%m-%d %H:%M:%S %Z")
+            lines.append(f"  • Resets at: {reset_str}")
+        if "retry_after_seconds" in rate_info:
+            lines.append(f"  • Retry after: {rate_info['retry_after_seconds']} seconds")
+        lines.append("")
+    
+    # Add troubleshooting guidance
+    lines.append("[bold]Troubleshooting Tips:[/bold]")
+    lines.append("  • If you're on a shared CI or corporate environment, you may be rate-limited.")
+    lines.append("  • Consider using a GitHub token via --github-token or the GH_TOKEN/GITHUB_TOKEN")
+    lines.append("    environment variable to increase rate limits.")
+    lines.append("  • Authenticated requests have a limit of 5,000/hour vs 60/hour for unauthenticated.")
+    
+    return "\n".join(lines)
 
 
 class Agent(str, Enum):
@@ -452,17 +524,30 @@ def validate_speckit_installation(repo_root: Path) -> bool:
     return True
 
 
-def download_latest_release(temp_dir: Path) -> Optional[Path]:
+def download_latest_release(temp_dir: Path, github_token: str = None) -> Optional[Path]:
     """Download the latest release from GitHub"""
 
     with console.status("[bold blue]Downloading latest extensions...") as status:
         try:
             # Get latest release info
             url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/releases/latest"
-            response = client.get(url)
-            response.raise_for_status()
+            response = client.get(
+                url,
+                timeout=30,
+                headers=_github_auth_headers(github_token),
+            )
+            
+            if response.status_code != 200:
+                error_msg = _format_rate_limit_error(response.status_code, response.headers, url)
+                console.print(Panel(error_msg, title="GitHub API Error", border_style="red"))
+                return None
+            
+            try:
+                release_data = response.json()
+            except ValueError as je:
+                console.print(f"[red]Failed to parse release JSON:[/red] {je}")
+                return None
 
-            release_data = response.json()
             tag_name = release_data["tag_name"]
 
             console.print(f"[blue]ℹ[/blue] Latest version: {tag_name}")
@@ -471,8 +556,16 @@ def download_latest_release(temp_dir: Path) -> Optional[Path]:
             zipball_url = f"https://github.com/{GITHUB_REPO}/archive/refs/tags/{tag_name}.zip"
 
             status.update(f"[bold blue]Downloading {tag_name}...")
-            response = client.get(zipball_url)
-            response.raise_for_status()
+            response = client.get(
+                zipball_url,
+                timeout=60,
+                headers=_github_auth_headers(github_token),
+            )
+            
+            if response.status_code != 200:
+                error_msg = _format_rate_limit_error(response.status_code, response.headers, zipball_url)
+                console.print(Panel(error_msg, title="Download Error", border_style="red"))
+                return None
 
             # Save and extract
             zip_path = temp_dir / "extensions.zip"
@@ -932,6 +1025,11 @@ def main(
         "--llm-enhance",
         help="Create one-time command for LLM-enhanced constitution update (uses /specify.constitution)",
     ),
+    github_token: str = typer.Option(
+        None,
+        "--github-token",
+        help="GitHub token to use for API requests (or set GH_TOKEN or GITHUB_TOKEN environment variable)",
+    ),
 ) -> None:
     """
     Installation tool for spec-kit-extensions that detects your existing
@@ -1012,7 +1110,7 @@ def main(
     # Download latest release
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        source_dir = download_latest_release(temp_path)
+        source_dir = download_latest_release(temp_path, github_token)
 
         if not source_dir:
             console.print(
