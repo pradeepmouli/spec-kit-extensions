@@ -55,6 +55,29 @@ Each workflow has unique branch pattern:
 
 **Why this matters**: Branch name alone tells us workflow type, no config needed.
 
+#### Branch Pattern Compatibility
+
+spec-kit's `common.sh` enforces branch naming via `check_feature_branch()`, which originally only accepted the standard pattern `^[0-9]{3}-`. To support extension patterns, `specify-extend` automatically patches this function during installation:
+
+**Original spec-kit pattern:**
+- `001-feature-name` (standard feature branches)
+
+**Patched to accept extension patterns:**
+- `bugfix-001-description` (bugfix workflow)
+- `modify-001^002-description` (modify workflow)
+- `refactor-003-description` (refactor workflow)
+- `hotfix-004-description` (hotfix workflow)
+- `deprecate-005-description` (deprecate workflow)
+
+The patch:
+1. Creates `.specify/scripts/bash/common.sh.backup` before modification
+2. Updates `check_feature_branch()` to validate both standard and extension patterns
+3. Preserves non-git repository behavior
+4. Provides helpful error messages listing all supported patterns
+5. Gracefully handles already-patched files
+
+This ensures extension workflows integrate seamlessly with spec-kit's branch validation system.
+
 ### 3. Directory Structure
 
 Workflows create different directory patterns:

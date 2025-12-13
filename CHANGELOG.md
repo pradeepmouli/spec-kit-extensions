@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.1.2
+- **CLI Tool** (`specify-extend`) - Currently at v1.2.0
 
 ---
 
@@ -30,6 +30,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (specify-extend)
+
+### [1.2.0] - 2025-12-12
+
+#### ✨ Features
+
+- **Extension Branch Pattern Support** - Automatically patches spec-kit's `common.sh` to support extension branch naming patterns
+  - Patches `check_feature_branch()` to accept both standard and extension patterns
+  - Standard pattern: `###-description` (e.g., `001-add-feature`)
+  - Extension patterns:
+    - `bugfix-###-description` (e.g., `bugfix-001-fix-login`)
+    - `modify-###^###-description` (e.g., `modify-001^002-update-api`)
+    - `refactor-###-description` (e.g., `refactor-003-cleanup-utils`)
+    - `hotfix-###-description` (e.g., `hotfix-004-security-patch`)
+    - `deprecate-###-description` (e.g., `deprecate-005-remove-legacy`)
+  - Creates `.specify/scripts/bash/common.sh.backup` before patching
+  - Gracefully handles already-patched files
+  - Skips if `common.sh` doesn't exist (e.g., fresh installations)
+
+#### 🔧 Improved
+
+- **Installation Flow** - Now includes automatic `common.sh` patching after template installation
+- **Error Messages** - Enhanced branch validation error to list all supported patterns
+- **Backward Compatibility** - Preserves non-git repository behavior and standard spec-kit patterns
 
 ### [1.1.2] - 2025-12-12
 

@@ -91,6 +91,7 @@ The `specify-extend` tool automatically:
 - ✅ Installs extensions matching your setup
 - ✅ Configures agent-specific commands
 - ✅ Updates constitution with quality gates
+- ✅ Patches spec-kit's `common.sh` to support extension branch patterns
 
 **Optional: LLM-Enhanced Constitution Updates**
 

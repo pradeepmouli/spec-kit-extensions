@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 
 # Initialize Rich console
 console = Console()
@@ -988,6 +988,109 @@ def update_constitution(
         console.print("  [dim]Would update constitution.md[/dim]")
 
 
+def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
+    """Patch spec-kit's common.sh to support extension branch patterns
+
+    Modifies check_feature_branch() to accept both standard spec-kit patterns (###-)
+    and extension patterns (bugfix-###-, modify-###^###-, refactor-###-, hotfix-###-, deprecate-###-)
+
+    Args:
+        repo_root: Root directory of the repository
+        dry_run: Whether to perform a dry run
+    """
+    console.print("[blue]ℹ[/blue] Patching common.sh for extension branch support...")
+
+    common_sh = repo_root / ".specify" / "scripts" / "bash" / "common.sh"
+
+    if not common_sh.exists():
+        console.print("[yellow]⚠[/yellow] common.sh not found, skipping patch")
+        return
+
+    if not dry_run:
+        content = common_sh.read_text()
+
+        # Check if already patched
+        if "# Extension branch patterns" in content:
+            console.print("[blue]ℹ[/blue] common.sh already patched for extensions")
+            return
+
+        # Find the check_feature_branch function
+        original_pattern = '''check_feature_branch() {
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        return 0
+    fi
+
+    local branch
+    branch=$(git branch --show-current)
+
+    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
+        echo "Error: Not on a feature branch. Current branch: $branch"
+        echo "Feature branches must follow the pattern: ###-description"
+        echo "Example: 001-add-user-authentication"
+        exit 1
+    fi
+}'''
+
+        # New implementation that supports extension patterns
+        patched_pattern = '''check_feature_branch() {
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        return 0
+    fi
+
+    local branch
+    branch=$(git branch --show-current)
+
+    # Extension branch patterns (spec-kit-extensions)
+    local extension_patterns=(
+        "^bugfix-[0-9]{3}-"
+        "^modify-[0-9]{3}\\^[0-9]{3}-"
+        "^refactor-[0-9]{3}-"
+        "^hotfix-[0-9]{3}-"
+        "^deprecate-[0-9]{3}-"
+    )
+
+    # Check extension patterns first
+    for pattern in "${extension_patterns[@]}"; do
+        if [[ "$branch" =~ $pattern ]]; then
+            return 0
+        fi
+    done
+
+    # Check standard spec-kit pattern (###-)
+    if [[ "$branch" =~ ^[0-9]{3}- ]]; then
+        return 0
+    fi
+
+    # No match - show helpful error
+    echo "Error: Not on a feature branch. Current branch: $branch"
+    echo "Feature branches must follow one of these patterns:"
+    echo "  Standard:  ###-description (e.g., 001-add-user-authentication)"
+    echo "  Bugfix:    bugfix-###-description"
+    echo "  Modify:    modify-###^###-description"
+    echo "  Refactor:  refactor-###-description"
+    echo "  Hotfix:    hotfix-###-description"
+    echo "  Deprecate: deprecate-###-description"
+    exit 1
+}'''
+
+        if original_pattern in content:
+            # Create backup
+            backup_file = common_sh.with_suffix('.sh.backup')
+            backup_file.write_text(content)
+
+            # Apply patch
+            patched_content = content.replace(original_pattern, patched_pattern)
+            common_sh.write_text(patched_content)
+
+            console.print("[green]✓[/green] common.sh patched to support extension branch patterns")
+            console.print(f"  [dim]Backup saved to: {backup_file}[/dim]")
+        else:
+            console.print("[yellow]⚠[/yellow] check_feature_branch() function format has changed")
+            console.print("  [dim]Manual patching required[/dim]")
+    else:
+        console.print("  [dim]Would patch common.sh for extension branch support[/dim]")
+
+
 @app.command()
 def main(
     extensions: List[str] = typer.Argument(
@@ -1126,6 +1229,7 @@ def main(
         install_extension_files(repo_root, source_dir, extensions_to_install, dry_run)
         install_agent_commands(repo_root, source_dir, detected_agent, extensions_to_install, dry_run)
         update_constitution(repo_root, source_dir, detected_agent, dry_run, llm_enhance)
+        patch_common_sh(repo_root, dry_run)
 
     # Success message
     console.print("\n" + "━" * 60)
