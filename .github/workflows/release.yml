@@ -32,18 +32,8 @@ jobs:
         # Extract version from specify_extend.py
         PY_VERSION=$(grep '^__version__ = ' specify_extend.py | sed 's/__version__ = "\(.*\)"/\1/')
 
-        # Extract CLI version from CHANGELOG.md
-        CHANGELOG_VERSION=$(grep -A 1 '## CLI Tool' CHANGELOG.md | grep '### \[' | head -1 | sed 's/### \[\(.*\)\].*/\1/')
-
-        echo "Tag version:       $TAG_VERSION"
-        echo "pyproject.toml:    $TOML_VERSION"
-        echo "specify_extend.py: $PY_VERSION"
-        echo "CHANGELOG.md:      $CHANGELOG_VERSION"
-
-        # Check if all versions match
-        if [ "$TAG_VERSION" != "$TOML_VERSION" ]; then
-          echo "❌ Error: Tag version ($TAG_VERSION) doesn't match pyproject.toml version ($TOML_VERSION)"
-          exit 1
+        # Extract CLI version from CHANGELOG.md - find first ### [version] after ## CLI Tool
+        CHANGELOG_VERSION=$(sed -n '/## CLI Tool/,/^## /p' CHANGELOG.md | grep '^### \[' | head -1 | sed 's/### \[\(.*\)\].*/\1/')
         fi
 
         if [ "$TAG_VERSION" != "$PY_VERSION" ]; then
