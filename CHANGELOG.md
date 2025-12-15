@@ -7,11 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.3
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.3.3] - 2025-12-15
+
+#### 🔧 Changed
+
+- **Naming Convention** - Standardized command file naming from `specify.*` to `speckit.*`
+  - Renamed all command files to use `speckit` prefix (e.g., `speckit.bugfix.md`, `speckit.modify.md`)
+  - Updated Copilot agent files to `speckit.{ext}.agent.md` format
+  - Updated Copilot prompt files to `speckit.{ext}.prompt.md` format
+  - Fixed prompt file references to correctly point to agent files
+  - Updated all documentation to reflect new naming convention
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.3
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [1.3.1] - 2025-12-14
 
