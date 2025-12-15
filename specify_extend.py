@@ -1029,7 +1029,7 @@ check_feature_branch() {
     # Support both parameterized and non-parameterized calls
     local branch="${1:-}"
     local has_git_repo="${2:-}"
-    
+
     # If branch not provided as parameter, get current branch
     if [[ -z "$branch" ]]; then
         if git rev-parse --git-dir > /dev/null 2>&1; then
@@ -1039,7 +1039,7 @@ check_feature_branch() {
             return 0
         fi
     fi
-    
+
     # For non-git repos, skip validation if explicitly specified
     if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
         echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
