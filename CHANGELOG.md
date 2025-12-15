@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## CLI Tool (`specify-extend`)
 
+### [1.3.1] - 2025-12-14
+
+#### 🐛 Fixed
+
+- **common.sh Patching Compatibility** - Fixed patching to support parameterized `check_feature_branch()` function
+  - Now handles both parameterized `check_feature_branch(branch, has_git_repo)` and non-parameterized signatures
+  - Patched function supports optional parameters for backward compatibility
+  - Resolves "function format has changed" error when patching newer common.sh versions
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.1
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
+
 ### [1.3.0] - 2025-12-14
 
 #### 🚀 Improved
