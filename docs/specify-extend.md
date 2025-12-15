@@ -271,18 +271,18 @@ your-project/
 │   └── memory/
 │       └── constitution.md      # ← Updated with quality gates
 ├── .claude/commands/            # ← If using Claude Code
-│   ├── specify.bugfix.md
-│   ├── specify.modify.md
-│   ├── specify.refactor.md
-│   ├── specify.hotfix.md
-│   └── specify.deprecate.md
+│   ├── speckit.bugfix.md
+│   ├── speckit.modify.md
+│   ├── speckit.refactor.md
+│   ├── speckit.hotfix.md
+│   └── speckit.deprecate.md
 └── .github/                     # ← If using GitHub Copilot
     ├── agents/
-    │   ├── specify.bugfix.md
-    │   ├── specify.modify.md
-    │   ├── specify.refactor.md
-    │   ├── specify.hotfix.md
-    │   └── specify.deprecate.md
+    │   ├── speckit.bugfix.agent.md
+    │   ├── speckit.modify.agent.md
+    │   ├── speckit.refactor.agent.md
+    │   ├── speckit.hotfix.agent.md
+    │   └── speckit.deprecate.agent.md
     └── prompts/
         ├── speckit.bugfix.prompt.md
         ├── speckit.modify.prompt.md

@@ -694,13 +694,13 @@ def install_agent_commands(
 
     for ext in extensions:
         # For now, we only have markdown files
-        source_file = source_commands / f"specify.{ext}.md"
+        source_file = source_commands / f"speckit.{ext}.md"
 
         # For Copilot, append .agent suffix to the filename
         if agent == "copilot":
-            dest_filename = f"specify.{ext}.agent.{file_ext or 'md'}"
+            dest_filename = f"speckit.{ext}.agent.{file_ext or 'md'}"
         else:
-            dest_filename = f"specify.{ext}.{file_ext or 'md'}"
+            dest_filename = f"speckit.{ext}.{file_ext or 'md'}"
 
         dest_file = commands_dir / dest_filename
 
@@ -712,18 +712,18 @@ def install_agent_commands(
                 if agent == "copilot":
                     prompts_dir = repo_root / ".github" / "prompts"
                     prompts_dir.mkdir(parents=True, exist_ok=True)
-                    prompt_file = prompts_dir / f"specify.{ext}.prompt.md"
+                    prompt_file = prompts_dir / f"speckit.{ext}.prompt.md"
                     # Prompt file is just a pointer to the agent file
-                    prompt_content = f"---\nagent: specify.{ext}\n---\n"
+                    prompt_content = f"---\nagent: speckit.{ext}\n---\n"
                     prompt_file.write_text(prompt_content)
-                    console.print(f"[green]✓[/green] Installed /specify.{ext} agent and prompt")
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
                 else:
-                    console.print(f"[green]✓[/green] Installed /specify.{ext} command")
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
             else:
                 if agent == "copilot":
-                    console.print(f"[green]✓[/green] Installed /specify.{ext} agent and prompt")
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
                 else:
-                    console.print(f"[green]✓[/green] Installed /specify.{ext} command")
+                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
         else:
             console.print(f"[yellow]⚠[/yellow] Command file for {ext} not found")
 

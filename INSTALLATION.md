@@ -162,7 +162,7 @@ ls .specify/scripts/bash/create-*.sh
 
 # Verify commands (if using Claude Code)
 ls .claude/commands/*.md
-# Should show: specify.bugfix.md, specify.modify.md, specify.refactor.md, specify.hotfix.md, specify.deprecate.md
+# Should show: speckit.bugfix.md, speckit.modify.md, speckit.refactor.md, speckit.hotfix.md, speckit.deprecate.md
 ```
 
 ## Configuration

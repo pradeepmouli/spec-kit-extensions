@@ -105,7 +105,7 @@ Create command template files in the `commands/` directory following the agent's
 
 #### Markdown Format (Claude, Cursor, Copilot, opencode, Windsurf, Amazon Q)
 
-**File**: `commands/specify.bugfix.md` (example)
+**File**: `commands/speckit.bugfix.md` (example)
 
 ```markdown
 ---
@@ -138,7 +138,7 @@ Execute the bugfix workflow script...
 
 #### TOML Format (Gemini, Qwen)
 
-**File**: `commands/specify.bugfix.toml` (example)
+**File**: `commands/speckit.bugfix.toml` (example)
 
 ```toml
 description = "Fix bugs with regression-test-first approach"
@@ -231,7 +231,7 @@ Add a complete setup guide for the new agent following the existing pattern:
    ```bash
    # Check directory structure
    ls .new-agent/commands/
-   # Should show: specify.bugfix.md, specify.modify.md, etc.
+   # Should show: speckit.bugfix.md, speckit.modify.md, etc.
    ```
 
 4. **Test command execution**:
