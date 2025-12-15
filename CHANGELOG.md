@@ -7,7 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.2.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.0
+
+---
+
+## CLI Tool (`specify-extend`)
+
+### [1.3.0] - 2025-12-14
+
+#### 🚀 Improved
+
+- **Directory Structure Organization** - Changed from flat directory naming to subdirectory organization
+  - Bugfix, refactor, hotfix, and deprecate workflows now create subdirectories: `specs/bugfix/###-description/` instead of `specs/bugfix-###-description/`
+  - Branch naming updated to use forward slashes: `bugfix/###-description` instead of `bugfix-###-description`
+  - Cleaner organization with workflows grouped into their own subdirectories
+  - Modify workflow continues to use feature-specific structure: `specs/###-feature/modifications/###-/`
+
+- **Robust common.sh Patching** - Improved patching strategy for spec-kit's common.sh
+  - Renames original `check_feature_branch()` to `check_feature_branch_old()` instead of in-place replacement
+  - Appends new function to end of file for better compatibility
+  - More resilient to changes in original function implementation
+  - Easier to debug and compare old vs new implementations
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.0
+- **Compatible Spec Kit Version**: v0.0.80+
 
 ---
 
