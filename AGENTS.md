@@ -399,8 +399,8 @@ When adding new agents:
 
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/pradeepmouli/spec-kit-extensions/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/pradeepmouli/spec-kit-extensions/discussions)
+- **Issues**: [GitHub Issues](https://github.com/[your-username]/spec-kit-extensions/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/[your-username]/spec-kit-extensions/discussions)
 - **spec-kit**: [Original spec-kit repo](https://github.com/github/spec-kit)
 
 ---
