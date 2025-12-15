@@ -135,6 +135,20 @@ Improving existing workflows:
 4. Wait for maintainer feedback
 5. Submit PR
 
+#### New AI Agent Support
+
+Want to add support for a new AI coding agent?
+
+1. Review the [AGENTS.md](AGENTS.md) guide for maintainers
+2. [Open an issue](https://github.com/[your-username]/spec-kit-extensions/issues/new) proposing the new agent
+3. Follow the steps in AGENTS.md to:
+   - Update agent configuration in `specify_extend.py`
+   - Add detection logic
+   - Create command templates
+   - Update documentation (README.md, AI-AGENTS.md)
+4. Test the integration thoroughly
+5. Submit PR with examples
+
 ## Development Setup
 
 ### Prerequisites
