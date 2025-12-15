@@ -48,21 +48,33 @@ AGENT_CONFIG = {
 
 **Example - The Cursor Lesson:**
 
-❌ **Wrong approach** (requires special-case mapping):
+The codebase currently has an `Agent` enum with `cursor = "cursor-agent"` which creates a mapping. While this works, it's an exception that should be avoided for new agents.
+
+❌ **Avoid this pattern** (requires enum mapping):
 ```python
+# In Agent enum
+class Agent(str, Enum):
+    newagent = "new-agent-cli"  # Creates extra mapping layer
+
+# In AGENT_CONFIG
 AGENT_CONFIG = {
-    "cursor": {  # Shorthand that doesn't match the actual tool
-        "name": "Cursor",
+    "new-agent-cli": {  # Must match enum value, not enum name
+        "name": "New Agent",
         # ...
     }
 }
 ```
 
-✅ **Correct approach** (no mapping needed):
+✅ **Preferred approach** (direct naming):
 ```python
+# In Agent enum
+class Agent(str, Enum):
+    new_agent_cli = "new-agent-cli"  # Enum name matches value (using underscore)
+
+# In AGENT_CONFIG
 AGENT_CONFIG = {
-    "cursor-agent": {  # Matches the actual executable name
-        "name": "Cursor",
+    "new-agent-cli": {  # Matches both enum value and actual CLI tool name
+        "name": "New Agent",
         # ...
     }
 }
@@ -78,9 +90,9 @@ def detect_agent(repo_root: Path) -> str:
     
     # ... existing checks ...
     
-    # Check for New Agent
-    if (repo_root / ".new-agent" / "commands").exists():
-        return "new-agent-cli"
+    # Check for New Agent (example)
+    if (repo_root / ".new-agent-cli" / "commands").exists():
+        return "new-agent-cli"  # Return value matching AGENT_CONFIG key
     
     # ... remaining checks ...
 ```
@@ -205,6 +217,8 @@ Add a complete setup guide for the new agent following the existing pattern:
    ```bash
    mkdir test-project && cd test-project
    git init
+   # Note: Use an actual agent name that spec-kit supports (e.g., claude, copilot)
+   # This example assumes the new agent has been added to spec-kit core
    specify init --ai new-agent-cli .
    ```
 
@@ -334,7 +348,7 @@ spec-kit-extensions provides these workflows that must be supported for each age
 
 ## Common Pitfalls
 
-1. **Using shorthand keys instead of actual CLI tool names**: Always use the actual executable name as the AGENT_CONFIG key (e.g., `"cursor-agent"` not `"cursor"`). This prevents the need for special-case mappings throughout the codebase.
+1. **Using shorthand keys instead of actual CLI tool names**: Always use the actual executable name as the AGENT_CONFIG key (e.g., `"cursor-agent"` not `"cursor"`). While the codebase has an `Agent` enum with `cursor = "cursor-agent"`, this creates an extra mapping layer. For new agents, keep the enum name aligned with the value (using underscores if needed: `new_agent_cli = "new-agent-cli"`).
 
 2. **Wrong argument format**: Use correct placeholder format for each agent type:
    - `$ARGUMENTS` for Markdown
