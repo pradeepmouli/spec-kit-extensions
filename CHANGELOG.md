@@ -7,11 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.3
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.4
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.3.4] - 2025-12-15
+
+#### 🐛 Fixed
+
+- **Backward Compatibility** - Added fallback to support both `speckit.*` and `specify.*` naming conventions
+  - Ensures compatibility when downloading from older releases
+  - Gracefully handles transition period between naming conventions
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.4
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [1.3.3] - 2025-12-15
 

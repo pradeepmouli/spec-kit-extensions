@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 # Initialize Rich console
 console = Console()
@@ -693,8 +693,10 @@ def install_agent_commands(
     source_commands = source_dir / "commands"
 
     for ext in extensions:
-        # For now, we only have markdown files
+        # Try new naming convention first (speckit.*), fallback to old (specify.*)
         source_file = source_commands / f"speckit.{ext}.md"
+        if not source_file.exists():
+            source_file = source_commands / f"specify.{ext}.md"
 
         # For Copilot, append .agent suffix to the filename
         if agent == "copilot":
