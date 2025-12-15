@@ -1022,15 +1022,29 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
             return
 
         # New function to append at the end
+        # Supports both parameterized and non-parameterized signatures
         new_function = '''
 # Extended branch validation supporting spec-kit-extensions
 check_feature_branch() {
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    # Support both parameterized and non-parameterized calls
+    local branch="${1:-}"
+    local has_git_repo="${2:-}"
+    
+    # If branch not provided as parameter, get current branch
+    if [[ -z "$branch" ]]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            branch=$(git branch --show-current)
+            has_git_repo="true"
+        else
+            return 0
+        fi
+    fi
+    
+    # For non-git repos, skip validation if explicitly specified
+    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
+        echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
         return 0
     fi
-
-    local branch
-    branch=$(git branch --show-current)
 
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
@@ -1054,15 +1068,15 @@ check_feature_branch() {
     fi
 
     # No match - show helpful error
-    echo "Error: Not on a feature branch. Current branch: $branch"
-    echo "Feature branches must follow one of these patterns:"
-    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)"
-    echo "  Bugfix:      bugfix/###-description"
-    echo "  Modify:      modify/###^###-description"
-    echo "  Refactor:    refactor/###-description"
-    echo "  Hotfix:      hotfix/###-description"
-    echo "  Deprecate:   deprecate/###-description"
-    exit 1
+    echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
+    echo "Feature branches must follow one of these patterns:" >&2
+    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Modify:      modify/###^###-description" >&2
+    echo "  Refactor:    refactor/###-description" >&2
+    echo "  Hotfix:      hotfix/###-description" >&2
+    echo "  Deprecate:   deprecate/###-description" >&2
+    return 1
 }'''
 
         if "check_feature_branch()" in content:
