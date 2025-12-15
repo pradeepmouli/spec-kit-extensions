@@ -87,13 +87,13 @@ Add detection logic to the `detect_agent()` function in `specify_extend.py`:
 ```python
 def detect_agent(repo_root: Path) -> str:
     """Detect which AI agent is configured by examining project structure"""
-    
+
     # ... existing checks ...
-    
+
     # Check for New Agent (example)
     if (repo_root / ".new-agent-cli" / "commands").exists():
         return "new-agent-cli"  # Return value matching AGENT_CONFIG key
-    
+
     # ... remaining checks ...
 ```
 
@@ -348,7 +348,7 @@ spec-kit-extensions provides these workflows that must be supported for each age
 
 ## Common Pitfalls
 
-1. **Using shorthand keys instead of actual CLI tool names**: 
+1. **Using shorthand keys instead of actual CLI tool names**:
    - Rule: Always use the actual executable name as the AGENT_CONFIG key (e.g., `"cursor-agent"` not `"cursor"`)
    - Existing exception: The codebase has an `Agent` enum with `cursor = "cursor-agent"`, which creates an extra mapping layer
    - Recommended for new agents: Keep the enum name aligned with the value using underscores: `new_agent_cli = "new-agent-cli"`
