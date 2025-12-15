@@ -120,7 +120,7 @@ Execute the bugfix workflow script with the provided description:
 
 This creates:
 - Branch: `bugfix/NNN-description`
-- Directory: `specs/bugfix-NNN-description/`
+- Directory: `specs/bugfix/NNN-description/`
 - Files: `bug-report.md`, `tasks.md`
 
 Quality Gate: **Write regression test BEFORE implementing fix**
@@ -152,7 +152,7 @@ Execute the bugfix workflow script with the provided description:
 
 This creates:
 - Branch: `bugfix/NNN-description`
-- Directory: `specs/bugfix-NNN-description/`
+- Directory: `specs/bugfix/NNN-description/`
 - Files: `bug-report.md`, `tasks.md`
 
 Quality Gate: **Write regression test BEFORE implementing fix**
@@ -217,13 +217,13 @@ Add a complete setup guide for the new agent following the existing pattern:
    ```bash
    mkdir test-project && cd test-project
    git init
-   # Note: Use an actual agent name that spec-kit supports (e.g., claude, copilot)
-   # This example assumes the new agent has been added to spec-kit core
-   specify init --ai new-agent-cli .
+   # Example using Claude (replace with your new agent once added to spec-kit)
+   specify init --ai claude .
    ```
 
 2. **Install extensions**:
    ```bash
+   # Use your new agent key from AGENT_CONFIG
    specify-extend --all --agent new-agent-cli
    ```
 
@@ -348,7 +348,10 @@ spec-kit-extensions provides these workflows that must be supported for each age
 
 ## Common Pitfalls
 
-1. **Using shorthand keys instead of actual CLI tool names**: Always use the actual executable name as the AGENT_CONFIG key (e.g., `"cursor-agent"` not `"cursor"`). While the codebase has an `Agent` enum with `cursor = "cursor-agent"`, this creates an extra mapping layer. For new agents, keep the enum name aligned with the value (using underscores if needed: `new_agent_cli = "new-agent-cli"`).
+1. **Using shorthand keys instead of actual CLI tool names**: 
+   - Rule: Always use the actual executable name as the AGENT_CONFIG key (e.g., `"cursor-agent"` not `"cursor"`)
+   - Existing exception: The codebase has an `Agent` enum with `cursor = "cursor-agent"`, which creates an extra mapping layer
+   - Recommended for new agents: Keep the enum name aligned with the value using underscores: `new_agent_cli = "new-agent-cli"`
 
 2. **Wrong argument format**: Use correct placeholder format for each agent type:
    - `$ARGUMENTS` for Markdown
