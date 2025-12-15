@@ -112,11 +112,11 @@ FEATURE_NAME=$(basename "$FEATURE_DIR")
 
 # Find highest deprecate number
 HIGHEST=0
-if [ -d "$SPECS_DIR" ]; then
-    for dir in "$SPECS_DIR"/deprecate-*; do
+if [ -d "$SPECS_DIR/deprecate" ]; then
+    for dir in "$SPECS_DIR"/deprecate/*/; do
         [ -d "$dir" ] || continue
         dirname=$(basename "$dir")
-        number=$(echo "$dirname" | sed 's/deprecate-//' | grep -o '^[0-9]\+' || echo "0")
+        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
         number=$((10#$number))
         if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
     done
@@ -137,8 +137,10 @@ else
     >&2 echo "[deprecate] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-# Create deprecation directory
-DEPRECATE_DIR="$SPECS_DIR/${DEPRECATE_ID}-${FEATURE_SHORT}"
+# Create deprecation directory under deprecate/ subdirectory
+DEPRECATE_SUBDIR="$SPECS_DIR/deprecate"
+mkdir -p "$DEPRECATE_SUBDIR"
+DEPRECATE_DIR="$DEPRECATE_SUBDIR/${DEPRECATE_NUM}-${FEATURE_SHORT}"
 mkdir -p "$DEPRECATE_DIR"
 
 # Copy template
@@ -151,6 +153,9 @@ if [ -f "$DEPRECATION_TEMPLATE" ]; then
 else
     echo "# Deprecation Plan" > "$DEPRECATION_FILE"
 fi
+
+# Create symlink from spec.md to deprecation.md
+ln -sf "deprecation.md" "$DEPRECATE_DIR/spec.md"
 
 # Run dependency scan
 DEPENDENCIES_FILE="$DEPRECATE_DIR/dependencies.md"

@@ -64,7 +64,8 @@ Use `/speckit.bugfix` when:
 
 ```
 specs/
-└── bugfix-001-description/
+└── bugfix/
+    └── 001-description/
     ├── bug-report.md      # Bug documentation (created by /speckit.bugfix)
     ├── plan.md            # Fix plan (created by /speckit.plan after review)
     └── tasks.md           # Task breakdown (created by /speckit.tasks after plan review)

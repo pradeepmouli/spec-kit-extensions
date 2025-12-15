@@ -1,0 +1,130 @@
+name: Monitor spec-kit Releases
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-spec-kit-release:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest spec-kit release
+        id: spec-kit-release
+        run: |
+          # Fetch latest release from github/spec-kit
+          LATEST_RELEASE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/github/spec-kit/releases/latest")
+
+          RELEASE_TAG=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
+          RELEASE_NAME=$(echo "$LATEST_RELEASE" | jq -r '.name')
+          RELEASE_URL=$(echo "$LATEST_RELEASE" | jq -r '.html_url')
+          RELEASE_BODY=$(echo "$LATEST_RELEASE" | jq -r '.body')
+          PUBLISHED_AT=$(echo "$LATEST_RELEASE" | jq -r '.published_at')
+
+          echo "tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+          echo "url=$RELEASE_URL" >> $GITHUB_OUTPUT
+          echo "published_at=$PUBLISHED_AT" >> $GITHUB_OUTPUT
+
+          # Save release body to file for multiline handling
+          echo "$RELEASE_BODY" > /tmp/release_body.txt
+
+      - name: Check if issue already exists
+        id: check-issue
+        run: |
+          # Search for existing open issues with the same title
+          ISSUE_TITLE="Add compatibility for spec-kit ${{ steps.spec-kit-release.outputs.tag }}"
+
+          EXISTING_ISSUE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open" | \
+            jq -r --arg title "$ISSUE_TITLE" '.[] | select(.title == $title) | .number' | head -n 1)
+
+          if [ -n "$EXISTING_ISSUE" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "issue_number=$EXISTING_ISSUE" >> $GITHUB_OUTPUT
+            echo "Issue already exists: #$EXISTING_ISSUE"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "No existing issue found"
+          fi
+
+      - name: Create compatibility issue
+        if: steps.check-issue.outputs.exists == 'false'
+        run: |
+          RELEASE_TAG="${{ steps.spec-kit-release.outputs.tag }}"
+          RELEASE_NAME="${{ steps.spec-kit-release.outputs.name }}"
+          RELEASE_URL="${{ steps.spec-kit-release.outputs.url }}"
+          PUBLISHED_AT="${{ steps.spec-kit-release.outputs.published_at }}"
+
+          # Read release body from file
+          RELEASE_BODY=$(cat /tmp/release_body.txt)
+
+          # Create issue body with proper escaping
+          ISSUE_BODY=$(cat <<-EOF
+          A new version of spec-kit has been released: **${RELEASE_TAG}**
+
+          ## Release Information
+
+          - **Version**: ${RELEASE_TAG}
+          - **Name**: ${RELEASE_NAME}
+          - **Published**: ${PUBLISHED_AT}
+          - **Release URL**: ${RELEASE_URL}
+
+          ## Tasks
+
+          - [ ] Review spec-kit release notes for breaking changes
+          - [ ] Test spec-kit-extensions compatibility with ${RELEASE_TAG}
+          - [ ] Update extension templates if needed
+          - [ ] Update CLI tool if needed
+          - [ ] Update documentation to reference ${RELEASE_TAG}
+          - [ ] Update README.md compatibility section
+          - [ ] Run full test suite with new spec-kit version
+          - [ ] Create PR with any necessary changes
+
+          ## spec-kit Release Notes
+
+          <details>
+          <summary>Click to expand release notes</summary>
+
+          ${RELEASE_BODY}
+
+          </details>
+
+          ---
+
+          **Automatically created by GitHub Actions**
+          Workflow: [\`monitor-spec-kit-releases.yml\`](https://github.com/${{ github.repository }}/blob/main/.github/workflows/monitor-spec-kit-releases.yml)
+          EOF
+          )
+
+          # Create the issue and assign to Copilot
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues" \
+            -d "$(jq -n \
+              --arg title "Add compatibility for spec-kit ${RELEASE_TAG}" \
+              --arg body "$ISSUE_BODY" \
+              '{
+                title: $title,
+                body: $body,
+                labels: ["enhancement", "spec-kit-compatibility", "automation"],
+                assignees: ["copilot"]
+              }')"
+
+          echo "✅ Created issue for spec-kit ${RELEASE_TAG}"
+
+      - name: Skip - Issue already exists
+        if: steps.check-issue.outputs.exists == 'true'
+        run: |
+          echo "ℹ️ Issue already exists for this release: #${{ steps.check-issue.outputs.issue_number }}"
+          echo "Skipping issue creation to avoid duplicates"

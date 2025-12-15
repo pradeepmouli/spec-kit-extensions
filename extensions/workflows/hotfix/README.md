@@ -81,7 +81,8 @@ Use `/speckit.hotfix` when:
 
 ```
 specs/
-└── hotfix-001-database-connection-pool/
+└── hotfix/
+    └── 001-database-connection-pool/
     ├── hotfix.md                    # Incident log
     ├── post-mortem.md               # Required within 48 hours
     ├── plan.md                      # Expedited fix plan (created by /speckit.plan)

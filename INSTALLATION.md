@@ -162,7 +162,7 @@ ls .specify/scripts/bash/create-*.sh
 
 # Verify commands (if using Claude Code)
 ls .claude/commands/*.md
-# Should show: speckit.bugfix.md, speckit.modify.md, speckit.refactor.md, speckit.hotfix.md, speckit.deprecate.md
+# Should show: specify.bugfix.md, specify.modify.md, specify.refactor.md, specify.hotfix.md, specify.deprecate.md
 ```
 
 ## Configuration
@@ -357,10 +357,10 @@ rm .claude/commands/speckit.{bugfix,modify,refactor,hotfix,deprecate}.md
 nano .specify/memory/constitution.md
 
 # Remove workflow specs (if desired)
-rm -rf specs/bugfix-*
-rm -rf specs/refactor-*
-rm -rf specs/hotfix-*
-rm -rf specs/deprecate-*
+rm -rf specs/bugfix
+rm -rf specs/refactor
+rm -rf specs/hotfix
+rm -rf specs/deprecate
 ```
 
 ## Next Steps

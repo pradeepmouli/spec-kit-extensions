@@ -179,6 +179,9 @@ else
     echo "# Modification Spec" > "$MOD_SPEC_FILE"
 fi
 
+# Create symlink from spec.md to modification-spec.md
+ln -sf "modification-spec.md" "$MOD_DIR/spec.md"
+
 # Run impact analysis
 IMPACT_SCANNER="$REPO_ROOT/.specify/extensions/workflows/modify/scan-impact.sh"
 IMPACT_FILE="$MOD_DIR/impact-analysis.md"

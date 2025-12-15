@@ -63,11 +63,11 @@ spec-kit's `common.sh` enforces branch naming via `check_feature_branch()`, whic
 - `001-feature-name` (standard feature branches)
 
 **Patched to accept extension patterns:**
-- `bugfix-001-description` (bugfix workflow)
-- `modify-001^002-description` (modify workflow)
-- `refactor-003-description` (refactor workflow)
-- `hotfix-004-description` (hotfix workflow)
-- `deprecate-005-description` (deprecate workflow)
+- `bugfix/001-description` (bugfix workflow)
+- `modify/001^002-description` (modify workflow)
+- `refactor/003-description` (refactor workflow)
+- `hotfix/004-description` (hotfix workflow)
+- `deprecate/005-description` (deprecate workflow)
 
 The patch:
 1. Creates `.specify/scripts/bash/common.sh.backup` before modification
@@ -298,7 +298,7 @@ Command calls: .specify/scripts/bash/create-bugfix.sh
     ↓
 Script performs:
     1. Generates branch: bugfix/001-form-crashes
-    2. Creates dir: specs/bugfix-001-form-crashes/
+    2. Creates dir: specs/bugfix/001-form-crashes/
     3. Copies templates:
        - bug-report-template.md → bug-report.md
        - tasks-template.md → tasks.md

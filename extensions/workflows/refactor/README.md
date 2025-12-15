@@ -79,7 +79,8 @@ This ensures you always have a working state to return to.
 
 ```
 specs/
-└── refactor-001-extract-tweet-service/
+└── refactor/
+    └── 001-extract-tweet-service/
     ├── refactor-spec.md          # Refactoring goals (created by /speckit.refactor)
     ├── behavioral-snapshot.md    # Behavior documentation (created by /speckit.refactor)
     ├── metrics-before.md         # Baseline metrics (created by /speckit.refactor)

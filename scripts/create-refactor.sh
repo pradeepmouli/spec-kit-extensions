@@ -52,11 +52,11 @@ mkdir -p "$SPECS_DIR"
 
 # Find highest refactor number
 HIGHEST=0
-if [ -d "$SPECS_DIR" ]; then
-    for dir in "$SPECS_DIR"/refactor-*; do
+if [ -d "$SPECS_DIR/refactor" ]; then
+    for dir in "$SPECS_DIR"/refactor/*/; do
         [ -d "$dir" ] || continue
         dirname=$(basename "$dir")
-        number=$(echo "$dirname" | sed 's/refactor-//' | grep -o '^[0-9]\+' || echo "0")
+        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
         number=$((10#$number))
         if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
     done
@@ -78,8 +78,10 @@ else
     >&2 echo "[refactor] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-# Create refactor directory
-REFACTOR_DIR="$SPECS_DIR/${REFACTOR_ID}-${WORDS}"
+# Create refactor directory under refactor/ subdirectory
+REFACTOR_SUBDIR="$SPECS_DIR/refactor"
+mkdir -p "$REFACTOR_SUBDIR"
+REFACTOR_DIR="$REFACTOR_SUBDIR/${REFACTOR_NUM}-${WORDS}"
 mkdir -p "$REFACTOR_DIR"
 
 # Copy template
@@ -91,6 +93,9 @@ if [ -f "$REFACTOR_TEMPLATE" ]; then
 else
     echo "# Refactor Spec" > "$REFACTOR_SPEC_FILE"
 fi
+
+# Create symlink from spec.md to refactor-spec.md
+ln -sf "refactor-spec.md" "$REFACTOR_DIR/spec.md"
 
 # Create placeholder for metrics
 METRICS_BEFORE="$REFACTOR_DIR/metrics-before.md"

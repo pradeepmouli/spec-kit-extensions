@@ -1,7 +1,7 @@
 # Bug Report: [TITLE]
 
 **Bug ID**: [bugfix-###]
-**Branch**: `bugfix/[###-short-description]`
+**Branch**: `bugfix/###-short-description`
 **Created**: [DATE]
 **Severity**: [ ] Critical | [ ] High | [ ] Medium | [ ] Low
 **Component**: [file/module/feature affected]

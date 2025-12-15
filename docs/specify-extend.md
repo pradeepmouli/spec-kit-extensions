@@ -271,18 +271,18 @@ your-project/
 │   └── memory/
 │       └── constitution.md      # ← Updated with quality gates
 ├── .claude/commands/            # ← If using Claude Code
-│   ├── speckit.bugfix.md
-│   ├── speckit.modify.md
-│   ├── speckit.refactor.md
-│   ├── speckit.hotfix.md
-│   └── speckit.deprecate.md
+│   ├── specify.bugfix.md
+│   ├── specify.modify.md
+│   ├── specify.refactor.md
+│   ├── specify.hotfix.md
+│   └── specify.deprecate.md
 └── .github/                     # ← If using GitHub Copilot
     ├── agents/
-    │   ├── speckit.bugfix.md
-    │   ├── speckit.modify.md
-    │   ├── speckit.refactor.md
-    │   ├── speckit.hotfix.md
-    │   └── speckit.deprecate.md
+    │   ├── specify.bugfix.md
+    │   ├── specify.modify.md
+    │   ├── specify.refactor.md
+    │   ├── specify.hotfix.md
+    │   └── specify.deprecate.md
     └── prompts/
         ├── speckit.bugfix.prompt.md
         ├── speckit.modify.prompt.md
@@ -400,10 +400,10 @@ rm .claude/commands/speckit.*.md  # Claude Code
 # - .specify/memory/constitution.md (all)
 
 # Remove workflow directories (optional)
-rm -rf specs/bugfix-*
-rm -rf specs/refactor-*
-rm -rf specs/hotfix-*
-rm -rf specs/deprecate-*
+rm -rf specs/bugfix
+rm -rf specs/refactor
+rm -rf specs/hotfix
+rm -rf specs/deprecate
 # Keep feature modifications
 # rm -rf specs/*/modifications/
 ```

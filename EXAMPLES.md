@@ -40,7 +40,7 @@ Error: Invalid file type: application/octet-stream
 ### What It Created
 
 - **Branch**: `bugfix/001-when-submitting-the`
-- **Directory**: `specs/bugfix-001-when-submitting-the/`
+- **Directory**: `specs/bugfix/001-when-submitting-the/`
 - **Files**:
   - `bug-report.md` - Detailed bug analysis
   - `plan.md` - Fix strategy (created by /speckit.plan)

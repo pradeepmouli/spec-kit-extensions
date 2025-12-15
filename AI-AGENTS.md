@@ -463,7 +463,7 @@ esac
 .specify/ai-workflow.sh bugfix "form crashes when submitting"
 
 # Then use Gemini CLI to implement
-gemini-cli "Implement the bugfix in specs/bugfix-001-form-crashes/ following tasks.md. Read bug-report.md first. Write regression test before fix."
+gemini-cli "Implement the bugfix in specs/bugfix/001-form-crashes/ following tasks.md. Read bug-report.md first. Write regression test before fix."
 ```
 
 **Pros**:
@@ -490,11 +490,11 @@ gemini-cli "Implement the bugfix in specs/bugfix-001-form-crashes/ following tas
 .specify/scripts/bash/create-bugfix.sh "bug description"
 
 # Implement with your CLI tool
-qwen-cli "Implement bugfix in specs/bugfix-001-*/ following tasks.md"
+qwen-cli "Implement bugfix in specs/bugfix/*/ following tasks.md"
 # or
-opencode "Implement bugfix in specs/bugfix-001-*/ following tasks.md"
+opencode "Implement bugfix in specs/bugfix/*/ following tasks.md"
 # or
-codex "Implement bugfix in specs/bugfix-001-*/ following tasks.md"
+codex "Implement bugfix in specs/bugfix/*/ following tasks.md"
 ```
 
 ---
@@ -514,7 +514,7 @@ codex "Implement bugfix in specs/bugfix-001-*/ following tasks.md"
 
 2. **Ask any AI agent to help**:
    ```
-   "Please help me implement the bugfix specified in specs/bugfix-001-form-crashes/bug-report.md.
+   "Please help me implement the bugfix specified in specs/bugfix/001-form-crashes/bug-report.md.
    Follow the tasks in tasks.md.
    Important: Write a regression test BEFORE implementing the fix."
    ```
@@ -707,7 +707,7 @@ Test with a simple bugfix:
 
 Check that:
 1. Branch created: `git branch` shows `bugfix/001-test-workflow`
-2. Files created: `ls specs/bugfix-001-test-workflow/`
+2. Files created: `ls specs/bugfix/001-test-workflow/`
 3. AI can read files and implement
 
 ---

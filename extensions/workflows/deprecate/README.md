@@ -90,11 +90,12 @@ Use `/speckit.deprecate` when:
 
 ```
 specs/
-└── deprecate-001-edit-profile-form/
-    ├── deprecation.md      # Deprecation plan (created by /speckit.deprecate)
-    ├── dependencies.md     # Auto-generated dependency scan (created by /speckit.deprecate)
-    ├── plan.md             # Implementation plan (created by /speckit.plan after review)
-    └── tasks.md            # Phased tasks (created by /speckit.tasks after plan review)
+└── deprecate/
+    └── 001-edit-profile-form/
+        ├── deprecation.md      # Deprecation plan (created by /speckit.deprecate)
+        ├── dependencies.md     # Auto-generated dependency scan (created by /speckit.deprecate)
+        ├── plan.md             # Implementation plan (created by /speckit.plan after review)
+        └── tasks.md            # Phased tasks (created by /speckit.tasks after plan review)
 ```
 
 ## Command Usage

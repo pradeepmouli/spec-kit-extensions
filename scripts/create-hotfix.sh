@@ -52,11 +52,11 @@ mkdir -p "$SPECS_DIR"
 
 # Find highest hotfix number
 HIGHEST=0
-if [ -d "$SPECS_DIR" ]; then
-    for dir in "$SPECS_DIR"/hotfix-*; do
+if [ -d "$SPECS_DIR/hotfix" ]; then
+    for dir in "$SPECS_DIR"/hotfix/*/; do
         [ -d "$dir" ] || continue
         dirname=$(basename "$dir")
-        number=$(echo "$dirname" | sed 's/hotfix-//' | grep -o '^[0-9]\+' || echo "0")
+        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
         number=$((10#$number))
         if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
     done
@@ -78,8 +78,10 @@ else
     >&2 echo "[hotfix] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-# Create hotfix directory
-HOTFIX_DIR="$SPECS_DIR/${HOTFIX_ID}-${WORDS}"
+# Create hotfix directory under hotfix/ subdirectory
+HOTFIX_SUBDIR="$SPECS_DIR/hotfix"
+mkdir -p "$HOTFIX_SUBDIR"
+HOTFIX_DIR="$HOTFIX_SUBDIR/${HOTFIX_NUM}-${WORDS}"
 mkdir -p "$HOTFIX_DIR"
 
 # Copy templates
@@ -100,6 +102,9 @@ if [ -f "$POSTMORTEM_TEMPLATE" ]; then
 else
     echo "# Post-Mortem" > "$POSTMORTEM_FILE"
 fi
+
+# Create symlink from spec.md to hotfix.md
+ln -sf "hotfix.md" "$HOTFIX_DIR/spec.md"
 
 # Add incident start timestamp to hotfix file
 TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")

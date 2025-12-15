@@ -225,25 +225,29 @@ specs/
 │           ├── impact-analysis.md
 │           ├── plan.md                # Created by /speckit.plan
 │           └── tasks.md               # Created by /speckit.tasks
-├── bugfix-001-save-button/          # Standalone bugfix
-│   ├── bug-report.md
-│   ├── plan.md                        # Created by /speckit.plan
-│   └── tasks.md                       # Created by /speckit.tasks
-├── refactor-001-extract-service/    # Standalone refactor
-│   ├── refactor-spec.md
-│   ├── behavioral-snapshot.md
-│   ├── plan.md                        # Created by /speckit.plan
-│   └── tasks.md                       # Created by /speckit.tasks
-├── hotfix-001-connection-pool/      # Emergency hotfix
-│   ├── hotfix.md
-│   ├── post-mortem.md
-│   ├── plan.md                        # Created by /speckit.plan
-│   └── tasks.md                       # Created by /speckit.tasks
-└── deprecate-001-old-editor/        # Feature deprecation
-    ├── deprecation-plan.md
-    ├── dependency-analysis.md
-    ├── plan.md                          # Created by /speckit.plan
-    └── tasks.md                         # Created by /speckit.tasks
+├── bugfix/
+│   └── 001-save-button/              # Standalone bugfix
+│       ├── bug-report.md
+│       ├── plan.md                    # Created by /speckit.plan
+│       └── tasks.md                   # Created by /speckit.tasks
+├── refactor/
+│   └── 001-extract-service/          # Standalone refactor
+│       ├── refactor-spec.md
+│       ├── behavioral-snapshot.md
+│       ├── plan.md                    # Created by /speckit.plan
+│       └── tasks.md                   # Created by /speckit.tasks
+├── hotfix/
+│   └── 001-connection-pool/          # Emergency hotfix
+│       ├── hotfix.md
+│       ├── post-mortem.md
+│       ├── plan.md                    # Created by /speckit.plan
+│       └── tasks.md                   # Created by /speckit.tasks
+└── deprecate/
+    └── 001-old-editor/               # Feature deprecation
+        ├── deprecation-plan.md
+        ├── dependency-analysis.md
+        ├── plan.md                    # Created by /speckit.plan
+        └── tasks.md                   # Created by /speckit.tasks
 ```
 
 ## Next Steps

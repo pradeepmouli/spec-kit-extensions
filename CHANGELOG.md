@@ -39,11 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Patches `check_feature_branch()` to accept both standard and extension patterns
   - Standard pattern: `###-description` (e.g., `001-add-feature`)
   - Extension patterns:
-    - `bugfix-###-description` (e.g., `bugfix-001-fix-login`)
-    - `modify-###^###-description` (e.g., `modify-001^002-update-api`)
-    - `refactor-###-description` (e.g., `refactor-003-cleanup-utils`)
-    - `hotfix-###-description` (e.g., `hotfix-004-security-patch`)
-    - `deprecate-###-description` (e.g., `deprecate-005-remove-legacy`)
+    - `bugfix/###-description` (e.g., `bugfix/001-fix-login`)
+    - `modify/###^###-description` (e.g., `modify/001^002-update-api`)
+    - `refactor/###-description` (e.g., `refactor/003-cleanup-utils`)
+    - `hotfix/###-description` (e.g., `hotfix/004-security-patch`)
+    - `deprecate/###-description` (e.g., `deprecate/005-remove-legacy`)
   - Creates `.specify/scripts/bash/common.sh.backup` before patching
   - Gracefully handles already-patched files
   - Skips if `common.sh` doesn't exist (e.g., fresh installations)
@@ -263,14 +263,14 @@ Each workflow now creates files in phases:
 
 **Before** (v1.0.0):
 ```
-specs/bugfix-001/
+specs/bugfix/001/
 ├── bug-report.md
 └── tasks.md         # Created immediately
 ```
 
 **After** (v2.0.0):
 ```
-specs/bugfix-001/
+specs/bugfix/001/
 ├── bug-report.md    # Created by /speckit.bugfix
 ├── plan.md          # Created by /speckit.plan
 └── tasks.md         # Created by /speckit.tasks

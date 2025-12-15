@@ -62,11 +62,11 @@ mkdir -p "$SPECS_DIR"
 
 # Find highest bugfix number
 HIGHEST=0
-if [ -d "$SPECS_DIR" ]; then
-    for dir in "$SPECS_DIR"/bugfix-*; do
+if [ -d "$SPECS_DIR/bugfix" ]; then
+    for dir in "$SPECS_DIR"/bugfix/*/; do
         [ -d "$dir" ] || continue
         dirname=$(basename "$dir")
-        number=$(echo "$dirname" | sed 's/bugfix-//' | grep -o '^[0-9]\+' || echo "0")
+        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
         number=$((10#$number))
         if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
     done
@@ -88,8 +88,10 @@ else
     >&2 echo "[bugfix] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-# Create bug directory
-BUG_DIR="$SPECS_DIR/${BUG_ID}-${WORDS}"
+# Create bug directory under bugfix/ subdirectory
+BUGFIX_SUBDIR="$SPECS_DIR/bugfix"
+mkdir -p "$BUGFIX_SUBDIR"
+BUG_DIR="$BUGFIX_SUBDIR/${BUG_NUM}-${WORDS}"
 mkdir -p "$BUG_DIR"
 
 # Copy template
@@ -101,6 +103,9 @@ if [ -f "$BUGFIX_TEMPLATE" ]; then
 else
     echo "# Bug Report" > "$BUG_REPORT_FILE"
 fi
+
+# Create symlink from spec.md to bug-report.md
+ln -sf "bug-report.md" "$BUG_DIR/spec.md"
 
 # Set environment variable for current session
 export SPECIFY_BUGFIX="$BUG_ID"

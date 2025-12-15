@@ -157,7 +157,7 @@ def _github_auth_headers(cli_token: str | None = None) -> dict:
 def _parse_rate_limit_headers(headers: httpx.Headers) -> dict:
     """Extract and parse GitHub rate-limit headers."""
     info = {}
-    
+
     # Standard GitHub rate-limit headers
     if "X-RateLimit-Limit" in headers:
         info["limit"] = headers.get("X-RateLimit-Limit")
@@ -169,21 +169,21 @@ def _parse_rate_limit_headers(headers: httpx.Headers) -> dict:
             reset_time = datetime.fromtimestamp(reset_epoch, tz=timezone.utc)
             info["reset_epoch"] = reset_epoch
             info["reset_local"] = reset_time.astimezone()
-    
+
     # Retry-After header (for 429 responses)
     if "Retry-After" in headers:
         info["retry_after_seconds"] = headers.get("Retry-After")
-    
+
     return info
 
 
 def _format_rate_limit_error(status_code: int, headers: httpx.Headers, url: str) -> str:
     """Format a user-friendly error message with rate-limit information."""
     rate_info = _parse_rate_limit_headers(headers)
-    
+
     lines = [f"GitHub API returned status {status_code} for {url}"]
     lines.append("")
-    
+
     if rate_info:
         lines.append("[bold]Rate Limit Information:[/bold]")
         if "limit" in rate_info:
@@ -196,14 +196,14 @@ def _format_rate_limit_error(status_code: int, headers: httpx.Headers, url: str)
         if "retry_after_seconds" in rate_info:
             lines.append(f"  • Retry after: {rate_info['retry_after_seconds']} seconds")
         lines.append("")
-    
+
     # Add troubleshooting guidance
     lines.append("[bold]Troubleshooting Tips:[/bold]")
     lines.append("  • If you're on a shared CI or corporate environment, you may be rate-limited.")
     lines.append("  • Consider using a GitHub token via --github-token or the GH_TOKEN/GITHUB_TOKEN")
     lines.append("    environment variable to increase rate limits.")
     lines.append("  • Authenticated requests have a limit of 5,000/hour vs 60/hour for unauthenticated.")
-    
+
     return "\n".join(lines)
 
 
@@ -536,12 +536,12 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
                 timeout=30,
                 headers=_github_auth_headers(github_token),
             )
-            
+
             if response.status_code != 200:
                 error_msg = _format_rate_limit_error(response.status_code, response.headers, url)
                 console.print(Panel(error_msg, title="GitHub API Error", border_style="red"))
                 return None
-            
+
             try:
                 release_data = response.json()
             except ValueError as je:
@@ -561,7 +561,7 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
                 timeout=60,
                 headers=_github_auth_headers(github_token),
             )
-            
+
             if response.status_code != 200:
                 error_msg = _format_rate_limit_error(response.status_code, response.headers, zipball_url)
                 console.print(Panel(error_msg, title="Download Error", border_style="red"))
@@ -694,8 +694,15 @@ def install_agent_commands(
 
     for ext in extensions:
         # For now, we only have markdown files
-        source_file = source_commands / f"speckit.{ext}.md"
-        dest_file = commands_dir / f"speckit.{ext}.{file_ext or 'md'}"
+        source_file = source_commands / f"specify.{ext}.md"
+
+        # For Copilot, append .agent suffix to the filename
+        if agent == "copilot":
+            dest_filename = f"specify.{ext}.agent.{file_ext or 'md'}"
+        else:
+            dest_filename = f"specify.{ext}.{file_ext or 'md'}"
+
+        dest_file = commands_dir / dest_filename
 
         if source_file.exists():
             if not dry_run:
@@ -705,18 +712,18 @@ def install_agent_commands(
                 if agent == "copilot":
                     prompts_dir = repo_root / ".github" / "prompts"
                     prompts_dir.mkdir(parents=True, exist_ok=True)
-                    prompt_file = prompts_dir / f"speckit.{ext}.prompt.md"
+                    prompt_file = prompts_dir / f"specify.{ext}.prompt.md"
                     # Prompt file is just a pointer to the agent file
-                    prompt_content = f"---\nagent: speckit.{ext}\n---\n"
+                    prompt_content = f"---\nagent: specify.{ext}\n---\n"
                     prompt_file.write_text(prompt_content)
-                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
+                    console.print(f"[green]✓[/green] Installed /specify.{ext} agent and prompt")
                 else:
-                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
+                    console.print(f"[green]✓[/green] Installed /specify.{ext} command")
             else:
                 if agent == "copilot":
-                    console.print(f"[green]✓[/green] Installed /speckit.{ext} agent and prompt")
+                    console.print(f"[green]✓[/green] Installed /specify.{ext} agent and prompt")
                 else:
-                    console.print(f"[green]✓[/green] Installed /speckit.{ext} command")
+                    console.print(f"[green]✓[/green] Installed /specify.{ext} command")
         else:
             console.print(f"[yellow]⚠[/yellow] Command file for {ext} not found")
 
@@ -992,7 +999,7 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
     """Patch spec-kit's common.sh to support extension branch patterns
 
     Modifies check_feature_branch() to accept both standard spec-kit patterns (###-)
-    and extension patterns (bugfix-###-, modify-###^###-, refactor-###-, hotfix-###-, deprecate-###-)
+    and extension patterns (bugfix/###-, modify/###^###-, refactor/###-, hotfix/###-, deprecate/###-)
 
     Args:
         repo_root: Root directory of the repository
@@ -1010,29 +1017,14 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
         content = common_sh.read_text()
 
         # Check if already patched
-        if "# Extension branch patterns" in content:
+        if "check_feature_branch_old()" in content:
             console.print("[blue]ℹ[/blue] common.sh already patched for extensions")
             return
 
-        # Find the check_feature_branch function
-        original_pattern = '''check_feature_branch() {
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
-        return 0
-    fi
-
-    local branch
-    branch=$(git branch --show-current)
-
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
-        echo "Error: Not on a feature branch. Current branch: $branch"
-        echo "Feature branches must follow the pattern: ###-description"
-        echo "Example: 001-add-user-authentication"
-        exit 1
-    fi
-}'''
-
-        # New implementation that supports extension patterns
-        patched_pattern = '''check_feature_branch() {
+        # New function to append at the end
+        new_function = '''
+# Extended branch validation supporting spec-kit-extensions
+check_feature_branch() {
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
         return 0
     fi
@@ -1042,11 +1034,11 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
 
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
-        "^bugfix-[0-9]{3}-"
-        "^modify-[0-9]{3}\\^[0-9]{3}-"
-        "^refactor-[0-9]{3}-"
-        "^hotfix-[0-9]{3}-"
-        "^deprecate-[0-9]{3}-"
+        "^bugfix/[0-9]{3}-"
+        "^modify/[0-9]{3}\\^[0-9]{3}-"
+        "^refactor/[0-9]{3}-"
+        "^hotfix/[0-9]{3}-"
+        "^deprecate/[0-9]{3}-"
     )
 
     # Check extension patterns first
@@ -1064,28 +1056,38 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
     # No match - show helpful error
     echo "Error: Not on a feature branch. Current branch: $branch"
     echo "Feature branches must follow one of these patterns:"
-    echo "  Standard:  ###-description (e.g., 001-add-user-authentication)"
-    echo "  Bugfix:    bugfix-###-description"
-    echo "  Modify:    modify-###^###-description"
-    echo "  Refactor:  refactor-###-description"
-    echo "  Hotfix:    hotfix-###-description"
-    echo "  Deprecate: deprecate-###-description"
+    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)"
+    echo "  Bugfix:      bugfix/###-description"
+    echo "  Modify:      modify/###^###-description"
+    echo "  Refactor:    refactor/###-description"
+    echo "  Hotfix:      hotfix/###-description"
+    echo "  Deprecate:   deprecate/###-description"
     exit 1
 }'''
 
-        if original_pattern in content:
+        if "check_feature_branch()" in content:
             # Create backup
             backup_file = common_sh.with_suffix('.sh.backup')
             backup_file.write_text(content)
 
-            # Apply patch
-            patched_content = content.replace(original_pattern, patched_pattern)
+            # Rename original to check_feature_branch_old
+            patched_content = content.replace(
+                "check_feature_branch()",
+                "check_feature_branch_old()",
+                1  # Only replace the first occurrence (the function definition)
+            )
+
+            # Append new function to the end
+            patched_content += new_function
+
             common_sh.write_text(patched_content)
 
             console.print("[green]✓[/green] common.sh patched to support extension branch patterns")
+            console.print("  [dim]Original function renamed to check_feature_branch_old()[/dim]")
+            console.print("  [dim]New check_feature_branch() appended at end[/dim]")
             console.print(f"  [dim]Backup saved to: {backup_file}[/dim]")
         else:
-            console.print("[yellow]⚠[/yellow] check_feature_branch() function format has changed")
+            console.print("[yellow]⚠[/yellow] check_feature_branch() function not found")
             console.print("  [dim]Manual patching required[/dim]")
     else:
         console.print("  [dim]Would patch common.sh for extension branch support[/dim]")
