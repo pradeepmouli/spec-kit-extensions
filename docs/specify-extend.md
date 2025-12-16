@@ -131,6 +131,12 @@ specify-extend bugfix modify
 # Preview what would be installed
 specify-extend --dry-run --all
 
+# Install for multiple agents in the same repo (copy/generate)
+specify-extend --agents claude,copilot,cursor-agent --all
+
+# Opt-in: use symlinks for agent command files (advanced)
+specify-extend --agents claude,cursor-agent --all --link
+
 # Force Claude Code configuration even if not detected
 specify-extend --agent claude --all
 

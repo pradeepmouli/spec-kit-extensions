@@ -38,6 +38,16 @@ Any AI Agent Reads & Implements
 
 ## Setup by Agent
 
+All agents can be installed via `specify-extend`. By default it detects your configured agent, but you can also install for multiple agents in one repo:
+
+```bash
+# Install workflow templates + scripts + commands for multiple agents
+specify-extend --agents claude,copilot,cursor-agent --all
+
+# Opt-in (advanced): symlink agent command files instead of copying
+specify-extend --agents claude,cursor-agent --all --link
+```
+
 ### 1. Claude Code (Recommended)
 
 **Why choose**: Best integration, native slash commands, fully tested

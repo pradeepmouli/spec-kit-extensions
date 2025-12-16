@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 # Initialize Rich console
 console = Console()
@@ -658,6 +658,7 @@ def install_agent_commands(
     agent: str,
     extensions: List[str],
     dry_run: bool = False,
+    link: bool = False,
 ) -> None:
     """Install agent-specific command files"""
 
@@ -677,6 +678,12 @@ def install_agent_commands(
 
     if not folder:
         return
+
+    if link and os.name == "nt":
+        console.print(
+            "[yellow]⚠[/yellow] Symlink mode requested on Windows; falling back to copy"
+        )
+        link = False
 
     # Check if this agent needs TOML files (not yet supported)
     if file_ext == "toml":
@@ -706,9 +713,17 @@ def install_agent_commands(
 
         dest_file = commands_dir / dest_filename
 
+        def install_file(src: Path, dest: Path) -> None:
+            if link:
+                if dest.exists() or dest.is_symlink():
+                    dest.unlink()
+                dest.symlink_to(src)
+            else:
+                shutil.copy(src, dest)
+
         if source_file.exists():
             if not dry_run:
-                shutil.copy(source_file, dest_file)
+                install_file(source_file, dest_file)
 
                 # For GitHub Copilot, also create a prompt file that points to the agent
                 if agent == "copilot":
@@ -1173,6 +1188,22 @@ def main(
         "--agent",
         help="Force specific agent (claude, copilot, cursor-agent, etc.)",
     ),
+    agents: Optional[str] = typer.Option(
+        None,
+        "--agents",
+        help=(
+            "Install for multiple agents (comma-separated). "
+            "Example: --agents claude,copilot,cursor-agent"
+        ),
+    ),
+    link: bool = typer.Option(
+        False,
+        "--link",
+        help=(
+            "Opt-in: create symlinks for agent command files instead of copying. "
+            "May be less portable on Windows/ZIP releases."
+        ),
+    ),
     dry_run: bool = typer.Option(
         False,
         "--dry-run",
@@ -1260,20 +1291,43 @@ def main(
     if not validate_speckit_installation(repo_root):
         raise typer.Exit(1)
 
-    # Detect or use forced agent
-    if agent:
-        detected_agent = agent.value
-        console.print(f"[blue]ℹ[/blue] Using forced agent: {detected_agent}")
+    # Resolve target agents
+    resolved_agents: List[str]
+
+    if agent and agents:
+        console.print("[red]✗[/red] Use either --agent or --agents, not both", style="red bold")
+        raise typer.Exit(1)
+
+    if agents:
+        requested = [a.strip() for a in agents.split(",") if a.strip()]
+        if not requested:
+            console.print("[red]✗[/red] --agents provided but empty", style="red bold")
+            raise typer.Exit(1)
+        invalid = [a for a in requested if a not in AGENT_CONFIG]
+        if invalid:
+            console.print(
+                f"[red]✗[/red] Invalid agent(s): {', '.join(invalid)}",
+                style="red bold",
+            )
+            console.print(f"[dim]Available: {', '.join(sorted(AGENT_CONFIG.keys()))}[/dim]")
+            raise typer.Exit(1)
+        resolved_agents = requested
+        console.print(f"[blue]ℹ[/blue] Installing for agents: {', '.join(resolved_agents)}")
+    elif agent:
+        resolved_agents = [agent.value]
+        console.print(f"[blue]ℹ[/blue] Using forced agent: {resolved_agents[0]}")
     else:
         detected_agent = detect_agent(repo_root)
+        resolved_agents = [detected_agent]
         console.print(f"[blue]ℹ[/blue] Detected agent: {detected_agent}")
 
     # Dry run summary
     if dry_run:
         console.print("\n[bold yellow]DRY RUN - Would install:[/bold yellow]")
         console.print(f"  Repository: {repo_root}")
-        console.print(f"  Agent: {detected_agent}")
+        console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
+        console.print(f"  Link mode: {'symlink' if link else 'copy'}")
         raise typer.Exit(0)
 
     # Download latest release
@@ -1290,11 +1344,21 @@ def main(
 
         # Install files
         console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
-        console.print(f"[bold]Configured for:[/bold] {detected_agent}\n")
+        console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
         install_extension_files(repo_root, source_dir, extensions_to_install, dry_run)
-        install_agent_commands(repo_root, source_dir, detected_agent, extensions_to_install, dry_run)
-        update_constitution(repo_root, source_dir, detected_agent, dry_run, llm_enhance)
+        for target_agent in resolved_agents:
+            install_agent_commands(
+                repo_root,
+                source_dir,
+                target_agent,
+                extensions_to_install,
+                dry_run,
+                link=link,
+            )
+
+        # Constitution update is repo-level; use the first agent for formatting conventions
+        update_constitution(repo_root, source_dir, resolved_agents[0], dry_run, llm_enhance)
         patch_common_sh(repo_root, dry_run)
         patch_update_agent_context_sh(repo_root, dry_run)
 
@@ -1304,15 +1368,16 @@ def main(
     console.print("━" * 60 + "\n")
 
     console.print(f"[blue]ℹ[/blue] Installed extensions: {', '.join(extensions_to_install)}")
-    console.print(f"[blue]ℹ[/blue] Configured for: {detected_agent}\n")
+    console.print(f"[blue]ℹ[/blue] Configured for: {', '.join(resolved_agents)}\n")
 
     # Next steps
     console.print("[bold]Next steps:[/bold]")
-    agent_info = AGENT_CONFIG.get(detected_agent, AGENT_CONFIG["manual"])
+    primary_agent = resolved_agents[0]
+    agent_info = AGENT_CONFIG.get(primary_agent, AGENT_CONFIG["manual"])
     agent_name = agent_info["name"]
 
-    if llm_enhance and detected_agent != "manual":
-        if detected_agent == "copilot":
+    if llm_enhance and primary_agent != "manual":
+        if primary_agent == "copilot":
             console.print("  [bold yellow]1. Reference the constitution enhancement prompt[/bold yellow]")
             console.print("     [dim]In Copilot Chat, reference .github/prompts/speckit.enhance-constitution.md[/dim]")
             console.print("     [dim]This uses LLM intelligence to merge quality gates into your existing constitution[/dim]")
@@ -1323,14 +1388,14 @@ def main(
             console.print("     [dim]The command will self-destruct after use[/dim]")
         console.print("  2. Try a workflow command after constitution is updated")
         console.print("  3. Read the docs: .specify/extensions/README.md")
-    elif detected_agent == "claude":
+    elif primary_agent == "claude":
         console.print("  1. Try a command: /speckit.bugfix \"test bug\"")
         console.print("  2. Read the docs: .specify/extensions/README.md")
-    elif detected_agent == "copilot":
+    elif primary_agent == "copilot":
         console.print("  1. Reload VS Code or restart Copilot")
         console.print("  2. Use in Copilot Chat: @workspace /speckit.bugfix \"test bug\"")
         console.print("  3. Read the docs: .specify/extensions/README.md")
-    elif detected_agent == "cursor-agent":
+    elif primary_agent == "cursor-agent":
         console.print("  1. Ask Cursor: /speckit.bugfix \"test bug\"")
         console.print("  2. Read the docs: .specify/extensions/README.md")
     else:

@@ -7,11 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.5
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.6
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.3.6] - 2025-12-16
+
+#### \ud83d\ude80 Added
+
+- **Multi-Agent Installation** - Install commands for multiple AI agents in a single repository
+  - New `--agents` flag accepts a comma-separated list (e.g. `--agents claude,copilot,cursor-agent`)
+  - Keeps `--agent` for backward compatibility (mutually exclusive with `--agents`)
+- **Symlink Mode (Opt-in)** - New `--link` flag to symlink agent command files instead of copying
+  - Useful for monorepos or local development workflows
+  - Falls back to copying on Windows
+
+#### \ud83d\udce6 Components
+
+- **CLI Tool Version**: v1.3.6
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [1.3.5] - 2025-12-16
 

@@ -28,6 +28,12 @@ specify init .
 pip install specify-extend
 specify-extend --all
 
+# Optional: install command files for multiple agents in the same repo
+specify-extend --agents claude,copilot,cursor-agent --all
+
+# Optional (advanced): use symlinks instead of copying agent command files
+specify-extend --agents claude,cursor-agent --all --link
+
 # Method B: Use with uvx (no installation)
 uvx specify-extend --all
 
