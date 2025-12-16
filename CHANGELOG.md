@@ -7,11 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.4
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.5
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.3.5] - 2025-12-16
+
+#### 🔧 Changed
+
+- **Spec-kit Compatibility** - Patch spec-kit's `scripts/bash/update-agent-context.sh` to keep Copilot instructions compatible while using `AGENTS.md` as canonical guidance
+  - Rewrites Copilot target file to `.github/copilot-instructions.md`
+  - Keeps `AGENTS.md` as the primary instructions source for Copilot coding agent
+  - Avoids divergence between spec-kit context updates and spec-kit-extensions workflow command files
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.5
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [1.3.4] - 2025-12-15
 

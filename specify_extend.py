@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 # Initialize Rich console
 console = Console()
@@ -1109,6 +1109,54 @@ check_feature_branch() {
         console.print("  [dim]Would patch common.sh for extension branch support[/dim]")
 
 
+def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> None:
+    """Patch spec-kit's update-agent-context.sh to prefer AGENTS.md via a compatibility shim.
+
+    Spec-kit ships a script that generates/updates agent context files from plan.md.
+    Today it may write Copilot instructions to `.github/agents/copilot-instructions.md`.
+
+    With new Copilot guidance, `AGENTS.md` can be used as the canonical repo instructions.
+    For compatibility with other Copilot surfaces, we keep a `.github/copilot-instructions.md`
+    shim that points to `AGENTS.md`.
+
+    This patch rewrites the COPILOT file target to `.github/copilot-instructions.md`.
+    (It does not replace/rename spec-kit's script; it only adjusts where it writes.)
+    """
+
+    script_path = repo_root / "scripts" / "bash" / "update-agent-context.sh"
+    if not script_path.exists():
+        return
+
+    console.print("[blue]ℹ[/blue] Patching update-agent-context.sh for AGENTS.md-first Copilot instructions...")
+
+    content = script_path.read_text()
+
+    # If it already targets the shim location, we're done.
+    if 'COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"' in content:
+        console.print("[blue]ℹ[/blue] update-agent-context.sh already patched")
+        return
+
+    # Only patch if we find the known upstream assignment.
+    old = 'COPILOT_FILE="$REPO_ROOT/.github/agents/copilot-instructions.md"'
+    new = 'COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"'
+
+    if old not in content:
+        console.print("[yellow]⚠[/yellow] update-agent-context.sh COPILOT_FILE pattern not found; skipping patch")
+        return
+
+    patched = content.replace(old, new, 1)
+
+    if not dry_run:
+        backup_file = script_path.with_suffix(script_path.suffix + ".backup")
+        backup_file.write_text(content)
+        script_path.write_text(patched)
+        console.print("[green]✓[/green] update-agent-context.sh patched")
+        console.print("  [dim]Copilot instructions now written to .github/copilot-instructions.md[/dim]")
+        console.print("  [dim]Backup saved to: %s[/dim]" % backup_file)
+    else:
+        console.print("  [dim]Would patch update-agent-context.sh COPILOT_FILE path[/dim]")
+
+
 @app.command()
 def main(
     extensions: List[str] = typer.Argument(
@@ -1248,6 +1296,7 @@ def main(
         install_agent_commands(repo_root, source_dir, detected_agent, extensions_to_install, dry_run)
         update_constitution(repo_root, source_dir, detected_agent, dry_run, llm_enhance)
         patch_common_sh(repo_root, dry_run)
+        patch_update_agent_context_sh(repo_root, dry_run)
 
     # Success message
     console.print("\n" + "━" * 60)
