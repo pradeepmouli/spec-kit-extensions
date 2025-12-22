@@ -8,6 +8,7 @@ The extension system provides additional workflow types beyond the core `/specif
 - **`/specify`** - Create new features from scratch (greenfield development)
 
 ### Extension Workflows
+- **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Bug remediation with regression-test-first approach
 - **`/speckit.modify`** - Extend or modify existing features with impact analysis
 - **`/speckit.refactor`** - Improve code quality while preserving behavior with metrics
@@ -22,6 +23,7 @@ Extensions are enabled by default in this project. To disable an extension, edit
 
 | Scenario | Use This Workflow |
 |----------|------------------|
+| Establishing project context | `/speckit.baseline` |
 | Building new feature | `/specify` |
 | Fixing a bug | `/speckit.bugfix` |
 | Adding fields to existing feature | `/speckit.modify` |

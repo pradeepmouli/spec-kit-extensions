@@ -10,6 +10,7 @@
 
 **spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 7 additional workflows for the remaining ~75% of software development work:
 
+- **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
@@ -38,6 +39,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | Activity | Without Extensions | With Extensions |
 |----------|-------------------|-----------------|
 | **New Feature** | ✅ `/speckit.specify` workflow | ✅ Same |
+| **Project Baseline** | ❌ Ad-hoc | ✅ `/speckit.baseline` with comprehensive docs |
 | **Bug Fix** | ❌ Ad-hoc | ✅ `/speckit.bugfix` with regression tests |
 | **Modify Feature** | ❌ Ad-hoc | ✅ `/speckit.modify` with impact analysis |
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
@@ -162,6 +164,9 @@ See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instruct
 **What are you doing?**
 
 ```
+Starting with spec-kit?
+└─ Use `/speckit.baseline` to establish project context
+
 Building something new?
 └─ Use `/speckit.specify "description"`
 
@@ -238,6 +243,7 @@ Reviewing completed work?
 | Workflow | Command | Key Feature | Test Strategy |
 |----------|---------|-------------|---------------|
 | **Feature** | `/speckit.specify "..."` | Full spec + design | TDD (test before code) |
+| **Baseline** | `/speckit.baseline` | Context tracking | No tests (doc only) |
 | **Bugfix** | `/speckit.bugfix "..."` | Regression test | Test before fix |
 | **Modify** | `/speckit.modify 014 "..."` | Impact analysis | Update affected tests |
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
@@ -302,22 +308,27 @@ your-project/
 │   │   ├── QUICKSTART.md
 │   │   ├── enabled.conf         # Enable/disable workflows
 │   │   └── workflows/
+│   │       ├── baseline/
 │   │       ├── bugfix/
 │   │       ├── modify/
 │   │       ├── refactor/
 │   │       ├── hotfix/
 │   │       ├── deprecate/
+│   │       ├── cleanup/
 │   │       └── review/
 │   ├── scripts/bash/
-│   │   ├── create-bugfix.sh     # Extension scripts
+│   │   ├── create-baseline.sh    # Extension scripts
+│   │   ├── create-bugfix.sh
 │   │   ├── create-modification.sh
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
 │   │   ├── create-deprecate.sh
+│   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
+    ├── baseline.md
     ├── bugfix.md
     ├── modify.md
     ├── refactor.md
@@ -328,7 +339,7 @@ your-project/
 
 ## FAQ
 
-### Do I need to use all 6 workflows?
+### Do I need to use all 7 workflows?
 
 No! Enable only what you need via `.specify/extensions/enabled.conf`. Common combinations:
 - **Minimal**: Just `/bugfix` (most teams need this)

@@ -8,6 +8,7 @@
 5. Implementation via `/implement` following task order
 
 ### Extension Workflows
+- **Baseline**: `/baseline` → baseline-spec.md + current-state.md establishing project context
 - **Bugfix**: `/bugfix "<description>"` → bug-report.md + tasks.md with regression test requirement
 - **Modification**: `/modify <feature_num> "<description>"` → modification.md + impact analysis + tasks.md
 - **Refactor**: `/refactor "<description>"` → refactor.md + baseline metrics + incremental tasks.md
@@ -17,6 +18,7 @@
 ### Workflow Selection
 Development activities SHALL use the appropriate workflow type based on the nature of the work. Each workflow enforces specific quality gates and documentation requirements tailored to its purpose:
 
+- **Baseline** (`/baseline`): Project context establishment - requires comprehensive documentation of existing architecture and change tracking
 - **Feature Development** (`/specify`): New functionality - requires full specification, planning, and TDD approach
 - **Bug Fixes** (`/bugfix`): Defect remediation - requires regression test BEFORE applying fix
 - **Modifications** (`/modify`): Changes to existing features - requires impact analysis and backward compatibility assessment
@@ -27,6 +29,12 @@ Development activities SHALL use the appropriate workflow type based on the natu
 The wrong workflow SHALL NOT be used - features must not bypass specification, bugs must not skip regression tests, and refactorings must not alter behavior.
 
 ### Quality Gates by Workflow
+
+**Baseline**:
+- Comprehensive project analysis MUST be performed
+- All major components MUST be documented in baseline-spec.md
+- Current state MUST enumerate all changes by workflow type
+- Architecture and technology stack MUST be accurately captured
 
 **Feature Development**:
 - Specification MUST be complete before planning

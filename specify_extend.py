@@ -60,7 +60,7 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
+AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
@@ -415,6 +415,7 @@ def detect_workflow_selection_section(content: str) -> bool:
     # Look for workflow command patterns in their expected context
     # Match them as list items, in tables, or in backticks
     workflow_patterns = [
+        r'`/baseline[^`]*`',
         r'`/bugfix[^`]*`',
         r'`/modify[^`]*`',
         r'`/refactor[^`]*`',
@@ -434,7 +435,7 @@ def detect_workflow_selection_section(content: str) -> bool:
         matches = re.findall(pattern, content, re.MULTILINE)
         if matches:
             # Extract which workflow this is
-            workflow_name = re.search(r'/(bugfix|modify|refactor|hotfix|deprecate)', pattern)
+            workflow_name = re.search(r'/(baseline|bugfix|modify|refactor|hotfix|deprecate)', pattern)
             if workflow_name:
                 workflow_commands_found.add(workflow_name.group(1))
     has_workflows = len(workflow_commands_found)
@@ -1246,11 +1247,13 @@ def main(
         console.print("\n[bold]Available Extensions:[/bold]\n")
 
         extension_info = {
+            "baseline": ("Establish project baseline and track all changes", "Document project comprehensively"),
             "bugfix": ("Bug remediation with regression-test-first approach", "Write regression test BEFORE fix"),
             "modify": ("Modify existing features with automatic impact analysis", "Review impact analysis before changes"),
             "refactor": ("Improve code quality while preserving behavior", "Tests pass after EVERY incremental change"),
             "hotfix": ("Emergency production fixes with expedited process", "Post-mortem required within 48 hours"),
             "deprecate": ("Planned feature sunset with 3-phase rollout", "Follow 3-phase sunset process"),
+            "cleanup": ("Validate and reorganize spec-kit artifacts", "Maintain consistent structure"),
         }
 
         for ext, (desc, gate) in extension_info.items():
