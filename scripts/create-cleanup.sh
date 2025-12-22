@@ -88,12 +88,16 @@ fi
 # Array to store issues found
 declare -a ISSUES=()
 declare -a ACTIONS=()
+HAS_ERRORS=false
 
 # Function to add an issue
 add_issue() {
     local severity="$1"
     local message="$2"
     ISSUES+=("[$severity] $message")
+    if [[ "$severity" == "ERROR" ]]; then
+        HAS_ERRORS=true
+    fi
 }
 
 # Function to add an action
@@ -124,6 +128,11 @@ for entry in "$SPECS_DIR"/*; do
         continue
     fi
     
+    # Explicitly skip cleanup directory
+    if [[ "$dirname" == "cleanup" ]]; then
+        continue
+    fi
+    
     # Check if it's a numbered directory (001-*, 002-*, etc.)
     if [[ "$dirname" =~ ^[0-9]{3}- ]]; then
         add_issue "WARNING" "Numbered directory found directly under specs/: $dirname (should be under a workflow type)"
@@ -141,6 +150,7 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
     # Collect all numbered directories
     declare -a numbers=()
     declare -A dir_map
+    declare -A dup_check
     
     for dir in "$workflow_dir"/*/; do
         [ -d "$dir" ] || continue
@@ -150,8 +160,15 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
         if [[ "$dirname" =~ ^([0-9]{3})- ]]; then
             number="${BASH_REMATCH[1]}"
             number_int=$((10#$number))
-            numbers+=($number_int)
-            dir_map[$number_int]="$dirname"
+            
+            # Check for duplicates before adding
+            if [[ -n "${dup_check[$number_int]}" ]]; then
+                add_issue "ERROR" "Duplicate number in $workflow_type/: $(printf "%03d" $number_int) (found in ${dup_check[$number_int]} and $dirname)"
+            else
+                numbers+=($number_int)
+                dir_map[$number_int]="$dirname"
+                dup_check[$number_int]="$dirname"
+            fi
         else
             add_issue "ERROR" "Invalid directory name in $workflow_type/: $dirname (should start with 3-digit number)"
         fi
@@ -185,49 +202,54 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
     if $needs_renumber; then
         add_issue "INFO" "Non-sequential numbering in $workflow_type/ (gaps detected)"
         if $AUTO_FIX; then
-            add_action "Renumber $workflow_type/ directories to be sequential"
-            
-            # Perform renumbering if not dry-run
-            if ! $DRY_RUN; then
-                # Create temp directory for safe renaming
-                temp_dir=$(mktemp -d "$workflow_dir/.tmp.XXXXXX")
+            # Don't auto-fix if there are ERROR-level issues (like duplicates)
+            if $HAS_ERRORS; then
+                add_action "Cannot auto-fix $workflow_type/: resolve ERROR-level issues first (e.g., duplicates)"
+            else
+                add_action "Renumber $workflow_type/ directories to be sequential"
                 
-                # Move all numbered directories to temp with new numbers
-                counter=1
-                for num in "${sorted_numbers[@]}"; do
-                    old_dir="$workflow_dir/${dir_map[$num]}"
-                    new_num=$(printf "%03d" $counter)
+                # Perform renumbering if not dry-run
+                if ! $DRY_RUN; then
+                    # Create temp directory for safe renaming
+                    temp_dir=$(mktemp -d "$workflow_dir/.tmp.XXXXXX")
                     
-                    # Extract suffix (everything after the number and dash)
-                    old_name="${dir_map[$num]}"
-                    suffix="${old_name#*-}"
-                    new_name="${new_num}-${suffix}"
+                    # Move all numbered directories to temp with new numbers
+                    counter=1
+                    for num in "${sorted_numbers[@]}"; do
+                        old_dir="$workflow_dir/${dir_map[$num]}"
+                        new_num=$(printf "%03d" $counter)
+                        
+                        # Extract suffix (everything after the number and dash)
+                        old_name="${dir_map[$num]}"
+                        suffix="${old_name#*-}"
+                        new_name="${new_num}-${suffix}"
+                        
+                        mv "$old_dir" "$temp_dir/$new_name"
+                        counter=$((counter + 1))
+                    done
                     
-                    mv "$old_dir" "$temp_dir/$new_name"
-                    counter=$((counter + 1))
-                done
-                
-                # Move back from temp to workflow directory
-                shopt -s nullglob
-                move_error=false
-                for item in "$temp_dir"/*; do
-                    if ! mv "$item" "$workflow_dir/"; then
+                    # Move back from temp to workflow directory
+                    shopt -s nullglob
+                    move_error=false
+                    for item in "$temp_dir"/*; do
+                        if ! mv "$item" "$workflow_dir/"; then
+                            move_error=true
+                        fi
+                    done
+                    shopt -u nullglob
+                    
+                    if ! rmdir "$temp_dir"; then
+                        echo "Error: Failed to remove temporary directory '$temp_dir'" >&2
                         move_error=true
                     fi
-                done
-                shopt -u nullglob
-                
-                if ! rmdir "$temp_dir"; then
-                    echo "Error: Failed to remove temporary directory '$temp_dir'" >&2
-                    move_error=true
-                }
-                
-                if $move_error; then
-                    echo "Error: One or more operations failed while renumbering '$workflow_type/' directories." >&2
-                    exit 1
+                    
+                    if $move_error; then
+                        echo "Error: One or more operations failed while renumbering '$workflow_type/' directories." >&2
+                        exit 1
+                    fi
+                    
+                    add_action "✓ Renumbered $workflow_type/ directories"
                 fi
-                
-                add_action "✓ Renumbered $workflow_type/ directories"
             fi
         else
             add_action "Run with --auto-fix to renumber $workflow_type/ directories sequentially"
@@ -267,80 +289,6 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
     done
 done
 
-# Generate report
-CLEANUP_DIR="$SPECS_DIR/cleanup"
-mkdir -p "$CLEANUP_DIR"
-
-# Find highest cleanup number
-HIGHEST=0
-for dir in "$CLEANUP_DIR"/*/; do
-    [ -d "$dir" ] || continue
-    dirname=$(basename "$dir")
-    number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
-    number=$((10#$number))
-    if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
-done
-
-NEXT=$((HIGHEST + 1))
-CLEANUP_NUM=$(printf "%03d" "$NEXT")
-
-# Create cleanup report directory
-REPORT_DIR="$CLEANUP_DIR/${CLEANUP_NUM}-cleanup-report"
-mkdir -p "$REPORT_DIR"
-
-# Write report
-REPORT_FILE="$REPORT_DIR/cleanup-report.md"
-cat > "$REPORT_FILE" << EOF
-# Cleanup Report
-
-**Cleanup ID**: cleanup-${CLEANUP_NUM}
-**Date**: $(date +%Y-%m-%d)
-**Reason**: $CLEANUP_REASON
-
-## Summary
-
-Total issues found: ${#ISSUES[@]}
-Actions taken/suggested: ${#ACTIONS[@]}
-
-## Issues Found
-
-EOF
-
-if [ ${#ISSUES[@]} -eq 0 ]; then
-    echo "✓ No issues found - spec structure is valid" >> "$REPORT_FILE"
-else
-    for issue in "${ISSUES[@]}"; do
-        echo "- $issue" >> "$REPORT_FILE"
-    done
-fi
-
-cat >> "$REPORT_FILE" << EOF
-
-## Actions
-
-EOF
-
-if [ ${#ACTIONS[@]} -eq 0 ]; then
-    echo "✓ No actions needed" >> "$REPORT_FILE"
-else
-    for action in "${ACTIONS[@]}"; do
-        echo "- $action" >> "$REPORT_FILE"
-    done
-fi
-
-cat >> "$REPORT_FILE" << EOF
-
-## Validation Checks Performed
-
-- ✓ Sequential numbering validation
-- ✓ Directory structure validation
-- ✓ Required files presence check
-- ✓ Duplicate number detection
-- ✓ Gap detection in numbering
-
-**Note**: This cleanup script only validates and reorganizes documentation in the specs/ directory. Code files are never moved or modified.
-EOF
-
 # Output results
 if $JSON_MODE; then
     # Build JSON array of issues
@@ -352,8 +300,12 @@ if $JSON_MODE; then
         else
             issues_json+=","
         fi
-        # Escape quotes in issue message
-        escaped_issue="${issue//\"/\\\"}"
+        # Properly escape JSON special characters (backslash first, then quotes)
+        escaped_issue="${issue//\\/\\\\}"
+        escaped_issue="${escaped_issue//\"/\\\"}"
+        escaped_issue="${escaped_issue//$'\n'/\\n}"
+        escaped_issue="${escaped_issue//$'\r'/\\r}"
+        escaped_issue="${escaped_issue//$'\t'/\\t}"
         issues_json+="\"$escaped_issue\""
     done
     issues_json+="]"
@@ -367,8 +319,12 @@ if $JSON_MODE; then
         else
             actions_json+=","
         fi
-        # Escape quotes in action message
-        escaped_action="${action//\"/\\\"}"
+        # Properly escape JSON special characters (backslash first, then quotes)
+        escaped_action="${action//\\/\\\\}"
+        escaped_action="${escaped_action//\"/\\\"}"
+        escaped_action="${escaped_action//$'\n'/\\n}"
+        escaped_action="${escaped_action//$'\r'/\\r}"
+        escaped_action="${escaped_action//$'\t'/\\t}"
         actions_json+="\"$escaped_action\""
     done
     actions_json+="]"
@@ -381,8 +337,8 @@ if $JSON_MODE; then
         message="Found ${#ISSUES[@]} issue(s)"
     fi
     
-    printf '{"status":"%s","message":"%s","issues":%s,"actions":%s,"report_file":"%s","cleanup_num":"%s"}\n' \
-        "$status" "$message" "$issues_json" "$actions_json" "$REPORT_FILE" "$CLEANUP_NUM"
+    printf '{"status":"%s","message":"%s","issues":%s,"actions":%s}\n' \
+        "$status" "$message" "$issues_json" "$actions_json"
 else
     echo ""
     echo "═══════════════════════════════════════════════════════════════"
@@ -414,9 +370,6 @@ else
         done
         echo ""
     fi
-    
-    echo "Report saved to: $REPORT_FILE"
-    echo ""
     
     if $DRY_RUN; then
         echo "💡 This was a dry run. Run without --dry-run to apply changes."

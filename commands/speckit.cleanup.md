@@ -37,7 +37,7 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    .specify/scripts/bash/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
    ```
 
-   **For validation and report only:**
+   **For validation only:**
    ```bash
    .specify/scripts/bash/create-cleanup.sh --json "$ARGUMENTS"
    ```
@@ -47,8 +47,6 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    - `message`: Summary message
    - `issues`: Array of issues found (with severity)
    - `actions`: Array of actions taken or suggested
-   - `report_file`: Path to detailed cleanup report
-   - `cleanup_num`: Cleanup run number
 
 4. **Present the results** to the user:
 
@@ -57,8 +55,6 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    ✅ Spec structure validation complete
 
    No issues found - all spec-kit artifacts are properly organized!
-
-   📄 **Report**: [report_file]
    ```
 
    If status is "issues_found":
@@ -71,10 +67,8 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    **Actions [taken/suggested]: [count]**
    [List actions from JSON]
 
-   📄 **Detailed Report**: [report_file]
-
    💡 **Next Steps:**
-   - Review the issues and actions in the report
+   - Review the issues and actions
    - If this was a dry-run, run again with --auto-fix to apply changes
    - Commit the cleanup changes separately from feature work
    ```

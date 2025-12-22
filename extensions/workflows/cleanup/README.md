@@ -44,29 +44,26 @@ With `--auto-fix` flag, the script can:
 
 **Important**: Auto-fix only affects directory names and organization in `specs/`. Code files are never moved or modified.
 
-### 4. Report Generation
-Creates a detailed report in `specs/cleanup/NNN-cleanup-report/` documenting:
-- All issues found
+### 4. Output
+Provides validation results with:
+- All issues found (with severity levels)
 - Actions taken or suggested
-- Validation checks performed
-- Timestamp and reason for cleanup
+- Summary of validation checks performed
+- JSON output mode available for programmatic use
 
 ## Quality Gates
 
 - ✅ Only documentation in `specs/` directory is affected
 - ✅ Code files are never moved or modified
 - ✅ Original directory suffixes are preserved during renaming
-- ✅ Changes are logged in a cleanup report
+- ✅ Output shows all issues and actions clearly
 - ✅ Dry-run mode available to preview changes
 
-## Files Created
+## Output Only
 
-```
-specs/
-└── cleanup/
-    └── NNN-cleanup-report/
-        └── cleanup-report.md    # Detailed report of validation and actions
-```
+The cleanup workflow **validates** and **reorganizes** but does not create any files or directories. It only:
+- Outputs validation results to stdout (or JSON)
+- Renames/renumbers existing directories when using `--auto-fix`
 
 ## Command Usage
 
@@ -108,7 +105,7 @@ Options:
 Result:
 - Scans all spec directories
 - Reports any organizational issues
-- Creates cleanup report
+- Outputs validation results
 - Suggests fixes if issues found
 
 ### Example 2: Fix After Merge
@@ -149,38 +146,42 @@ specs/bugfix/
 /speckit.cleanup --auto-fix "monthly maintenance"
 ```
 
-## Cleanup Report Example
+## Cleanup Output Example
 
-```markdown
-# Cleanup Report
+```
+═══════════════════════════════════════════════════════════════
+  Spec-Kit Cleanup Report
+═══════════════════════════════════════════════════════════════
 
-**Cleanup ID**: cleanup-001
-**Date**: 2024-01-15
-**Reason**: Fix numbering after merge
+Issues found: 3
 
-## Summary
+  [ERROR] Duplicate number in bugfix/: 003
+  [INFO] Non-sequential numbering in bugfix/ (gaps detected)
+  [WARNING] Missing spec file in 004-form-validation
 
-Total issues found: 3
-Actions taken/suggested: 2
+Actions suggested:
 
-## Issues Found
+  Cannot auto-fix bugfix/: resolve ERROR-level issues first (e.g., duplicates)
+  Review and verify 004-form-validation has required files
 
-- [ERROR] Duplicate number in bugfix/: 003
-- [INFO] Non-sequential numbering in bugfix/ (gaps detected)
-- [WARNING] Missing spec file in 004-form-validation
+💡 Run with --auto-fix to automatically fix numbering issues.
+```
 
-## Actions
-
-- ✓ Renumbered bugfix/ directories
-- Review and verify 004-form-validation has required files
-
-## Validation Checks Performed
-
-- ✓ Sequential numbering validation
-- ✓ Directory structure validation
-- ✓ Required files presence check
-- ✓ Duplicate number detection
-- ✓ Gap detection in numbering
+**JSON output example:**
+```json
+{
+  "status": "issues_found",
+  "message": "Found 3 issue(s)",
+  "issues": [
+    "[ERROR] Duplicate number in bugfix/: 003",
+    "[INFO] Non-sequential numbering in bugfix/ (gaps detected)",
+    "[WARNING] Missing spec file in 004-form-validation"
+  ],
+  "actions": [
+    "Cannot auto-fix bugfix/: resolve ERROR-level issues first (e.g., duplicates)",
+    "Review and verify 004-form-validation has required files"
+  ]
+}
 ```
 
 ## Workflow Types Validated
@@ -211,7 +212,7 @@ The cleanup script validates these workflow subdirectories:
 
 1. **Always dry-run first**: Use `--dry-run` to preview changes
 2. **Document reason**: Provide meaningful reason for cleanup runs
-3. **Review reports**: Check cleanup reports to understand what changed
+3. **Review output**: Check validation output to understand what changed
 4. **Backup first**: Cleanup is safe, but backups never hurt
 5. **Commit separately**: Commit cleanup changes separately from feature work
 
@@ -251,7 +252,7 @@ This workflow upholds:
 ### What Cleanup WILL Do:
 - ✅ Rename directories in `specs/` to fix numbering
 - ✅ Report organizational issues
-- ✅ Generate cleanup reports
+- ✅ Output validation results
 - ✅ Validate directory structure
 
 ### What Cleanup WILL NOT Do:
