@@ -2,19 +2,20 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**5 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**6 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 5 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 6 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
 - **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
+- **`/speckit.review`** - Review completed work and validate against specifications
 
 ## Why Use These Extensions?
 
@@ -40,6 +41,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
 | **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
+| **Code Review** | ❌ Ad-hoc | ✅ `/speckit.review` with structured validation |
 
 ## Real-World Validation
 
@@ -174,6 +176,9 @@ Changing existing feature?
 
 Removing a feature?
 └─ Use `/speckit.deprecate 014 "deprecation reason"`
+
+Reviewing completed work?
+└─ Use `/speckit.review [task-id]`
 ```
 
 ### Example: Fix a Bug
@@ -235,6 +240,7 @@ Removing a feature?
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
 | **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
 | **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
+| **Review** | `/speckit.review [T001]` | Structured validation | Verify all tests pass |
 
 ## Documentation
 
@@ -298,13 +304,15 @@ your-project/
 │   │       ├── modify/
 │   │       ├── refactor/
 │   │       ├── hotfix/
-│   │       └── deprecate/
+│   │       ├── deprecate/
+│   │       └── review/
 │   ├── scripts/bash/
 │   │   ├── create-bugfix.sh     # Extension scripts
 │   │   ├── create-modification.sh
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
-│   │   └── create-deprecate.sh
+│   │   ├── create-deprecate.sh
+│   │   └── mark-task-status.sh
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
@@ -312,7 +320,8 @@ your-project/
     ├── modify.md
     ├── refactor.md
     ├── hotfix.md
-    └── deprecate.md
+    ├── deprecate.md
+    └── review.md
 ```
 
 ## FAQ
