@@ -2,21 +2,21 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**6 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**7 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 6 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 7 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
 - **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
-- **`/speckit.cleanup`** - Validate and reorganize spec-kit artifacts structure
-
+- **`/speckit.cleanup`** - Clean up codebase with automated scripts
+- **`/speckit.review`** - Review completed work with structured feedback
 ## Why Use These Extensions?
 
 ### The Problem
@@ -28,6 +28,8 @@ With vanilla spec-kit, you get structure for ~25% of your work (new features), b
 - **Code quality**: No metrics → unclear if refactor helped
 - **Emergencies**: No process → panic-driven development
 - **Feature removal**: No plan → angry users
+- **Codebase Cleanup**: No automation → manual effort
+- **Work Review**: No structure → inconsistent feedback
 
 ### The Solution
 
@@ -41,8 +43,9 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
 | **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
-| **Organize Specs** | ❌ Manual | ✅ `/speckit.cleanup` with validation |
-
+| **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
+| **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
+### Benefits
 ## Real-World Validation
 
 These workflows are **production-tested** on a React Router v7 Twitter clone ("Tweeter") with:
@@ -176,6 +179,9 @@ Changing existing feature?
 
 Removing a feature?
 └─ Use `/speckit.deprecate 014 "deprecation reason"`
+
+Reviewing completed work?
+└─ Use `/speckit.review [task-id]`
 ```
 
 ### Example: Fix a Bug
@@ -237,9 +243,8 @@ Removing a feature?
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
 | **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
 | **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
-| **Cleanup** | `/speckit.cleanup "..."` | Validate structure | No tests (doc only) |
-
-## Documentation
+| **Review** | `/speckit.review [task-id]` | Structured feedback | Verify tests |
+| **Cleanup** | `/speckit.cleanup` | Automated scripts | Manual verification |
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
 - **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents
@@ -301,13 +306,15 @@ your-project/
 │   │       ├── modify/
 │   │       ├── refactor/
 │   │       ├── hotfix/
-│   │       └── deprecate/
+│   │       ├── deprecate/
+│   │       └── review/
 │   ├── scripts/bash/
 │   │   ├── create-bugfix.sh     # Extension scripts
 │   │   ├── create-modification.sh
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
-│   │   └── create-deprecate.sh
+│   │   ├── create-deprecate.sh
+│   │   └── mark-task-status.sh
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
@@ -315,7 +322,8 @@ your-project/
     ├── modify.md
     ├── refactor.md
     ├── hotfix.md
-    └── deprecate.md
+    ├── deprecate.md
+    └── review.md
 ```
 
 ## FAQ
