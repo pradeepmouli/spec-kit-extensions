@@ -371,7 +371,193 @@ This structure with review checkpoints makes it easy to:
 
 ---
 
-## Example 4: Workflow Comparison Table
+## Example 4: `/speckit.review` - Validating Completed Implementation
+
+### The Context
+
+After implementing the profile form crash bugfix (Example 1), we need to validate the implementation before merging.
+
+### The Workflow
+
+```bash
+# After implementing the bugfix tasks
+/speckit.review
+# Performs: Code review, test validation, spec verification
+```
+
+### What It Did
+
+The review workflow:
+
+1. **Loaded Context**:
+   - Read `specs/bugfix/001-when-submitting-the/bug-report.md`
+   - Read `specs/bugfix/001-when-submitting-the/plan.md`
+   - Read `specs/bugfix/001-when-submitting-the/tasks.md`
+   - Examined code changes: `git diff main..bugfix/001-when-submitting-the`
+
+2. **Verified Implementation**:
+   - ✅ Regression test exists and passes
+   - ✅ Fix handles empty file inputs correctly
+   - ✅ Edge case covered: browser sending `application/octet-stream`
+   - ✅ No breaking changes to existing functionality
+   - ✅ Error messages remain clear
+
+3. **Ran Tests**:
+   ```bash
+   npm test
+   # All tests passing: 47 passed, 0 failed
+   ```
+
+4. **Generated Review Report**:
+
+```markdown
+# Review Report
+
+**Feature**: bugfix/001-when-submitting-the
+**Reviewer**: claude-code
+**Date**: 2025-03-15
+**Status**: ✅ Approved
+
+## Summary
+
+Profile form crash bugfix implementation meets all acceptance criteria.
+Regression test successfully prevents recurrence, and fix is minimal and correct.
+
+## Implementation Review
+
+### What Was Reviewed
+- T001: Write regression test (reproduces crash)
+- T002: Implement fix (skip empty file inputs)
+- T003: Verify fix (all tests pass)
+
+### Implementation Quality
+- **Code Quality**: Excellent - minimal change, clear logic
+- **Test Coverage**: Comprehensive - regression test + existing tests
+- **Documentation**: Clear comments explain the fix
+- **Standards Compliance**: Follows project TypeScript patterns
+
+## Test Results
+
+**Tests Executed**: 47
+**Tests Passing**: 47
+**Tests Failing**: 0
+
+Regression test: ✅ Passes (prevents future recurrence)
+
+## Findings
+
+### ✅ What Worked Well
+- Minimal change (3 lines) reduces risk
+- Clear comment explains why check is needed
+- Regression test will prevent recurrence
+- No breaking changes to existing functionality
+
+### No Issues Found
+
+All acceptance criteria met. Ready to merge.
+
+## Tasks Status
+
+### Completed (Marked as Done)
+- [X] T001: Write regression test
+- [X] T002: Implement fix
+- [X] T003: Verify fix
+
+## Recommendations
+
+None - implementation is solid.
+
+## Next Steps
+
+1. ✅ Tasks marked as complete in tasks.md
+2. ✅ Ready to merge feature branch
+3. Create PR for team review (optional)
+```
+
+5. **Updated tasks.md**:
+
+The review automatically marked completed tasks:
+
+```markdown
+# Tasks
+
+## Phase 1: Reproduce & Test First
+- [X] T001: Write regression test that reproduces the crash
+  - Create test case for editing bio without uploading image
+  - Verify test fails before fix (expected: crash)
+  
+## Phase 2: Implement Fix
+- [X] T002: Implement fix to skip empty file inputs
+  - Add check for application/octet-stream type
+  - Skip validation for empty file inputs
+  
+## Phase 3: Verify
+- [X] T003: Verify fix resolves the issue
+  - Run regression test (should pass)
+  - Run full test suite
+  - Manual verification: edit bio without image upload
+```
+
+### The Value
+
+**Before `/speckit.review`**:
+- ❌ Manual review process (inconsistent)
+- ❌ Easy to forget to run tests
+- ❌ No structured validation checklist
+- ❌ Tasks manually marked (often forgotten)
+
+**With `/speckit.review`**:
+- ✅ Structured, repeatable review process
+- ✅ Automatic test execution
+- ✅ Verification against specification
+- ✅ Tasks automatically marked complete
+- ✅ Review report for documentation
+
+### Review Outcomes
+
+The review can produce three outcomes:
+
+1. **✅ Approved**: Ready to merge (as in this example)
+2. **⚠️ Approved with Notes**: Minor improvements suggested but not blocking
+3. **❌ Needs Changes**: Issues must be fixed before approval
+
+### Integration with Workflow
+
+The review workflow completes the spec-kit cycle:
+
+```bash
+# 1. Report the bug
+/speckit.bugfix "profile form crashes when..."
+
+# 2. Plan the fix
+/speckit.plan
+
+# 3. Break into tasks
+/speckit.tasks
+
+# 4. Implement
+/speckit.implement
+
+# 5. Review (NEW!)
+/speckit.review
+# ✅ Validates implementation
+# ✅ Runs tests
+# ✅ Marks tasks complete
+# ✅ Generates review report
+
+# 6. Merge
+git push origin bugfix/001-when-submitting-the
+```
+
+**Impact**: 
+- 🎯 **Validation**: Ensures quality before merge
+- ✅ **Consistency**: Same review process every time
+- 📊 **Documentation**: Review report captures findings
+- ⚡ **Efficiency**: Automated task status updates
+
+---
+
+## Example 5: Workflow Comparison Table
 
 Here's how the same work would have been done **without** vs **with** extensions:
 
@@ -390,7 +576,7 @@ Here's how the same work would have been done **without** vs **with** extensions
 
 ---
 
-## Example 5: Pattern - Feature Evolution Timeline
+## Example 6: Pattern - Feature Evolution Timeline
 
 Here's the complete evolution of Feature 014 (Edit Profile) with checkpoint-based workflow:
 
