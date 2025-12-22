@@ -6,16 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.6
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.2.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.7
 
 ---
 
 ## CLI Tool (`specify-extend`)
 
+### [1.3.7] - 2025-12-22
+
+#### 🚀 Added
+
+- **Cleanup Workflow** - New `/speckit.cleanup` workflow for validating and reorganizing spec-kit artifacts
+  - Added `cleanup` to `AVAILABLE_EXTENSIONS` list
+  - Automatic detection and installation of cleanup workflow templates
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.7
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.2.0
+
+---
+
 ### [1.3.6] - 2025-12-16
 
-#### \ud83d\ude80 Added
+#### 🚀 Added
 
 - **Multi-Agent Installation** - Install commands for multiple AI agents in a single repository
   - New `--agents` flag accepts a comma-separated list (e.g. `--agents claude,copilot,cursor-agent`)
@@ -120,6 +136,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [2.2.0] - 2025-12-22
+
+#### 🚀 Added
+
+- **Cleanup Workflow** - New workflow for validating and reorganizing spec-kit artifacts
+  - Command: `/speckit.cleanup [--dry-run] [--auto-fix] "reason"`
+  - Validates sequential numbering (001, 002, 003, etc.)
+  - Detects gaps, duplicates, and incorrect directory locations
+  - Automatically renumbers directories with `--auto-fix`
+  - Generates detailed cleanup reports in `specs/cleanup/NNN-cleanup-report/`
+  - **Safety guarantee**: Only moves/renames documentation in `specs/`, never touches code files
+  - Use cases: Pre-release validation, post-merge cleanup, periodic maintenance
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.2.0
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [2.1.1] - 2025-12-08
 
