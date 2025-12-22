@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 # Initialize Rich console
 console = Console()
@@ -60,7 +60,7 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["bugfix", "modify", "refactor", "hotfix", "deprecate"]
+AVAILABLE_EXTENSIONS = ["bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup"]
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
