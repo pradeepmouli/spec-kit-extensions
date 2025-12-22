@@ -314,6 +314,7 @@ your-project/
 │   │       ├── refactor/
 │   │       ├── hotfix/
 │   │       ├── deprecate/
+│   │       ├── cleanup/
 │   │       └── review/
 │   ├── scripts/bash/
 │   │   ├── create-baseline.sh    # Extension scripts
@@ -322,6 +323,7 @@ your-project/
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
 │   │   ├── create-deprecate.sh
+│   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
