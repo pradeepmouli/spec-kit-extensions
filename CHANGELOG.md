@@ -6,12 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.2.0
-- **CLI Tool** (`specify-extend`) - Currently at v1.3.7
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.3.8
+
+---
+
+## Extension Templates
+
+### [2.3.0] - 2025-12-22
+
+#### 🚀 Added
+
+- **Baseline Workflow** - New `/speckit.baseline` workflow for establishing project context and tracking changes
+  - Creates `baseline-spec.md` documenting project architecture, features, and structure
+  - Creates `current-state.md` tracking all changes by workflow type
+  - Automatically detects if specs exist and determines baseline commit
+  - Provides comprehensive context for AI agents working on subsequent tasks
+  - Templates include: baseline-spec-template.md, current-state-template.md
+  - Script: `create-baseline.sh` with JSON output support
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.3.0
+- **Compatible Spec Kit Version**: v0.0.80+
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.3.8] - 2025-12-22
+
+#### 🚀 Added
+
+- **Baseline Workflow** - New `/speckit.baseline` workflow for project context establishment
+  - Added `baseline` to `AVAILABLE_EXTENSIONS` list
+  - Automatic detection and installation of baseline workflow templates
+  - Updated constitution template with baseline quality gates
+  - Enhanced workflow selection detection to include baseline patterns
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.3.8
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.3.0
+
+---
 
 ### [1.3.7] - 2025-12-22
 
