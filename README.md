@@ -2,21 +2,21 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**6 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**7 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 6 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 7 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
 - **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
-- **`/speckit.review`** - Review completed work and validate against specifications
-
+- **`/speckit.cleanup`** - Clean up codebase with automated scripts
+- **`/speckit.review`** - Review completed work with structured feedback
 ## Why Use These Extensions?
 
 ### The Problem
@@ -28,6 +28,8 @@ With vanilla spec-kit, you get structure for ~25% of your work (new features), b
 - **Code quality**: No metrics → unclear if refactor helped
 - **Emergencies**: No process → panic-driven development
 - **Feature removal**: No plan → angry users
+- **Codebase Cleanup**: No automation → manual effort
+- **Work Review**: No structure → inconsistent feedback
 
 ### The Solution
 
@@ -41,8 +43,9 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
 | **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
-| **Code Review** | ❌ Ad-hoc | ✅ `/speckit.review` with structured validation |
-
+| **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
+| **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
+### Benefits
 ## Real-World Validation
 
 These workflows are **production-tested** on a React Router v7 Twitter clone ("Tweeter") with:
@@ -240,9 +243,8 @@ Reviewing completed work?
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
 | **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
 | **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
-| **Review** | `/speckit.review [T001]` | Structured validation | Verify all tests pass |
-
-## Documentation
+| **Review** | `/speckit.review [task-id]` | Structured feedback | Verify tests |
+| **Cleanup** | `/speckit.cleanup` | Automated scripts | Manual verification |
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
 - **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents
@@ -326,12 +328,12 @@ your-project/
 
 ## FAQ
 
-### Do I need to use all 5 workflows?
+### Do I need to use all 6 workflows?
 
 No! Enable only what you need via `.specify/extensions/enabled.conf`. Common combinations:
 - **Minimal**: Just `/bugfix` (most teams need this)
 - **Standard**: `/bugfix` + `/modify` (covers most scenarios)
-- **Complete**: All 5 workflows (full lifecycle coverage)
+- **Complete**: All 6 workflows (full lifecycle coverage + maintenance)
 
 ### Can I customize the workflows?
 
