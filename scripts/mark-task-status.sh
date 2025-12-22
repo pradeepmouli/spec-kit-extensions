@@ -63,7 +63,9 @@ esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Check if we're in spec-kit repo (scripts/bash/common.sh) or extensions (need to go up to spec-kit)
+# Source common.sh from spec-kit installation
+# Note: When installed via specify-extend, this script is placed in .specify/scripts/bash/
+# alongside spec-kit's common.sh (at .specify/scripts/bash/common.sh)
 if [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     # Running from spec-kit integrated location: .specify/scripts/bash/
     source "$SCRIPT_DIR/../bash/common.sh"
@@ -112,6 +114,12 @@ from pathlib import Path
 task_id, status, path = sys.argv[1:]
 path = Path(path)
 text = path.read_text()
+
+# Pattern matches task entries with various whitespace styles:
+# - Handles leading whitespace before dash: "  - [ ]" or "    - [ ]"
+# - Handles whitespace around dash: "- [ ]" or "-[ ]" or "  -  [ ]"
+# - Matches checkboxes: [ ], [x], [X]
+# - Handles whitespace after checkbox: "[ ] T001" or "[ ]  T001"
 pattern = re.compile(rf"^(\s*-\s*)\[[ xX]\]\s+({re.escape(task_id)})(\b.*)$", re.MULTILINE)
 box = "[X]" if status == "done" else "[ ]"
 
