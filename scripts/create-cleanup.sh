@@ -208,8 +208,24 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
                 done
                 
                 # Move back from temp to workflow directory
-                mv "$temp_dir"/* "$workflow_dir/"
-                rmdir "$temp_dir"
+                shopt -s nullglob
+                move_error=false
+                for item in "$temp_dir"/*; do
+                    if ! mv "$item" "$workflow_dir/"; then
+                        move_error=true
+                    fi
+                done
+                shopt -u nullglob
+                
+                if ! rmdir "$temp_dir"; then
+                    echo "Error: Failed to remove temporary directory '$temp_dir'" >&2
+                    move_error=true
+                }
+                
+                if $move_error; then
+                    echo "Error: One or more operations failed while renumbering '$workflow_type/' directories." >&2
+                    exit 1
+                fi
                 
                 add_action "✓ Renumbered $workflow_type/ directories"
             fi
