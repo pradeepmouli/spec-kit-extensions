@@ -8,7 +8,7 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.bump-version` in the triggering message **is** the new version number. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below.
+The text the user typed after `/speckit.bump-version` in the triggering message **is** the new version number. If the user does not provide a version number, assume it is a patch version over the last release. You always have it available in this conversation even if `$ARGUMENTS` appears literally below.
 
 Given the version number (e.g., "1.4.2" for CLI or "2.3.1" for templates), do this:
 
