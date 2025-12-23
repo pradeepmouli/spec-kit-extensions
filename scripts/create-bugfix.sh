@@ -35,6 +35,13 @@ else
     fi
 fi
 
+# Verify generate_branch_name function is available
+if ! declare -f generate_branch_name > /dev/null; then
+    echo "Error: generate_branch_name function is not available in common.sh." >&2
+    echo "Please ensure you have the latest version of spec-kit-extensions installed." >&2
+    exit 1
+fi
+
 JSON_MODE=false
 ARGS=()
 for arg in "$@"; do
