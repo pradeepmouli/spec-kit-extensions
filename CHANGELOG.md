@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.0
-- **CLI Tool** (`specify-extend`) - Currently at v1.4.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.4.3
 
 ---
 
@@ -52,6 +52,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.4.3] - 2025-12-23
+
+#### 🐛 Fixed
+
+- **Cleanup Workflow Script** - Fixed premature exit issues in `create-cleanup.sh` when run with `--json` flag
+  - Root cause: `validate_workflow_directory` function had implicit non-zero return codes at lines 117 and 160
+  - Fix: Explicitly return 0 from early return statements to prevent `set -e` from terminating the script prematurely
+  - Impact: Script now correctly produces JSON output when requested instead of exiting without output
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.4.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.3.0
+
+---
 
 ### [1.4.1] - 2025-12-23
 
