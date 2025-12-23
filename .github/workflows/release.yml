@@ -80,57 +80,57 @@ jobs:
       run: |
         TAG_VERSION="${{ steps.get_version.outputs.version }}"
         RELEASE_TYPE="${{ steps.get_version.outputs.release_type }}"
-        
+
         echo "Release Type: $RELEASE_TYPE"
         echo "Tag version:  $TAG_VERSION"
-        
+
         if [ "$RELEASE_TYPE" = "cli" ]; then
           # For CLI releases, validate CLI-specific files
-          
+
           # Extract version from pyproject.toml
           TOML_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          
+
           # Extract version from specify_extend.py
           PY_VERSION=$(grep '^__version__ = ' specify_extend.py | sed 's/__version__ = "\(.*\)"/\1/')
-          
+
           # Extract CLI version from CHANGELOG.md - find first ### [version] after ## CLI Tool
           CHANGELOG_VERSION=$(sed -n '/## CLI Tool/,/^## /p' CHANGELOG.md | grep '^### \[' | head -1 | sed 's/### \[\(.*\)\].*/\1/')
-          
+
           echo "pyproject.toml:    $TOML_VERSION"
           echo "specify_extend.py: $PY_VERSION"
           echo "CHANGELOG.md:      $CHANGELOG_VERSION"
-          
+
           # Check if all versions match
           if [ "$TAG_VERSION" != "$TOML_VERSION" ]; then
             echo "❌ Error: Tag version ($TAG_VERSION) doesn't match pyproject.toml version ($TOML_VERSION)"
             exit 1
           fi
-          
+
           if [ "$TAG_VERSION" != "$PY_VERSION" ]; then
             echo "❌ Error: Tag version ($TAG_VERSION) doesn't match specify_extend.py version ($PY_VERSION)"
             exit 1
           fi
-          
+
           if [ "$TAG_VERSION" != "$CHANGELOG_VERSION" ]; then
             echo "❌ Error: Tag version ($TAG_VERSION) doesn't match CHANGELOG.md version ($CHANGELOG_VERSION)"
             exit 1
           fi
-          
+
           echo "✅ All CLI versions are in sync: $TAG_VERSION"
-          
+
         elif [ "$RELEASE_TYPE" = "templates" ]; then
           # For template releases, validate CHANGELOG only
-          
+
           # Extract templates version from CHANGELOG.md - find first ### [version] after ## Extension Templates
           CHANGELOG_VERSION=$(sed -n '/## Extension Templates/,/^## CLI Tool/p' CHANGELOG.md | grep '^### \[' | head -1 | sed 's/### \[\(.*\)\].*/\1/')
-          
+
           echo "CHANGELOG.md:      $CHANGELOG_VERSION"
-          
+
           if [ "$TAG_VERSION" != "$CHANGELOG_VERSION" ]; then
             echo "❌ Error: Tag version ($TAG_VERSION) doesn't match CHANGELOG.md version ($CHANGELOG_VERSION)"
             exit 1
           fi
-          
+
           echo "✅ Templates version is in sync with CHANGELOG: $TAG_VERSION"
         fi
 
