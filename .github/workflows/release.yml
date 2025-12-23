@@ -4,6 +4,17 @@ on:
   push:
     tags:
       - 'cli-v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.4.0)'
+        required: true
+        type: string
+      create_tag:
+        description: 'Create git tag for this version'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -14,13 +25,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Extract version from tag
+    - name: Extract version from tag or input
       id: get_version
       run: |
-        TAG=${GITHUB_REF#refs/tags/cli-v}
-        echo "version=$TAG" >> $GITHUB_OUTPUT
-        echo "Tag version: $TAG"
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Manual trigger - Version: $VERSION"
+        else
+          TAG=${GITHUB_REF#refs/tags/cli-v}
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "Tag trigger - Version: $TAG"
+        fi
+
+    - name: Create tag if requested
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_tag == 'true'
+      run: |
+        VERSION="${{ steps.get_version.outputs.version }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "cli-v$VERSION" -m "Release CLI version $VERSION"
+        git push origin "cli-v$VERSION"
 
     - name: Validate versions are in sync
       run: |
