@@ -53,6 +53,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## CLI Tool (`specify-extend`)
 
+### [1.4.1] - 2025-12-23
+
+#### 🔧 Improved
+
+- **Version Bump Automation** - Added automated version bumping script (`bump-version.sh`)
+  - Updates version in `specify_extend.py` and `pyproject.toml`
+  - Creates git tag with appropriate prefix (`cli-v` for CLI tool)
+  - Automatically updates CHANGELOG.md with version and date
+  - Supports manual trigger in release workflow
+- **Code Formatting** - Fixed formatting inconsistencies in README and scripts for better maintainability
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.4.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.3.0
+
+---
+
 ### [1.3.9] - 2025-12-22
 
 #### 🐛 Fixed
