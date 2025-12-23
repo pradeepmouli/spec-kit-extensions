@@ -114,7 +114,7 @@ validate_workflow_directory() {
     local workflow_type="$2"
     local skip_known_subdirs="$3"
 
-    [ -d "$workflow_dir" ] || return
+    [ -d "$workflow_dir" ] || return 0
 
     # Collect all numbered directories (scoped per workflow_dir)
     local numbers=()
@@ -157,7 +157,7 @@ validate_workflow_directory() {
     done
 
     # Skip if no numbered directories
-    [ ${#numbers[@]} -eq 0 ] && return
+    [ ${#numbers[@]} -eq 0 ] && return 0
 
     # Sort numbers
     IFS=$'\n' sorted_numbers=($(sort -n <<<"${numbers[*]}"))
