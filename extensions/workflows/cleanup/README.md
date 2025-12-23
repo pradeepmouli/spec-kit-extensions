@@ -90,9 +90,13 @@ The cleanup workflow **validates** and **reorganizes** but does not create any f
 
 Options:
 - `--json`: Output results in JSON format
-- `--dry-run`: Show what would be done without making changes
+- `--dry-run`: Show what would be done without making changes (always exits with code 0 for easier parsing)
 - `--auto-fix`: Automatically fix numbering and organization issues
 - `reason`: Optional reason for cleanup (for documentation)
+
+Exit Codes:
+- **Exit 0**: No issues found, or running in dry-run mode
+- **Exit 1**: Issues found (only when not in dry-run mode)
 
 ## Examples
 
