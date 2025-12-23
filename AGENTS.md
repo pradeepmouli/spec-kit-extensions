@@ -99,6 +99,22 @@ def detect_agent(repo_root: Path) -> str:
 
 Detection is based on the presence of agent-specific directories or configuration files.
 
+#### Agent Detection Priority Order
+
+The `detect_agent()` function checks for agents in this priority order (as of specify_extend.py:473-513):
+
+1. **Claude Code**: `.claude/commands/`
+2. **GitHub Copilot**: `.github/agents/` or `.github/copilot-instructions.md`
+3. **Cursor**: `.cursor/commands/` or `.cursorrules`
+4. **Windsurf**: `.windsurf/`
+5. **Other agents**: Based on AGENT_CONFIG directory patterns
+6. **Fallback**: Manual agent selection if no detection succeeds
+
+When adding a new agent, consider where it should fit in this priority order based on:
+- Specificity of detection (more specific = higher priority)
+- Likelihood of false positives (less likely = higher priority)
+- Common usage patterns (more common = higher priority)
+
 ### 3. Add Command Templates
 
 Create command template files in the `commands/` directory following the agent's format:
@@ -246,6 +262,47 @@ Add a complete setup guide for the new agent following the existing pattern:
    ls specs/bugfix/001-test-workflow/  # Should show bug-report.md, tasks.md
    ```
 
+6. **Test non-git repository support**:
+   ```bash
+   mkdir /tmp/non-git-test && cd /tmp/non-git-test
+   specify-extend --all --agent new-agent-cli
+   # Scripts should work with informative warnings, not errors
+   ```
+
+7. **Test JSON output mode** (for programmatic usage):
+   ```bash
+   .specify/scripts/bash/create-bugfix.sh --json "test"
+   # Should output valid JSON with branch, directory, and file information
+   ```
+
+## Branch Naming Design Pattern
+
+spec-kit-extensions uses branch naming to identify workflow types. Understanding this is crucial when testing new agent integrations:
+
+| Workflow | Branch Pattern | Example |
+|----------|---------------|----------|
+| Standard Feature | `NNN-description` | `001-user-auth` |
+| Bugfix | `bugfix/NNN-description` | `bugfix/001-fix-login` |
+| Modify | `modify/NNN^MMM-description` | `modify/001^002-update-api` |
+| Refactor | `refactor/NNN-description` | `refactor/001-clean-utils` |
+| Hotfix | `hotfix/NNN-description` | `hotfix/001-patch-security` |
+| Deprecate | `deprecate/NNN-description` | `deprecate/001-remove-v1-api` |
+| Cleanup | `cleanup/NNN-description` | `cleanup/001-remove-old-code` |
+| Baseline | `baseline/NNN-description` | `baseline/001-initial-state` |
+
+**Key Implementation Details:**
+
+- **Branch naming utility**: `generate_branch_name()` in `common.sh` (lines 66-112)
+  - Filters stop words (the, a, an, with, for, to, etc.)
+  - Filters short words (< 3 characters) to keep meaningful terms
+  - Handles acronyms properly
+  - Enforces word count limits
+
+- **Multiple branches per spec**: The system supports multiple branches sharing the same spec:
+  - Example: `bugfix/004-fix-a` and `bugfix/004-fix-b` both use `specs/bugfix/004-*/`
+  - The numeric prefix is the key, not the full branch name
+  - Implemented via `find_feature_dir_by_prefix()` in `common.sh`
+
 ## Agent Categories
 
 ### CLI-Based Agents
@@ -384,6 +441,11 @@ Before submitting a PR to add a new agent:
 - [ ] Verified command files installed to correct directory
 - [ ] Tested at least one workflow end-to-end
 - [ ] Verified workflow creation (branch, directory, files)
+- [ ] Tested non-git repository support (should work with warnings)
+- [ ] Tested `--json` output mode for programmatic usage
+- [ ] Verified branch naming follows expected patterns
+- [ ] Tested with and without GitHub token (for rate limit scenarios)
+- [ ] Verified `--dry-run` mode works correctly
 - [ ] Documented any special requirements or limitations
 
 ## Architecture Notes
@@ -404,6 +466,29 @@ Before submitting a PR to add a new agent:
 - `extensions/` - Workflow templates and documentation
 - `AI-AGENTS.md` - User-facing agent setup guide
 - `README.md` - Project overview and quick reference
+- `common.sh` - Shared bash utilities for branch naming and git operations
+
+### Important Code Locations
+
+When working with agent support, these are the key locations in `specify_extend.py`:
+
+- **AGENT_CONFIG dictionary**: Lines 78-139
+- **Agent enum**: Lines 210-222
+- **detect_agent() function**: Lines 473-513
+- **patch_common_sh() function**: Lines 1235-1344
+- **AVAILABLE_EXTENSIONS list**: Line 63
+
+When working with bash utilities:
+
+- **common.sh**:
+  - `generate_branch_name()`: Lines 66-112
+  - `find_feature_dir_by_prefix()`: Supports multiple branches per spec
+  - Git utilities: `get_repo_root()`, `get_current_branch()`, `has_git()`
+
+- **Workflow scripts** (scripts/*.sh):
+  - All support `--json` flag for programmatic output
+  - All have fallback logic for non-git repositories
+  - All verify required functions exist before execution
 
 ## Future Considerations
 
