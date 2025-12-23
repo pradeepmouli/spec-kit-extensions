@@ -33,7 +33,7 @@ The cleanup script checks:
 ### 2. Issue Detection
 Reports issues in three severity levels:
 - **ERROR**: Critical issues that prevent proper workflow operation
-- **WARNING**: Issues that should be addressed but don't break functionality  
+- **WARNING**: Issues that should be addressed but don't break functionality
 - **INFO**: Informational notices about non-critical inconsistencies
 
 ### 3. Auto-Fix (Optional)

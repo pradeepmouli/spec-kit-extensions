@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 # Initialize Rich console
 console = Console()
@@ -397,11 +397,11 @@ def format_template_with_sections(template_content: str, numbering_style: Option
 
 def detect_existing_workflows(content: str) -> set:
     """Detect which extension workflows are already documented in constitution
-    
+
     Returns a set of workflow names that have quality gate sections in the constitution.
     """
     existing_workflows = set()
-    
+
     # Look for quality gate sections for each workflow
     workflow_patterns = {
         'baseline': r'\*\*Baseline\*\*:',
@@ -413,11 +413,11 @@ def detect_existing_workflows(content: str) -> set:
         'cleanup': r'\*\*Cleanup\*\*:',
         'review': r'\*\*Review\*\*:'
     }
-    
+
     for workflow, pattern in workflow_patterns.items():
         if re.search(pattern, content, re.IGNORECASE):
             existing_workflows.add(workflow)
-    
+
     return existing_workflows
 
 
@@ -620,27 +620,27 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
 
 def read_enabled_conf(repo_root: Path) -> set:
     """Read enabled.conf and return set of enabled workflow names
-    
+
     Args:
         repo_root: Root directory of the repository
-        
+
     Returns:
         Set of enabled workflow names (without comments/blank lines)
     """
     enabled_conf = repo_root / ".specify" / "extensions" / "enabled.conf"
-    
+
     if not enabled_conf.exists():
         return set()
-    
+
     enabled = set()
     content = enabled_conf.read_text()
-    
+
     for line in content.split('\n'):
         line = line.strip()
         # Skip comments and empty lines
         if line and not line.startswith('#'):
             enabled.add(line)
-    
+
     return enabled
 
 
@@ -650,14 +650,14 @@ def update_enabled_conf(
     dry_run: bool = False
 ) -> None:
     """Update enabled.conf with specified workflows
-    
+
     Args:
         repo_root: Root directory of the repository
         workflows_to_enable: Set of workflow names to mark as enabled
         dry_run: Whether to perform a dry run
     """
     enabled_conf = repo_root / ".specify" / "extensions" / "enabled.conf"
-    
+
     if not enabled_conf.exists():
         if not dry_run:
             enabled_conf.parent.mkdir(parents=True, exist_ok=True)
@@ -666,37 +666,37 @@ def update_enabled_conf(
 # Uncomment workflows you want to enable
 # Comment out a line to disable that workflow extension\n\n# Extension Workflows\n"""
             enabled_conf.write_text(content)
-    
+
     # Read current content preserving comments
     if enabled_conf.exists():
         lines = enabled_conf.read_text().split('\n')
     else:
         lines = []
-    
+
     # Build new content
     new_lines = []
     seen_workflows = set()
-    
+
     # Process existing lines
     for line in lines:
         stripped = line.strip()
-        
+
         # Keep comments and empty lines
         if not stripped or stripped.startswith('#'):
             new_lines.append(line)
             continue
-        
+
         # Check if this is a workflow line
         workflow_name = stripped
         seen_workflows.add(workflow_name)
-        
+
         # Enable or disable based on workflows_to_enable
         if workflow_name in workflows_to_enable:
             new_lines.append(workflow_name)
         else:
             # Comment out disabled workflows
             new_lines.append(f"# {workflow_name}")
-    
+
     # Add new workflows that weren't in the file
     new_workflows = workflows_to_enable - seen_workflows
     if new_workflows:
@@ -704,7 +704,7 @@ def update_enabled_conf(
             new_lines.append('')
         for workflow in sorted(new_workflows):
             new_lines.append(workflow)
-    
+
     if not dry_run:
         enabled_conf.write_text('\n'.join(new_lines) + '\n')
         console.print(f"[green]✓[/green] Updated enabled.conf")
@@ -718,35 +718,35 @@ def prompt_for_workflows(
     installed: set
 ) -> set:
     """Interactively prompt user to select which workflows to enable
-    
+
     Args:
         available: List of all available workflows
         currently_enabled: Set of currently enabled workflows
         installed: Set of workflows being installed this session
-        
+
     Returns:
         Set of workflows the user wants to enable
     """
     from rich.prompt import Confirm, Prompt
     from rich.table import Table
-    
+
     # Identify new workflows (available but not currently enabled)
     new_workflows = set(available) - currently_enabled
-    
+
     if not new_workflows:
         # No new workflows, just return currently enabled ones plus installed
         return currently_enabled | installed
-    
+
     console.print("\n[bold yellow]New workflows detected![/bold yellow]")
     console.print(f"Currently enabled: {', '.join(sorted(currently_enabled)) or 'none'}")
     console.print(f"New available: {', '.join(sorted(new_workflows))}\n")
-    
+
     # Build table showing workflow info
     table = Table(title="Available Workflows")
     table.add_column("Workflow", style="cyan")
     table.add_column("Status", style="yellow")
     table.add_column("Description", style="dim")
-    
+
     workflow_descriptions = {
         "baseline": "Establish project baseline and track changes",
         "bugfix": "Bug remediation with regression tests",
@@ -757,22 +757,22 @@ def prompt_for_workflows(
         "cleanup": "Validate and reorganize spec-kit artifacts",
         "review": "Review completed implementation work"
     }
-    
+
     for workflow in sorted(available):
         status = "✓ Enabled" if workflow in currently_enabled else "○ New"
         desc = workflow_descriptions.get(workflow, "Extension workflow")
         table.add_row(workflow, status, desc)
-    
+
     console.print(table)
     console.print()
-    
+
     # Ask user what to do
     choice = Prompt.ask(
         "[bold]Enable new workflows?[/bold]",
         choices=["all", "select", "none", "current"],
         default="all"
     )
-    
+
     if choice == "all":
         # Enable all available workflows
         return set(available)
@@ -1163,10 +1163,10 @@ def update_constitution(
 
             # Check which workflows are already documented
             existing_workflows = detect_existing_workflows(content)
-            
+
             # Check if workflow selection section exists
             has_selection_section = detect_workflow_selection_section(content)
-            
+
             # If all major workflows are present, skip update
             major_workflows = {'baseline', 'bugfix', 'modify', 'refactor', 'hotfix', 'deprecate'}
             if has_selection_section and major_workflows.issubset(existing_workflows):
@@ -1174,7 +1174,7 @@ def update_constitution(
                     "[yellow]⚠[/yellow] Constitution already contains all workflow quality gates"
                 )
                 return
-            
+
             # If we have some workflows but not all, inform about what's missing
             if existing_workflows:
                 missing = major_workflows - existing_workflows
@@ -1565,7 +1565,7 @@ def main(
     # Handle workflow enabling
     currently_enabled = read_enabled_conf(repo_root)
     workflows_to_enable = set()
-    
+
     if enable:
         # User explicitly specified workflows to enable
         workflows_to_enable = set(enable.split(','))
@@ -1584,7 +1584,7 @@ def main(
     else:
         # Non-interactive: enable what's being installed + keep current
         workflows_to_enable = currently_enabled | set(extensions_to_install)
-    
+
     # Download latest release
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
@@ -1621,7 +1621,7 @@ def main(
     if workflows_to_enable and not dry_run:
         update_enabled_conf(repo_root, workflows_to_enable, dry_run)
         console.print(f"[blue]ℹ[/blue] Enabled workflows: {', '.join(sorted(workflows_to_enable))}\n")
-    
+
     # Success message
     console.print("\n" + "━" * 60)
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")

@@ -308,7 +308,7 @@ if $JSON_MODE; then
         issues_json+="\"$escaped_issue\""
     done
     issues_json+="]"
-    
+
     # Build JSON array of actions
     actions_json="["
     first=true
@@ -327,7 +327,7 @@ if $JSON_MODE; then
         actions_json+="\"$escaped_action\""
     done
     actions_json+="]"
-    
+
     if [ ${#ISSUES[@]} -eq 0 ]; then
         status="success"
         message="Spec structure is valid"
@@ -335,7 +335,7 @@ if $JSON_MODE; then
         status="issues_found"
         message="Found ${#ISSUES[@]} issue(s)"
     fi
-    
+
     printf '{"status":"%s","message":"%s","issues":%s,"actions":%s}\n' \
         "$status" "$message" "$issues_json" "$actions_json"
 else
@@ -344,7 +344,7 @@ else
     echo "  Spec-Kit Cleanup Report"
     echo "═══════════════════════════════════════════════════════════════"
     echo ""
-    
+
     if [ ${#ISSUES[@]} -eq 0 ]; then
         echo "✓ No issues found - spec structure is valid"
     else
@@ -354,9 +354,9 @@ else
             echo "  $issue"
         done
     fi
-    
+
     echo ""
-    
+
     if [ ${#ACTIONS[@]} -gt 0 ]; then
         if $DRY_RUN; then
             echo "Actions suggested:"
@@ -369,11 +369,11 @@ else
         done
         echo ""
     fi
-    
+
     if $DRY_RUN; then
         echo "💡 This was a dry run. Run without --dry-run to apply changes."
     fi
-    
+
     if [ ${#ISSUES[@]} -gt 0 ] && ! $AUTO_FIX; then
         echo "💡 Run with --auto-fix to automatically fix numbering issues."
     fi
