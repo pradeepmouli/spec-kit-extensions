@@ -25,10 +25,10 @@ Use `/speckit.cleanup` when:
 ### 1. Validation Phase
 The cleanup script checks:
 - **Sequential numbering**: Each workflow type should have 001, 002, 003, etc.
-- **Directory structure**: Specs should be organized under workflow types
+- **Directory structure**: Specs should be organized under workflow types (bugfix/, modify/, refactor/, hotfix/, deprecate/, features/)
 - **Required files**: Each spec directory should have its main spec file
-- **No duplicates**: No two directories with the same number
-- **No gaps**: Numbering should be continuous
+- **No duplicates**: No two directories with the same number *within each workflow subdirectory* (bugfix/001 and refactor/001 are both valid)
+- **No gaps**: Numbering should be continuous within each workflow type
 
 ### 2. Issue Detection
 Reports issues in three severity levels:

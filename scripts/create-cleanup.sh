@@ -106,62 +106,39 @@ add_action() {
     ACTIONS+=("$action")
 }
 
-# Validate workflow subdirectories
-# Expected: bugfix/, modify/, refactor/, hotfix/, deprecate/
-WORKFLOW_TYPES=("bugfix" "modify" "refactor" "hotfix" "deprecate")
+# Validate numbered spec directories under a given path. When skip_known_subdirs is true,
+# we ignore workflow subdirectories like bugfix/, modify/, etc. to allow processing
+# top-level numbered specs (features) independently.
+validate_workflow_directory() {
+    local workflow_dir="$1"
+    local workflow_type="$2"
+    local skip_known_subdirs="$3"
 
-# Collect all directories in specs/
-declare -A WORKFLOW_DIRS
-for workflow_type in "${WORKFLOW_TYPES[@]}"; do
-    if [ -d "$SPECS_DIR/$workflow_type" ]; then
-        WORKFLOW_DIRS[$workflow_type]=1
-    fi
-done
+    [ -d "$workflow_dir" ] || return
 
-# Check for misplaced directories (numbered dirs directly under specs/)
-for entry in "$SPECS_DIR"/*; do
-    [ -d "$entry" ] || continue
-    dirname=$(basename "$entry")
-    
-    # Skip known workflow subdirectories
-    if [[ " ${WORKFLOW_TYPES[@]} " =~ " ${dirname} " ]]; then
-        continue
-    fi
-    
-    # Explicitly skip cleanup directory
-    if [[ "$dirname" == "cleanup" ]]; then
-        continue
-    fi
-    
-    # Check if it's a numbered directory (001-*, 002-*, etc.)
-    if [[ "$dirname" =~ ^[0-9]{3}- ]]; then
-        add_issue "WARNING" "Numbered directory found directly under specs/: $dirname (should be under a workflow type)"
-        # Try to determine workflow type from directory content or name
-        # For now, suggest manual review
-        add_action "Review and move $dirname to appropriate workflow subdirectory (bugfix/, modify/, etc.)"
-    fi
-done
+    # Collect all numbered directories (scoped per workflow_dir)
+    local numbers=()
+    declare -A dir_map=()
+    declare -A dup_check=()
 
-# Validate each workflow subdirectory
-for workflow_type in "${WORKFLOW_TYPES[@]}"; do
-    workflow_dir="$SPECS_DIR/$workflow_type"
-    [ -d "$workflow_dir" ] || continue
-    
-    # Collect all numbered directories
-    declare -a numbers=()
-    declare -A dir_map
-    declare -A dup_check
-    
     for dir in "$workflow_dir"/*/; do
         [ -d "$dir" ] || continue
+        local dirname
         dirname=$(basename "$dir")
-        
+
+        # Skip other workflow directories when scanning the root specs/ directory
+        if [[ "$skip_known_subdirs" == "true" ]]; then
+            if [[ " ${WORKFLOW_TYPES[@]} " =~ " ${dirname} " ]] || [[ "$dirname" == "cleanup" ]]; then
+                continue
+            fi
+        fi
+
         # Extract number from directory name (001, 002, etc.)
         if [[ "$dirname" =~ ^([0-9]{3})- ]]; then
-            number="${BASH_REMATCH[1]}"
-            number_int=$((10#$number))
-            
-            # Check for duplicates before adding
+            local number="${BASH_REMATCH[1]}"
+            local number_int=$((10#$number))
+
+            # Check for duplicates within this workflow directory only
             if [[ -n "${dup_check[$number_int]}" ]]; then
                 add_issue "ERROR" "Duplicate number in $workflow_type/: $(printf "%03d" $number_int) (found in ${dup_check[$number_int]} and $dirname)"
             else
@@ -170,27 +147,25 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
                 dup_check[$number_int]="$dirname"
             fi
         else
-            add_issue "ERROR" "Invalid directory name in $workflow_type/: $dirname (should start with 3-digit number)"
+            # For top-level scan, ignore non-numbered directories; for workflow dirs flag errors
+            if [[ "$skip_known_subdirs" == "true" ]]; then
+                continue
+            else
+                add_issue "ERROR" "Invalid directory name in $workflow_type/: $dirname (should start with 3-digit number)"
+            fi
         fi
     done
-    
+
     # Skip if no numbered directories
-    [ ${#numbers[@]} -eq 0 ] && continue
-    
+    [ ${#numbers[@]} -eq 0 ] && return
+
     # Sort numbers
     IFS=$'\n' sorted_numbers=($(sort -n <<<"${numbers[*]}"))
     unset IFS
-    
-    # Check for duplicates
-    for i in "${!sorted_numbers[@]}"; do
-        if [ $i -gt 0 ] && [ "${sorted_numbers[$i]}" -eq "${sorted_numbers[$((i-1))]}" ]; then
-            add_issue "ERROR" "Duplicate number in $workflow_type/: $(printf "%03d" ${sorted_numbers[$i]})"
-        fi
-    done
-    
+
     # Check for gaps and suggest renumbering
-    expected=1
-    needs_renumber=false
+    local expected=1
+    local needs_renumber=false
     for num in "${sorted_numbers[@]}"; do
         if [ $num -ne $expected ]; then
             needs_renumber=true
@@ -198,7 +173,7 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
         fi
         expected=$((num + 1))
     done
-    
+
     if $needs_renumber; then
         add_issue "INFO" "Non-sequential numbering in $workflow_type/ (gaps detected)"
         if $AUTO_FIX; then
@@ -207,27 +182,27 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
                 add_action "Cannot auto-fix $workflow_type/: resolve ERROR-level issues first (e.g., duplicates)"
             else
                 add_action "Renumber $workflow_type/ directories to be sequential"
-                
+
                 # Perform renumbering if not dry-run
                 if ! $DRY_RUN; then
                     # Create temp directory for safe renaming
                     temp_dir=$(mktemp -d "$workflow_dir/.tmp.XXXXXX")
-                    
+
                     # Move all numbered directories to temp with new numbers
                     counter=1
                     for num in "${sorted_numbers[@]}"; do
                         old_dir="$workflow_dir/${dir_map[$num]}"
                         new_num=$(printf "%03d" $counter)
-                        
+
                         # Extract suffix (everything after the number and dash)
                         old_name="${dir_map[$num]}"
                         suffix="${old_name#*-}"
                         new_name="${new_num}-${suffix}"
-                        
+
                         mv "$old_dir" "$temp_dir/$new_name"
                         counter=$((counter + 1))
                     done
-                    
+
                     # Move back from temp to workflow directory
                     shopt -s nullglob
                     move_error=false
@@ -237,17 +212,17 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
                         fi
                     done
                     shopt -u nullglob
-                    
+
                     if ! rmdir "$temp_dir"; then
                         echo "Error: Failed to remove temporary directory '$temp_dir'" >&2
                         move_error=true
                     fi
-                    
+
                     if $move_error; then
                         echo "Error: One or more operations failed while renumbering '$workflow_type/' directories." >&2
                         exit 1
                     fi
-                    
+
                     add_action "✓ Renumbered $workflow_type/ directories"
                 fi
             fi
@@ -255,11 +230,11 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
             add_action "Run with --auto-fix to renumber $workflow_type/ directories sequentially"
         fi
     fi
-    
+
     # Validate required files in each directory
     for num in "${sorted_numbers[@]}"; do
         dir_path="$workflow_dir/${dir_map[$num]}"
-        
+
         # Check for spec.md or workflow-specific spec files
         has_spec=false
         case "$workflow_type" in
@@ -278,15 +253,39 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
             modify)
                 [ -f "$dir_path/modification-spec.md" ] && has_spec=true
                 ;;
+            features)
+                [ -f "$dir_path/feature-spec.md" ] && has_spec=true
+                ;;
         esac
-        
+
         # Also check for generic spec.md
         [ -f "$dir_path/spec.md" ] && has_spec=true
-        
+
         if ! $has_spec; then
             add_issue "WARNING" "Missing spec file in ${dir_map[$num]}"
         fi
     done
+}
+
+# Validate workflow subdirectories
+# Expected: bugfix/, modify/, refactor/, hotfix/, deprecate/, features/
+WORKFLOW_TYPES=("bugfix" "modify" "refactor" "hotfix" "deprecate" "features")
+
+# Collect all directories in specs/
+declare -A WORKFLOW_DIRS
+for workflow_type in "${WORKFLOW_TYPES[@]}"; do
+    if [ -d "$SPECS_DIR/$workflow_type" ]; then
+        WORKFLOW_DIRS[$workflow_type]=1
+    fi
+done
+
+# Validate numbered directories directly under specs/ (features stored at root)
+validate_workflow_directory "$SPECS_DIR" "features" true
+
+# Validate each workflow subdirectory
+for workflow_type in "${WORKFLOW_TYPES[@]}"; do
+    workflow_dir="$SPECS_DIR/$workflow_type"
+    validate_workflow_directory "$workflow_dir" "$workflow_type" false
 done
 
 # Output results

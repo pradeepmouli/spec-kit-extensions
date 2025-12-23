@@ -14,6 +14,9 @@
 - **Refactor**: `/refactor "<description>"` → refactor.md + baseline metrics + incremental tasks.md
 - **Hotfix**: `/hotfix "<incident>"` → hotfix.md + expedited tasks.md + post-mortem.md (within 48 hours)
 - **Deprecation**: `/deprecate <feature_num> "<reason>"` → deprecation.md + dependency scan + phased tasks.md
+- **Review**: `/review <task_id>` → review implementation against spec + update tasks.md + generate report
+- **Cleanup**: `/cleanup` → organize specs/ directory + archive old branches + update documentation
+
 
 ### Workflow Selection
 Development activities SHALL use the appropriate workflow type based on the nature of the work. Each workflow enforces specific quality gates and documentation requirements tailored to its purpose:

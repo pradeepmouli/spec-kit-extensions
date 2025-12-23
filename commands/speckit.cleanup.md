@@ -12,7 +12,7 @@ $ARGUMENTS
 
 This workflow validates the organization of all spec-kit artifacts in the `specs/` directory, checking for:
 - Sequential numbering (001, 002, 003, etc.)
-- Proper directory structure
+- Proper directory structure based on workflow type
 - Required files presence
 - No gaps or duplicate numbers
 
