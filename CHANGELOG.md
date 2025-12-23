@@ -6,14 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.0
-- **CLI Tool** (`specify-extend`) - Currently at v1.4.3
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.4.4
 
 ---
 
 ## Extension Templates
 
 ### [Unreleased]
+
+_(No changes yet)_
+
+---
+
+### [2.3.1] - 2025-12-23
 
 #### 🔧 Improved
 
@@ -24,10 +30,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Intelligent word selection (takes 3-4 most meaningful words)
   - Affects: `create-bugfix.sh`, `create-refactor.sh`, `create-hotfix.sh`, `create-modification.sh`
   - Example impact: "Fix the API authentication bug" → `bugfix/001-fix-api-authentication-bug` (was `bugfix/001-fix-the-api`)
+- **Cleanup Workflow** - Detects workflow-prefixed directories placed at the wrong level and can auto-move them after confirmation; clarifies automatic vs agent-driven fixes and verification via `--dry-run`
+  - Adds detection for misplaced workflow dirs (e.g., `bugfix-001-*` under `specs/`), proposes moves, and applies when approved
+  - Keeps unknown dirs (e.g., `specs/copilot/`) visible as warnings so users decide how to handle them
+  - Updated guidance for agents to confirm plans before applying fixes and to rerun `--dry-run` until clean
+  - Affects: `scripts/create-cleanup.sh`, `extensions/workflows/cleanup/README.md`, `commands/speckit.cleanup.md`
 
 #### 📦 Components
 
-- **Extension Templates Version**: v2.3.1 (pending)
+- **Extension Templates Version**: v2.3.1
 - **Compatible Spec Kit Version**: v0.0.80+
 
 ---
@@ -52,6 +63,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.4.4] - 2025-12-23
+
+#### 🔧 Improved
+
+- **Cleanup Workflow Guidance** - Updated cleanup workflow instructions to separate automatic vs agent-driven fixes, with confirm-before-apply and verify-via-`--dry-run` steps. No functional CLI code changes; release aligns with Extension Templates v2.3.1.
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.4.4
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.3.1
+
+---
 
 ### [1.4.3] - 2025-12-23
 

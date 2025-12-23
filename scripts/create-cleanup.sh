@@ -89,12 +89,17 @@ fi
 declare -a ISSUES=()
 declare -a ACTIONS=()
 HAS_ERRORS=false
+HAS_UNFIXABLE_ERRORS=false
 
 # Function to add an issue
 add_issue() {
     local severity="$1"
     local message="$2"
+        local auto_fixable="${3:-false}"
     ISSUES+=("[$severity] $message")
+    if [[ "$severity" == "ERROR" ]] && [[ "$auto_fixable" != "true" ]]; then
+        HAS_UNFIXABLE_ERRORS=true
+    fi
     if [[ "$severity" == "ERROR" ]]; then
         HAS_ERRORS=true
     fi
@@ -130,6 +135,24 @@ validate_workflow_directory() {
         if [[ "$skip_known_subdirs" == "true" ]]; then
             if [[ " ${WORKFLOW_TYPES[@]} " =~ " ${dirname} " ]] || [[ "$dirname" == "cleanup" ]]; then
                 continue
+            fi
+
+            # Detect workflow-prefixed directories at wrong level (e.g., bugfix-001-*, refactor-002-*)
+            if [[ "$dirname" =~ ^(bugfix|modify|refactor|hotfix|deprecate)-([0-9]{3})-(.+)$ ]]; then
+                local wrong_workflow="${BASH_REMATCH[1]}"
+                local wrong_number="${BASH_REMATCH[2]}"
+                local wrong_suffix="${BASH_REMATCH[3]}"
+                add_issue "ERROR" "Misplaced workflow directory: $dirname should be in $wrong_workflow/$wrong_number-$wrong_suffix/" "true"
+                if $AUTO_FIX; then
+                    add_misplaced_dir "$dir" "$SPECS_DIR/$wrong_workflow/$wrong_number-$wrong_suffix"
+                    add_action "Move $dirname to $wrong_workflow/$wrong_number-$wrong_suffix/"
+                fi
+                continue
+            fi
+
+            # Detect unrecognized workflow directories
+            if [[ ! "$dirname" =~ ^([0-9]{3})- ]]; then
+                add_issue "WARNING" "Unrecognized directory in specs/: $dirname (not a numbered spec or known workflow type)"
             fi
         fi
 
@@ -178,7 +201,7 @@ validate_workflow_directory() {
         add_issue "INFO" "Non-sequential numbering in $workflow_type/ (gaps detected)"
         if $AUTO_FIX; then
             # Don't auto-fix if there are ERROR-level issues (like duplicates)
-            if $HAS_ERRORS; then
+            if $HAS_UNFIXABLE_ERRORS; then
                 add_action "Cannot auto-fix $workflow_type/: resolve ERROR-level issues first (e.g., duplicates)"
             else
                 add_action "Renumber $workflow_type/ directories to be sequential"
@@ -267,6 +290,45 @@ validate_workflow_directory() {
     done
 }
 
+# Array to track misplaced directories for auto-fix
+declare -a MISPLACED_DIRS=()
+
+# Function to add misplaced directory for later fix
+add_misplaced_dir() {
+    local source="$1"
+    local target="$2"
+    MISPLACED_DIRS+=("$source|$target")
+}
+
+# Function to move misplaced directories
+fix_misplaced_directories() {
+    if [ ${#MISPLACED_DIRS[@]} -eq 0 ]; then
+        return 0
+    fi
+
+    if $DRY_RUN; then
+        return 0
+    fi
+
+    for entry in "${MISPLACED_DIRS[@]}"; do
+        IFS='|' read -r source target <<< "$entry"
+
+        # Ensure target workflow directory exists
+        target_workflow_dir=$(dirname "$target")
+        if [ ! -d "$target_workflow_dir" ]; then
+            mkdir -p "$target_workflow_dir"
+        fi
+
+        # Move the directory
+        if mv "$source" "$target"; then
+            add_action "✓ Moved $(basename "$source") to $target"
+        else
+            echo "Error: Failed to move $source to $target" >&2
+            exit 1
+        fi
+    done
+}
+
 # Validate workflow subdirectories
 # Expected: bugfix/, modify/, refactor/, hotfix/, deprecate/, features/
 WORKFLOW_TYPES=("bugfix" "modify" "refactor" "hotfix" "deprecate" "features")
@@ -287,6 +349,11 @@ for workflow_type in "${WORKFLOW_TYPES[@]}"; do
     workflow_dir="$SPECS_DIR/$workflow_type"
     validate_workflow_directory "$workflow_dir" "$workflow_type" false
 done
+
+# Apply auto-fixes for misplaced directories if enabled
+if $AUTO_FIX; then
+    fix_misplaced_directories
+fi
 
 # Output results
 if $JSON_MODE; then

@@ -26,20 +26,32 @@ Use `/speckit.cleanup` when:
 The cleanup script checks:
 - **Sequential numbering**: Each workflow type should have 001, 002, 003, etc.
 - **Directory structure**: Specs should be organized under workflow types (bugfix/, modify/, refactor/, hotfix/, deprecate/, features/)
+- **Misplaced workflow directories**: Detects workflow-prefixed directories at wrong level (e.g., `bugfix-001-*` or `refactor-002-*` at root instead of in workflow subdirectories)
+- **Unrecognized directories**: Flags unknown directories that don't match expected patterns
 - **Required files**: Each spec directory should have its main spec file
 - **No duplicates**: No two directories with the same number *within each workflow subdirectory* (bugfix/001 and refactor/001 are both valid)
 - **No gaps**: Numbering should be continuous within each workflow type
 
 ### 2. Issue Detection
 Reports issues in three severity levels:
-- **ERROR**: Critical issues that prevent proper workflow operation
-- **WARNING**: Issues that should be addressed but don't break functionality
-- **INFO**: Informational notices about non-critical inconsistencies
+- **ERROR**: Critical issues that prevent proper workflow operation (e.g., misplaced workflow directories, duplicates)
+- **WARNING**: Issues that should be addressed but don't break functionality (e.g., unrecognized directories, missing spec files)
+- **INFO**: Informational notices about non-critical inconsistencies (e.g., gaps in numbering)
+
+#### Issue types detected
+- **Misplaced workflow directories (ERROR, auto-fixable)**: Workflow-prefixed folders at the wrong level (e.g., `bugfix-001-*` under `specs/` instead of `specs/bugfix/001-*`).
+- **Duplicate numbers within a workflow (ERROR)**: Same numeric prefix reused inside a workflow directory.
+- **Invalid directory names (ERROR)**: Entries inside workflow folders that do not start with a 3-digit prefix.
+- **Unrecognized directories (WARNING)**: Items in `specs/` that are neither numbered specs nor known workflow folders (e.g., `specs/copilot/`).
+- **Non-sequential numbering / gaps (INFO, auto-fixable)**: Numbering within a workflow skips values (001, 002, 005...).
+- **Missing spec file (WARNING)**: Required spec file for the workflow type is absent (e.g., `bug-report.md`, `refactor-spec.md`, `spec.md`).
 
 ### 3. Auto-Fix (Optional)
 With `--auto-fix` flag, the script can:
+- Move misplaced workflow directories to their correct locations
 - Renumber directories to be sequential
 - Fix gaps in numbering
+- Create workflow subdirectories if needed
 - Maintain original directory suffixes
 
 **Important**: Auto-fix only affects directory names and organization in `specs/`. Code files are never moved or modified.
@@ -145,6 +157,43 @@ specs/bugfix/
 # Review the suggested changes, then apply
 /speckit.cleanup --auto-fix "monthly maintenance"
 ```
+
+### Example 4: Fix Misplaced Workflow Directories
+
+When workflow directories are created at the wrong level:
+
+```bash
+/speckit.cleanup --auto-fix "reorganize misplaced directories"
+```
+
+Before:
+```
+specs/
+├── bugfix-001-after-applying-bugfix/    # Wrong location!
+├── refactor-001-migrate-project-to/     # Wrong location!
+├── copilot/                             # Unrecognized workflow
+├── bugfix/
+│   └── 001-use-slowcommissioning/
+└── refactor/
+  └── 002-implement-more/
+```
+
+After:
+```
+specs/
+├── copilot/                             # Remains (flagged as warning)
+├── bugfix/
+│   ├── 001-use-slowcommissioning/
+│   └── 002-after-applying-bugfix/       # Moved and renumbered
+└── refactor/
+  ├── 001-migrate-project-to/          # Moved and renumbered
+  └── 002-implement-more/
+```
+
+Issues detected:
+- `[ERROR] Misplaced workflow directory: bugfix-001-after-applying-bugfix should be in bugfix/001-after-applying-bugfix/`
+- `[ERROR] Misplaced workflow directory: refactor-001-migrate-project-to should be in refactor/001-migrate-project-to/`
+- `[WARNING] Unrecognized directory in specs/: copilot (not a numbered spec or known workflow type)`
 
 ## Cleanup Output Example
 

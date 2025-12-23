@@ -69,16 +69,19 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
    💡 **Next Steps:**
    - Review the issues and actions
-   - If this was a dry-run, run again with --auto-fix to apply changes
-   - Commit the cleanup changes separately from feature work
+   - Apply fixes (`--auto-fix` or agent-driven) after user confirmation
+   - Rerun the script in `--dry-run` mode to verify it reports no issues
+   - Repeat fix + dry-run until clean, then commit the cleanup separately from feature work
    ```
 
-5. **Provide guidance based on issues**:
+5. **Provide guidance based on issues (automatic vs. agent-driven fixes)**:
 
-   - For **duplicate numbers**: Suggest running with --auto-fix
-   - For **gaps**: Explain gaps are OK if specs were deleted, or can be closed with --auto-fix
-   - For **missing files**: Suggest creating the required spec files
-   - For **misplaced directories**: Explain which workflow subdirectory they should be in
+   - **Misplaced workflow directories (ERROR, automatic)**: Workflow-prefixed dirs at the wrong level (e.g., `bugfix-001-*` under `specs/` instead of `specs/bugfix/001-*`). The agent should: inspect contents, propose the target path, ask for confirmation, then move.
+   - **Duplicate numbers within a workflow (ERROR, agent-driven)**: Same numeric prefix reused inside a workflow directory. The agent should inspect both dirs, propose a renumbering plan, ask for confirmation, then apply.
+   - **Invalid directory names (ERROR, agent-driven)**: Entries inside workflow folders that do not start with a 3-digit prefix. The agent should suggest a compliant `NNN-description` rename, ask for confirmation, then apply.
+   - **Unrecognized directories (WARNING, agent-driven)**: Items in `specs/` that are neither numbered specs nor known workflow folders (e.g., `specs/copilot/`). The agent should summarize contents and ask whether to move/rename/ignore.
+   - **Non-sequential numbering / gaps (INFO, automatic)**: Numbering within a workflow skips values (001, 002, 005...). The agent should propose a renumbering plan, confirm, then apply unless blocked by unresolved errors (e.g., duplicates).
+   - **Missing spec file (WARNING, agent-driven)**: Required spec file for the workflow type is absent (e.g., `bug-report.md`, `refactor-spec.md`, or `spec.md`). The agent should suggest creating the required file and ask before doing so.
 
 ## Example Usage
 
