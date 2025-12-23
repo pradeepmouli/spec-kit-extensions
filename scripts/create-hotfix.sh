@@ -2,6 +2,32 @@
 
 set -e
 
+# Source common functions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Try to find and source common.sh
+COMMON_SH_FOUND=false
+# First try the extension location
+if [ -f "$SCRIPT_DIR/../common.sh" ]; then
+    source "$SCRIPT_DIR/../common.sh"
+    COMMON_SH_FOUND=true
+# Then try spec-kit integrated location
+elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
+    source "$SCRIPT_DIR/../bash/common.sh"
+    COMMON_SH_FOUND=true
+# Then try spec-kit repo root scripts
+elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
+    source "$SCRIPT_DIR/../../scripts/bash/common.sh"
+    COMMON_SH_FOUND=true
+fi
+
+# Ensure generate_branch_name is available from common.sh
+if [ "$COMMON_SH_FOUND" = false ] || ! declare -f generate_branch_name > /dev/null; then
+    echo "Error: generate_branch_name is not available because common.sh could not be found or does not define it." >&2
+    echo "Please ensure common.sh is present and on one of the expected paths before running this script." >&2
+    exit 1
+fi
+
 JSON_MODE=false
 ARGS=()
 for arg in "$@"; do
@@ -65,9 +91,8 @@ fi
 NEXT=$((HIGHEST + 1))
 HOTFIX_NUM=$(printf "%03d" "$NEXT")
 
-# Create branch name from description
-BRANCH_SUFFIX=$(echo "$INCIDENT_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_SUFFIX" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
+# Create branch name from description using smart filtering
+WORDS=$(generate_branch_name "$INCIDENT_DESCRIPTION")
 BRANCH_NAME="hotfix/${HOTFIX_NUM}-${WORDS}"
 HOTFIX_ID="hotfix-${HOTFIX_NUM}"
 

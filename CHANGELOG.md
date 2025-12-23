@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Extension Templates
 
+### [Unreleased]
+
+#### 🔧 Improved
+
+- **Branch Name Generation** - Updated all extension workflow scripts to use spec-kit's sophisticated branch name generation logic
+  - Added stop word filtering (removes common words like "the", "a", "to", "for", etc.)
+  - Added length filtering (removes words shorter than 3 characters)
+  - Added smart acronym handling (preserves uppercase acronyms from original input)
+  - Intelligent word selection (takes 3-4 most meaningful words)
+  - Affects: `create-bugfix.sh`, `create-refactor.sh`, `create-hotfix.sh`, `create-modification.sh`
+  - Example impact: "Fix the API authentication bug" → `bugfix/001-fix-api-authentication-bug` (was `bugfix/001-fix-the-api`)
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.3.1 (pending)
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
+
 ### [2.3.0] - 2025-12-22
 
 #### 🚀 Added

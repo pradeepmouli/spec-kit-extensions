@@ -35,6 +35,13 @@ else
     fi
 fi
 
+# Verify generate_branch_name function is available
+if ! declare -f generate_branch_name > /dev/null; then
+    echo "Error: generate_branch_name function is not available in common.sh." >&2
+    echo "Please ensure you have the latest version of spec-kit-extensions installed." >&2
+    exit 1
+fi
+
 JSON_MODE=false
 ARGS=()
 for arg in "$@"; do
@@ -75,9 +82,8 @@ fi
 NEXT=$((HIGHEST + 1))
 BUG_NUM=$(printf "%03d" "$NEXT")
 
-# Create branch name from description
-BRANCH_SUFFIX=$(echo "$BUG_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_SUFFIX" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
+# Create branch name from description using smart filtering
+WORDS=$(generate_branch_name "$BUG_DESCRIPTION")
 BRANCH_NAME="bugfix/${BUG_NUM}-${WORDS}"
 BUG_ID="bugfix-${BUG_NUM}"
 
