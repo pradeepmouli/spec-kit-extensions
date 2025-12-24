@@ -159,6 +159,14 @@ try {
     Copy-Item $deprecationFile $specLink -Force
 }
 
+# NOTE:
+# The dependency scanner is currently implemented as a bash script
+# located at `.specify/extensions/workflows/deprecate/scan-dependencies.sh`.
+# This PowerShell workflow will invoke it via `bash` when available.
+# If bash is not installed or the script is missing, this script will
+# still succeed but will note in the dependencies file that manual analysis
+# is required.
+
 $dependenciesFile = Join-Path $deprecateDir 'dependencies.md'
 $scanScript = Join-Path $repoRoot '.specify/extensions/workflows/deprecate/scan-dependencies.sh'
 

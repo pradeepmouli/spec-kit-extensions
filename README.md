@@ -132,6 +132,7 @@ cd your-project
 cp -r /tmp/extensions/extensions/* .specify/extensions/
 cp -r /tmp/extensions/scripts/* .specify/scripts/bash/
 # Optional (PowerShell): copy only if you want PowerShell workflows
+mkdir -p .specify/scripts/powershell/
 cp -r /tmp/extensions/scripts/powershell/* .specify/scripts/powershell/
 cp -r /tmp/extensions/commands/* .claude/commands/
 

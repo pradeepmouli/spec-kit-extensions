@@ -963,9 +963,12 @@ def install_agent_commands(
             if not dry_run:
                 if install_powershell:
                     content = source_file.read_text()
+                    # Replace bash script paths with PowerShell paths
                     content = content.replace(
                         ".specify/scripts/bash/", ".specify/scripts/powershell/"
-                    ).replace(".sh", ".ps1")
+                    )
+                    # Only replace `.sh` when it appears as a file extension (word boundary)
+                    content = re.sub(r"\.sh\b", ".ps1", content)
                     dest_file.write_text(content)
                 else:
                     install_file(source_file, dest_file)
@@ -1649,10 +1652,13 @@ def main(
         console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
         console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
+        # Default the script type only once we reach installation. At this point,
+        # agent resolution and related checks have already completed, so it's safe
+        # to fall back to "sh" if the user did not explicitly pass --script.
         selected_script = script_type or "sh"
         if selected_script not in {"sh", "ps"}:
             console.print(
-                f"[red]Error:[/red] Invalid script type '{selected_script}'. Choose from: sh, ps"
+                f"[red]Error:[/red] Invalid --script option '{selected_script}'. Must be 'sh' or 'ps'."
             )
             raise typer.Exit(1)
 
