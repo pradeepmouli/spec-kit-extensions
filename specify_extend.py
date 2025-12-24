@@ -235,6 +235,13 @@ def get_script_name(extension: str) -> str:
     return f"create-{extension}.sh"
 
 
+def get_powershell_script_name(extension: str) -> str:
+    """Get the PowerShell script name for an extension (handles special cases)"""
+    if extension == "modify":
+        return "create-modification.ps1"
+    return f"create-{extension}.ps1"
+
+
 def roman_to_int(roman: str) -> int:
     """Convert Roman numeral to integer
 
@@ -798,6 +805,7 @@ def install_extension_files(
     source_dir: Path,
     extensions: List[str],
     dry_run: bool = False,
+    install_powershell: bool = False,
 ) -> None:
     """Install extension workflow templates and scripts"""
 
@@ -805,10 +813,13 @@ def install_extension_files(
 
     extensions_dir = repo_root / ".specify" / "extensions"
     scripts_dir = repo_root / ".specify" / "scripts" / "bash"
+    powershell_scripts_dir = repo_root / ".specify" / "scripts" / "powershell"
 
     if not dry_run:
         extensions_dir.mkdir(parents=True, exist_ok=True)
         scripts_dir.mkdir(parents=True, exist_ok=True)
+        if install_powershell:
+            powershell_scripts_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy extension base files
     source_extensions = source_dir / "extensions"
@@ -853,6 +864,21 @@ def install_extension_files(
             else:
                 console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
 
+    if install_powershell:
+        source_powershell_scripts = source_dir / "scripts" / "powershell"
+        if source_powershell_scripts.exists():
+            for ext in extensions:
+                script_name = get_powershell_script_name(ext)
+                source_script = source_powershell_scripts / script_name
+
+                if source_script.exists():
+                    if not dry_run:
+                        dest_script = powershell_scripts_dir / script_name
+                        shutil.copy(source_script, dest_script)
+                    console.print(f"[green]✓[/green] Copied {script_name} script")
+                else:
+                    console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
+
 
 def install_agent_commands(
     repo_root: Path,
@@ -861,6 +887,7 @@ def install_agent_commands(
     extensions: List[str],
     dry_run: bool = False,
     link: bool = False,
+    install_powershell: bool = False,
 ) -> None:
     """Install agent-specific command files"""
 
@@ -871,6 +898,9 @@ def install_agent_commands(
         console.print(f"[blue]ℹ[/blue] Installing for manual/generic agent setup...")
         console.print("  [dim]To use extensions, run bash scripts directly:[/dim]")
         console.print("  [dim].specify/scripts/bash/create-bugfix.sh \"description\"[/dim]")
+        if install_powershell:
+            console.print("  [dim]PowerShell scripts are also installed:[/dim]")
+            console.print("  [dim].specify/scripts/powershell/create-bugfix.ps1 \"description\"[/dim]")
         return
 
     console.print(f"[blue]ℹ[/blue] Installing {agent_name} commands...")
@@ -884,6 +914,12 @@ def install_agent_commands(
     if link and os.name == "nt":
         console.print(
             "[yellow]⚠[/yellow] Symlink mode requested on Windows; falling back to copy"
+        )
+        link = False
+    if link and install_powershell:
+        console.print(
+            "[yellow]⚠[/yellow] Symlink mode requested with PowerShell script selection; "
+            "falling back to copy so command scripts can reference .ps1 workflows"
         )
         link = False
 
@@ -925,7 +961,14 @@ def install_agent_commands(
 
         if source_file.exists():
             if not dry_run:
-                install_file(source_file, dest_file)
+                if install_powershell:
+                    content = source_file.read_text()
+                    content = content.replace(
+                        ".specify/scripts/bash/", ".specify/scripts/powershell/"
+                    ).replace(".sh", ".ps1")
+                    dest_file.write_text(content)
+                else:
+                    install_file(source_file, dest_file)
 
                 # For GitHub Copilot, also create a prompt file that points to the agent
                 if agent == "copilot":
@@ -1460,6 +1503,11 @@ def main(
         "--github-token",
         help="GitHub token to use for API requests (or set GH_TOKEN or GITHUB_TOKEN environment variable)",
     ),
+    script_type: Optional[str] = typer.Option(
+        None,
+        "--script",
+        help="Script type to install: sh (bash) or ps (PowerShell)",
+    ),
 ) -> None:
     """
     Installation tool for spec-kit-extensions that detects your existing
@@ -1601,7 +1649,20 @@ def main(
         console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
         console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
-        install_extension_files(repo_root, source_dir, extensions_to_install, dry_run)
+        selected_script = script_type or "sh"
+        if selected_script not in {"sh", "ps"}:
+            console.print(
+                f"[red]Error:[/red] Invalid script type '{selected_script}'. Choose from: sh, ps"
+            )
+            raise typer.Exit(1)
+
+        install_extension_files(
+            repo_root,
+            source_dir,
+            extensions_to_install,
+            dry_run,
+            install_powershell=selected_script == "ps",
+        )
         for target_agent in resolved_agents:
             install_agent_commands(
                 repo_root,
@@ -1610,6 +1671,7 @@ def main(
                 extensions_to_install,
                 dry_run,
                 link=link,
+                install_powershell=selected_script == "ps",
             )
 
         # Constitution update is repo-level; use the first agent for formatting conventions
