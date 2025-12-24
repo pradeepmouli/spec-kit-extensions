@@ -191,6 +191,14 @@ try {
     Copy-Item $modSpecFile $specLink -Force
 }
 
+# NOTE:
+# The impact scanner is currently implemented as a bash script
+# located at `.specify/extensions/workflows/modify/scan-impact.sh`.
+# This PowerShell workflow will invoke it via `bash` when available.
+# If bash is not installed or the script is missing, this script will
+# still succeed but will note in the impact file that manual analysis
+# is required.
+
 $impactFile = Join-Path $modDir 'impact-analysis.md'
 $impactScanner = Join-Path $repoRoot '.specify/extensions/workflows/modify/scan-impact.sh'
 
