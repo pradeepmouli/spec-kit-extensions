@@ -2,13 +2,13 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**8 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**9 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 9 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
@@ -377,6 +377,7 @@ your-project/
     ├── refactor.md
     ├── hotfix.md
     ├── deprecate.md
+    ├── cleanup.md
     └── review.md
 ```
 
@@ -384,12 +385,12 @@ your-project/
 
 ## FAQ
 
-### Do I need to use all 8 workflows?
+### Do I need to use all 9 workflows?
 
 No! Enable only what you need via `.specify/extensions/enabled.conf`. Common combinations:
 - **Minimal**: Just `/bugfix` (most teams need this)
 - **Standard**: `/bugfix` + `/enhance` + `/modify` (covers most scenarios)
-- **Complete**: All 8 workflows (full lifecycle coverage + maintenance)
+- **Complete**: All 9 workflows (full lifecycle coverage + maintenance)
 
 ### Can I customize the workflows?
 
