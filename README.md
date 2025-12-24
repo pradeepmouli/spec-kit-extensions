@@ -334,8 +334,14 @@ your-project/
 │   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
 │   ├── scripts/powershell/      # PowerShell scripts (Windows)
+│   │   ├── create-baseline.ps1
+│   │   ├── create-bugfix.ps1
 │   │   ├── create-enhance.ps1
-│   │   └── (more coming soon...)
+│   │   ├── create-modification.ps1
+│   │   ├── create-refactor.ps1
+│   │   ├── create-hotfix.ps1
+│   │   ├── create-deprecate.ps1
+│   │   └── create-cleanup.ps1
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
