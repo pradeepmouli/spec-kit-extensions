@@ -72,7 +72,28 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Installation
 
-**Recommended: Use specify-extend (Automatic)**
+spec-kit-extensions works with any AI agent that supports spec-kit. Installation is a two-step process:
+
+**Step 1: Initialize spec-kit** (creates `.specify/` structure):
+```bash
+specify init --here --ai claude
+# or for PowerShell: specify init --here --ai claude --script ps
+```
+
+**Step 2: Install extensions**:
+```bash
+specify-extend --all
+```
+
+This will:
+- Detect your configured AI agent
+- Install all 5 workflow extensions into `.specify/`
+- Set up quality gates  
+- Configure branch naming patterns
+
+For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
+
+**Alternative: Manual Installation**
 ```bash
 # 1. Initialize spec-kit in your project
 cd your-project

@@ -164,21 +164,43 @@ Want to add support for a new AI coding agent?
 git clone https://github.com/YOUR-USERNAME/spec-kit-extensions.git
 cd spec-kit-extensions
 
-# 2. Create a test project
-cd /tmp
-git clone https://github.com/github/spec-kit.git test-project
-cd test-project
-specify init .
+# 2. Create development symlinks (for testing in this repo)
+# This mimics the structure that 'specify init' creates
+mkdir -p .specify/scripts/bash .specify/scripts/powershell .specify/extensions/workflows
+ln -s "$(pwd)/common.sh" .specify/scripts/bash/common.sh
+ln -s "$(pwd)"/scripts/*.sh .specify/scripts/bash/
+ln -s "$(pwd)"/scripts/powershell/*.ps1 .specify/scripts/powershell/
+ln -s "$(pwd)"/extensions/workflows/* .specify/extensions/workflows/
 
-# 3. Install your local extensions
+# 3. Test in this repo directly
+.specify/scripts/bash/create-refactor.sh --json "test refactoring"
+
+# OR: Install into a separate test project
+cd /tmp
+mkdir test-project && cd test-project
+git init
+
+# 4. Initialize spec-kit (creates .specify/ structure)
+specify init --here --ai claude
+# or for PowerShell scripts:
+# specify init --here --ai claude --script ps
+
+# 5. Install your local extensions into test project
 cp -r ~/spec-kit-extensions/extensions/* .specify/extensions/
 cp ~/spec-kit-extensions/scripts/* .specify/scripts/bash/
+# or for PowerShell:
+# cp ~/spec-kit-extensions/scripts/powershell/* .specify/scripts/powershell/
 cp ~/spec-kit-extensions/commands/* .claude/commands/
 
-# 4. Test workflows
+# 6. Test workflows in test project
 /bugfix "test bug"
 # ... verify it works
 ```
+
+**Note**: 
+- The `.specify/` directory is created by **spec-kit's `specify init`**, not by specify-extend
+- `specify init --script ps` uses PowerShell scripts, `--script sh` (default) uses Bash
+- The `.specify/` directory and `specs/` are git-ignored in this repo to avoid committing test artifacts
 
 ### Testing Changes
 

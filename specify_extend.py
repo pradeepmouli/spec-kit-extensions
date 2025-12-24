@@ -848,23 +848,9 @@ def install_extension_files(
         else:
             console.print(f"[yellow]⚠[/yellow] Workflow directory for {ext} not found")
 
-    # Copy bash scripts
-    source_scripts = source_dir / "scripts"
-    if source_scripts.exists():
-        for ext in extensions:
-            script_name = get_script_name(ext)
-            source_script = source_scripts / script_name
-
-            if source_script.exists():
-                if not dry_run:
-                    dest_script = scripts_dir / script_name
-                    shutil.copy(source_script, dest_script)
-                    dest_script.chmod(0o755)  # Make executable
-                console.print(f"[green]✓[/green] Copied {script_name} script")
-            else:
-                console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
-
+    # Copy scripts based on selected script type (consistent with spec-kit behavior)
     if install_powershell:
+        # Install PowerShell scripts only
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
             for ext in extensions:
@@ -875,6 +861,22 @@ def install_extension_files(
                     if not dry_run:
                         dest_script = powershell_scripts_dir / script_name
                         shutil.copy(source_script, dest_script)
+                    console.print(f"[green]✓[/green] Copied {script_name} script")
+                else:
+                    console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
+    else:
+        # Install bash scripts only
+        source_scripts = source_dir / "scripts"
+        if source_scripts.exists():
+            for ext in extensions:
+                script_name = get_script_name(ext)
+                source_script = source_scripts / script_name
+
+                if source_script.exists():
+                    if not dry_run:
+                        dest_script = scripts_dir / script_name
+                        shutil.copy(source_script, dest_script)
+                        dest_script.chmod(0o755)  # Make executable
                     console.print(f"[green]✓[/green] Copied {script_name} script")
                 else:
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
