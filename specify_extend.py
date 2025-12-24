@@ -60,7 +60,7 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
+AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
