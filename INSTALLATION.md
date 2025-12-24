@@ -27,6 +27,7 @@ specify init .
 # Method A: Install with pip from PyPI (Recommended)
 pip install specify-extend
 specify-extend --all
+specify-extend --all --script ps  # Optional: install PowerShell workflows
 
 # Optional: install command files for multiple agents in the same repo
 specify-extend --agents claude,copilot,cursor-agent --all
@@ -77,6 +78,9 @@ cp -r /tmp/spec-kit-extensions/extensions/* .specify/extensions/
 # 4. Copy bash scripts
 cp /tmp/spec-kit-extensions/scripts/create-*.sh .specify/scripts/bash/
 
+# 4b. Optional: Copy PowerShell scripts (Windows-friendly)
+cp /tmp/spec-kit-extensions/scripts/powershell/create-*.ps1 .specify/scripts/powershell/
+
 # 5. Copy Claude Code commands (if using Claude Code)
 mkdir -p .claude/commands
 cp /tmp/spec-kit-extensions/commands/*.md .claude/commands/
@@ -106,6 +110,8 @@ git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .speci
 # 2. Create symlinks to extension files
 ln -s ..extension-source/extensions .specify/extensions
 ln -s ../../.specify/extension-source/scripts/* .specify/scripts/bash/
+# Optional: PowerShell scripts (only if you want PowerShell workflows)
+ln -s ../../.specify/extension-source/scripts/powershell/* .specify/scripts/powershell/
 mkdir -p .claude/commands
 ln -s ../../.specify/extension-source/commands/* .claude/commands/
 
@@ -164,6 +170,7 @@ ls .specify/extensions/
 
 # Verify scripts
 ls .specify/scripts/bash/create-*.sh
+ls .specify/scripts/powershell/create-*.ps1
 # Should show: create-bugfix.sh, create-modification.sh, etc.
 
 # Verify commands (if using Claude Code)
@@ -277,9 +284,13 @@ Each AI agent requires different setup. See **[AI-AGENTS.md](AI-AGENTS.md)** for
 3. See [AI-AGENTS.md](AI-AGENTS.md#3-cursor) for complete example
 
 **For Manual Use (any agent)**:
-- Run bash scripts directly:
+- Run bash scripts directly (PowerShell scripts are optional):
   ```bash
   .specify/scripts/bash/create-bugfix.sh "bug description"
+  ```
+  ```powershell
+  # Optional: if PowerShell scripts are installed
+  .specify/scripts/powershell/create-bugfix.ps1 "bug description"
   ```
 - Then ask your AI agent to implement following the generated files
 - See [AI-AGENTS.md](AI-AGENTS.md#7-universal-fallback-any-ai-agent) for details

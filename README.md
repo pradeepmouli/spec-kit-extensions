@@ -87,6 +87,7 @@ python -m specify_extend --all
 
 # 3. Install extensions (auto-detects your agent)
 specify-extend --all
+specify-extend --all --script ps  # Optional: install PowerShell workflows
 
 # Or install specific extensions
 specify-extend bugfix modify refactor
@@ -128,6 +129,8 @@ git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/extension
 cd your-project
 cp -r /tmp/extensions/extensions/* .specify/extensions/
 cp -r /tmp/extensions/scripts/* .specify/scripts/bash/
+# Optional (PowerShell): copy only if you want PowerShell workflows
+cp -r /tmp/extensions/scripts/powershell/* .specify/scripts/powershell/
 cp -r /tmp/extensions/commands/* .claude/commands/
 
 # Merge constitution sections
@@ -272,7 +275,7 @@ These extensions work with any AI agent that supports spec-kit:
 - ✅ **Windsurf** (via project rules)
 - ✅ **Gemini CLI** (via specify CLI)
 - ✅ **Other CLI tools** (Qwen, opencode, Codex)
-- ✅ **Any AI agent** (universal fallback via bash scripts)
+- ✅ **Any AI agent** (universal fallback via bash scripts; PowerShell optional with --script ps)
 
 **See [AI-AGENTS.md](AI-AGENTS.md) for detailed setup guides for each agent.**
 
@@ -325,6 +328,14 @@ your-project/
 │   │   ├── create-deprecate.sh
 │   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
+│   ├── scripts/powershell/      # Optional: installed with --script ps
+│   │   ├── create-baseline.ps1   # Extension scripts (PowerShell)
+│   │   ├── create-bugfix.ps1
+│   │   ├── create-modification.ps1
+│   │   ├── create-refactor.ps1
+│   │   ├── create-hotfix.ps1
+│   │   ├── create-deprecate.ps1
+│   │   └── create-cleanup.ps1
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
