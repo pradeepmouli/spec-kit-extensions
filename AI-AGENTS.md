@@ -22,7 +22,9 @@ Any AI Agent Reads & Implements
 - ✅ **Bash scripts** - Universal across all platforms
 - ✅ **Markdown templates** - Human-readable, AI-parseable
 - ✅ **Git conventions** - Branch names encode workflow type
-- ✅ **No agent-specific code** - Works with any tool that can read files and run bash
+- ✅ **No agent-specific code** - Works with any tool that can read files and run bash (PowerShell optional)
+
+> **PowerShell support (opt-in)**: Run `specify-extend --all --script ps` (or manually copy from `scripts/powershell/`) to install `.ps1` workflows in `.specify/scripts/powershell/`. If installed, replace the bash examples below with the corresponding PowerShell script (e.g., `create-bugfix.ps1`).
 
 ## Supported AI Agents
 
