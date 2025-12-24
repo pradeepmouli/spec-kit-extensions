@@ -88,7 +88,7 @@ specify-extend --all
 This will:
 - Detect your configured AI agent
 - Install all 5 workflow extensions into `.specify/`
-- Set up quality gates  
+- Set up quality gates
 - Configure branch naming patterns
 
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).

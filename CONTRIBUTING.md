@@ -197,7 +197,7 @@ cp ~/spec-kit-extensions/commands/* .claude/commands/
 # ... verify it works
 ```
 
-**Note**: 
+**Note**:
 - The `.specify/` directory is created by **spec-kit's `specify init`**, not by specify-extend
 - `specify init --script ps` uses PowerShell scripts, `--script sh` (default) uses Bash
 - The `.specify/` directory and `specs/` are git-ignored in this repo to avoid committing test artifacts
