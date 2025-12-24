@@ -23,22 +23,22 @@ This provides essential context for you (the AI agent) when working on future ta
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. **Analyze the Project**:
-   
+
    a. If HAS_EXISTING_SPECS is "true":
       - The baseline commit represents the project state BEFORE spec-kit was used
       - Use `git show BASELINE_COMMIT:path/to/file` to examine files at that point
       - Analyze that historical state to document what existed before specs
-   
+
    b. If HAS_EXISTING_SPECS is "false":
       - Analyze the current project state
       - This is a fresh baseline for future work
 
 3. **Generate baseline-spec.md**:
-   
+
    Load `.specify/extensions/workflows/baseline/baseline-spec-template.md` to understand the structure.
-   
+
    Then comprehensively analyze the codebase (at the baseline commit if applicable) and fill in BASELINE_SPEC with:
-   
+
    - **Executive Summary**: High-level overview of project purpose
    - **Project Structure**: Directory layout and key components
    - **Architecture**: System design, technology stack, patterns
@@ -49,7 +49,7 @@ This provides essential context for you (the AI agent) when working on future ta
    - **Configuration**: Environment variables, feature flags
    - **Known Issues**: Current limitations and technical debt
    - **Future Considerations**: Planned improvements and scalability concerns
-   
+
    Be thorough - examine:
    - Package files (package.json, requirements.txt, pom.xml, etc.)
    - Build configurations (webpack, vite, Makefile, etc.)
@@ -61,22 +61,22 @@ This provides essential context for you (the AI agent) when working on future ta
    - Test files to understand tested functionality
 
 4. **Generate current-state.md**:
-   
+
    Load `.specify/extensions/workflows/baseline/current-state-template.md` for structure.
-   
+
    Scan the specs directory and enumerate all changes by type:
-   
+
    - **Features**: List all `specs/###-*` directories with descriptions
    - **Modifications**: Find `specs/###-*/modifications/` subdirectories
    - **Bugfixes**: List `specs/bugfix/` entries
-   - **Refactors**: List `specs/refactor/` entries  
+   - **Refactors**: List `specs/refactor/` entries
    - **Hotfixes**: List `specs/hotfix/` entries
    - **Deprecations**: List `specs/deprecate/` entries
-   
+
    For unspecified changes (if HAS_EXISTING_SPECS is true):
    - Compare commits from BASELINE_COMMIT to HEAD
    - Identify commits not associated with spec directories
-   
+
    Calculate statistics:
    - Counts for each workflow type
    - Total commits, files changed, lines added/removed
