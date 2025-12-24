@@ -78,8 +78,10 @@ Change tracking organized by:
 # Command: /speckit.baseline
 
 # Or manually:
-.specify/scripts/bash/create-baseline.sh
+.specify/scripts/bash/create-baseline.sh --json
 ```
+
+**Note:** The script only accepts the `--json` flag and does not take description arguments.
 
 The workflow will:
 1. Detect if specs exist and determine baseline commit

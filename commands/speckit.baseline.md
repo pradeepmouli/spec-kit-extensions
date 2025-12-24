@@ -19,6 +19,7 @@ This provides essential context for you (the AI agent) when working on future ta
 ## Your Task
 
 1. Run the script `.specify/scripts/bash/create-baseline.sh --json` from repo root and parse its JSON output for BASELINE_SPEC, CURRENT_STATE, BASELINE_COMMIT, and HAS_EXISTING_SPECS. All file paths must be absolute.
+   **Note:** The script only accepts the `--json` flag and ignores `$ARGUMENTS`.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. **Analyze the Project**:
