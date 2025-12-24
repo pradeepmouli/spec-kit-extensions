@@ -2,16 +2,17 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**7 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**8 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 7 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
+- **`/speckit.enhance`** - Make minor enhancements with streamlined single-doc workflow
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
@@ -41,6 +42,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | **New Feature** | ✅ `/speckit.specify` workflow | ✅ Same |
 | **Project Baseline** | ❌ Ad-hoc | ✅ `/speckit.baseline` with comprehensive docs |
 | **Bug Fix** | ❌ Ad-hoc | ✅ `/speckit.bugfix` with regression tests |
+| **Minor Enhancement** | ❌ Ad-hoc | ✅ `/speckit.enhance` with streamlined planning |
 | **Modify Feature** | ❌ Ad-hoc | ✅ `/speckit.modify` with impact analysis |
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
 | **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
@@ -168,7 +170,10 @@ Starting with spec-kit?
 └─ Use `/speckit.baseline` to establish project context
 
 Building something new?
-└─ Use `/speckit.specify "description"`
+├─ Major feature (multi-phase, complex)?
+│  └─ Use `/speckit.specify "description"`
+└─ Minor enhancement (simple, quick)?
+   └─ Use `/speckit.enhance "description"`
 
 Fixing broken behavior?
 ├─ Production emergency?
@@ -245,6 +250,7 @@ Reviewing completed work?
 | **Feature** | `/speckit.specify "..."` | Full spec + design | TDD (test before code) |
 | **Baseline** | `/speckit.baseline` | Context tracking | No tests (doc only) |
 | **Bugfix** | `/speckit.bugfix "..."` | Regression test | Test before fix |
+| **Enhance** | `/speckit.enhance "..."` | Single-doc workflow | Tests for new behavior |
 | **Modify** | `/speckit.modify 014 "..."` | Impact analysis | Update affected tests |
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
 | **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
@@ -310,26 +316,32 @@ your-project/
 │   │   └── workflows/
 │   │       ├── baseline/
 │   │       ├── bugfix/
+│   │       ├── enhance/
 │   │       ├── modify/
 │   │       ├── refactor/
 │   │       ├── hotfix/
 │   │       ├── deprecate/
 │   │       ├── cleanup/
 │   │       └── review/
-│   ├── scripts/bash/
-│   │   ├── create-baseline.sh    # Extension scripts
+│   ├── scripts/bash/            # Bash scripts (Linux/Mac/Git Bash)
+│   │   ├── create-baseline.sh
 │   │   ├── create-bugfix.sh
+│   │   ├── create-enhance.sh
 │   │   ├── create-modification.sh
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
 │   │   ├── create-deprecate.sh
 │   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
+│   ├── scripts/powershell/      # PowerShell scripts (Windows)
+│   │   ├── create-enhance.ps1
+│   │   └── (more coming soon...)
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
 └── .claude/commands/            # If using Claude Code
     ├── baseline.md
     ├── bugfix.md
+    ├── enhance.md
     ├── modify.md
     ├── refactor.md
     ├── hotfix.md
@@ -337,14 +349,16 @@ your-project/
     └── review.md
 ```
 
+**Note**: PowerShell scripts are available for Windows users. Bash scripts work on Linux, Mac, and Windows (via Git Bash or WSL).
+
 ## FAQ
 
-### Do I need to use all 7 workflows?
+### Do I need to use all 8 workflows?
 
 No! Enable only what you need via `.specify/extensions/enabled.conf`. Common combinations:
 - **Minimal**: Just `/bugfix` (most teams need this)
-- **Standard**: `/bugfix` + `/modify` (covers most scenarios)
-- **Complete**: All 6 workflows (full lifecycle coverage + maintenance)
+- **Standard**: `/bugfix` + `/enhance` + `/modify` (covers most scenarios)
+- **Complete**: All 8 workflows (full lifecycle coverage + maintenance)
 
 ### Can I customize the workflows?
 
