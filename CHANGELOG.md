@@ -6,16 +6,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.4.4
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.4.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.0
 
 ---
 
 ## Extension Templates
 
-### [Unreleased]
+### [2.4.0] - 2025-12-24
 
-_(No changes yet)_
+#### 🚀 Added
+
+- **Enhance Workflow** - New `/speckit.enhance` workflow for minor improvements and enhancements
+  - Quick-turnaround improvements that don't require full feature specs
+  - Creates enhancement-spec.md with problem statement, proposed changes, and verification steps
+  - Lighter-weight alternative to full feature development
+  - Templates include: enhancement-template.md
+  - Script: `create-enhance.sh` with JSON output support
+  - PowerShell support: `create-enhance.ps1`
+
+#### 🔧 Changed/Improved
+
+- **PowerShell Script Support** - Complete PowerShell implementation for all workflows
+  - All 8 extension workflows now have PowerShell equivalents (.ps1)
+  - Bash scripts remain at `.specify/scripts/bash/`, PowerShell at `.specify/scripts/powershell/`
+  - Agent commands automatically reference correct script type based on `--script` flag
+  - Consistent behavior with spec-kit's `--script ps` option
+  - Affects: All workflow scripts (baseline, bugfix, cleanup, deprecate, enhance, hotfix, modify, refactor)
+
+- **Documentation Improvements** - Enhanced setup and development documentation
+  - Clarified that `specify init` (not `specify-extend`) creates `.specify/` directory structure
+  - Added development symlink setup instructions in CONTRIBUTING.md
+  - Updated README.md with two-step installation process
+  - Added `.specify/` and `specs/` to .gitignore for development environments
+  - Documented bash vs PowerShell handling
+
+#### 🐛 Fixed
+
+- **Script Type Consistency** - Fixed specify-extend to match spec-kit's either/or behavior
+  - Changed from "always install bash + optionally PowerShell" to "install EITHER bash OR PowerShell"
+  - Now consistent with `specify init --script sh` (bash only) and `--script ps` (PowerShell only)
+  - Prevents mixed script installations that could cause confusion
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.4.0
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.0+
 
 ---
 
@@ -63,6 +100,37 @@ _(No changes yet)_
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.0] - 2025-12-24
+
+#### 🚀 Added
+
+- **PowerShell Script Support** - Added `--script` option to choose between bash and PowerShell
+  - `--script sh` (default): Installs bash scripts to `.specify/scripts/bash/`
+  - `--script ps`: Installs PowerShell scripts to `.specify/scripts/powershell/`
+  - Agent commands automatically updated to reference correct script paths
+  - Consistent with spec-kit's `specify init --script` behavior
+
+- **Enhance Workflow Integration** - Added support for new enhance workflow
+  - Installs enhance command templates for all supported agents
+  - Copies create-enhance.sh and create-enhance.ps1 scripts
+  - Updates enabled.conf with enhance workflow option
+
+#### 🔧 Changed/Improved
+
+- **Script Installation Logic** - Changed to either/or behavior (breaking change)
+  - Previously: Always installed bash, optionally added PowerShell
+  - Now: Installs ONLY the selected script type via `--script` flag
+  - Matches spec-kit's behavior where `--script ps` excludes bash entirely
+  - More consistent and prevents confusion from mixed installations
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.0
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.4.0
+
+---
 
 ### [1.4.4] - 2025-12-23
 
