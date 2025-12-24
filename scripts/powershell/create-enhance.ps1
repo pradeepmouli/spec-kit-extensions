@@ -1,178 +1,163 @@
-# Create enhancement workflow
-# PowerShell version of create-enhance.sh
-
+#!/usr/bin/env pwsh
+[CmdletBinding()]
 param(
-    [Parameter(Position=0, ValueFromRemainingArguments=$true)]
-    [string[]]$Arguments,
     [switch]$Json,
-    [switch]$Help
+    [switch]$Help,
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$EnhancementDescription
 )
+$ErrorActionPreference = 'Stop'
 
-function Show-Help {
-    Write-Host "Usage: create-enhance.ps1 [-Json] <enhancement_description>"
-    Write-Host ""
-    Write-Host "Creates a new enhancement workflow with condensed single-document planning."
-    Write-Host ""
-    Write-Host "Options:"
-    Write-Host "  -Json    Output results in JSON format"
-    Write-Host "  -Help    Show this help message"
-    exit 0
+function Resolve-CommonScript {
+    $searchDir = $PSScriptRoot
+    $commonScript = $null
+
+    for ($i = 0; $i -lt 6 -and -not $commonScript; $i++) {
+        $direct = Join-Path $searchDir 'common.ps1'
+        if (Test-Path $direct) {
+            $commonScript = $direct
+            break
+        }
+
+        $nested = Join-Path $searchDir 'scripts/powershell/common.ps1'
+        if (Test-Path $nested) {
+            $commonScript = $nested
+            break
+        }
+
+        $searchDir = Split-Path $searchDir -Parent
+    }
+
+    if (-not $commonScript) {
+        Write-Error 'Error: Could not find common.ps1. Please ensure spec-kit is properly installed.'
+        exit 1
+    }
+
+    . $commonScript
+
+    if (-not (Get-Command Get-RepoRoot -ErrorAction SilentlyContinue)) {
+        Write-Error 'Error: Get-RepoRoot is not available in common.ps1.'
+        exit 1
+    }
+}
+
+function Get-BranchNameFromDescription {
+    param([string]$Description)
+
+    $stopWords = @(
+        'i', 'a', 'an', 'the', 'to', 'for', 'of', 'in', 'on', 'at', 'by', 'with', 'from',
+        'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
+        'do', 'does', 'did', 'will', 'would', 'should', 'could', 'can', 'may', 'might', 'must', 'shall',
+        'this', 'that', 'these', 'those', 'my', 'your', 'our', 'their',
+        'want', 'need', 'add', 'get', 'set'
+    )
+
+    $cleanName = ($Description.ToLower() -replace '[^a-z0-9]', ' ')
+    $words = $cleanName -split '\s+' | Where-Object { $_ }
+
+    $meaningfulWords = @()
+    foreach ($word in $words) {
+        if ($stopWords -contains $word) { continue }
+        if ($word.Length -ge 3) {
+            $meaningfulWords += $word
+        } elseif ($Description -match "\b$($word.ToUpper())\b") {
+            $meaningfulWords += $word
+        }
+    }
+
+    if ($meaningfulWords.Count -gt 0) {
+        $maxWords = if ($meaningfulWords.Count -eq 4) { 4 } else { 3 }
+        return ($meaningfulWords | Select-Object -First $maxWords) -join '-'
+    }
+
+    $cleaned = $Description.ToLower() -replace '[^a-z0-9]', '-' -replace '-{2,}', '-' -replace '^-', '' -replace '-$', ''
+    $fallbackWords = $cleaned -split '-' | Where-Object { $_ } | Select-Object -First 3
+    return ($fallbackWords -join '-')
 }
 
 if ($Help) {
-    Show-Help
+    Write-Host 'Usage: ./create-enhance.ps1 [-Json] <enhancement_description>'
+    exit 0
 }
 
-# Join arguments into description
-$EnhancementDescription = $Arguments -join " "
-
-if ([string]::IsNullOrWhiteSpace($EnhancementDescription)) {
-    Write-Error "Usage: create-enhance.ps1 [-Json] <enhancement_description>"
+if (-not $EnhancementDescription -or $EnhancementDescription.Count -eq 0) {
+    Write-Error 'Usage: ./create-enhance.ps1 [-Json] <enhancement_description>'
     exit 1
 }
 
-# Get repository root
-function Get-RepoRoot {
-    $currentDir = Get-Location
-    while ($currentDir) {
-        if (Test-Path (Join-Path $currentDir ".git")) {
-            return $currentDir.Path
-        }
-        if (Test-Path (Join-Path $currentDir ".specify")) {
-            return $currentDir.Path
-        }
-        $parent = Split-Path $currentDir -Parent
-        if ($parent -eq $currentDir) {
-            break
-        }
-        $currentDir = $parent
-    }
-    return (Get-Location).Path
-}
+$enhancementDescription = ($EnhancementDescription -join ' ').Trim()
 
-# Check if git is available
-function Test-Git {
-    try {
-        $null = git --version 2>&1
-        return $true
-    } catch {
-        return $false
-    }
-}
+Resolve-CommonScript
 
-# Generate branch name from description (simplified version)
-function Get-BranchName {
-    param([string]$Description)
+$repoRoot = Get-RepoRoot
+$hasGit = Test-HasGit
 
-    # Stop words to filter out
-    $stopWords = @(
-        'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-        'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-        'to', 'was', 'will', 'with', 'should', 'would', 'could', 'can',
-        'this', 'but', 'not', 'or', 'so', 'than', 'then', 'there'
-    )
+Set-Location $repoRoot
 
-    # Convert to lowercase and split into words
-    $words = $Description.ToLower() -split '\s+' | Where-Object { $_ -match '^[a-z0-9]+$' }
+$specsDir = Join-Path $repoRoot 'specs'
+New-Item -ItemType Directory -Path $specsDir -Force | Out-Null
 
-    # Filter out stop words and keep first 5 meaningful words
-    $filteredWords = $words | Where-Object { $stopWords -notcontains $_ } | Select-Object -First 5
-
-    # Join with hyphens
-    return ($filteredWords -join '-')
-}
-
-$RepoRoot = Get-RepoRoot
-$HasGit = Test-Git
-
-Set-Location $RepoRoot
-
-$SpecsDir = Join-Path $RepoRoot "specs"
-if (-not (Test-Path $SpecsDir)) {
-    New-Item -ItemType Directory -Path $SpecsDir | Out-Null
-}
-
-# Find highest enhance number
-$Highest = 0
-$EnhanceDir = Join-Path $SpecsDir "enhance"
-if (Test-Path $EnhanceDir) {
-    Get-ChildItem $EnhanceDir -Directory | ForEach-Object {
+$enhanceDir = Join-Path $specsDir 'enhance'
+$highest = 0
+if (Test-Path $enhanceDir) {
+    Get-ChildItem -Path $enhanceDir -Directory | ForEach-Object {
         if ($_.Name -match '^(\d+)') {
             $num = [int]$matches[1]
-            if ($num -gt $Highest) {
-                $Highest = $num
-            }
+            if ($num -gt $highest) { $highest = $num }
         }
     }
 }
 
-$Next = $Highest + 1
-$EnhanceNum = "{0:D3}" -f $Next
+$next = $highest + 1
+$enhanceNum = '{0:000}' -f $next
+$words = Get-BranchNameFromDescription -Description $enhancementDescription
+$branchName = "enhance/$enhanceNum-$words"
+$enhanceId = "enhance-$enhanceNum"
 
-# Create branch name from description
-$Words = Get-BranchName $EnhancementDescription
-$BranchName = "enhance/$EnhanceNum-$Words"
-$EnhanceId = "enhance-$EnhanceNum"
-
-# Create git branch if git available
-if ($HasGit) {
+if ($hasGit) {
     try {
-        git checkout -b $BranchName 2>&1 | Out-Null
+        git checkout -b $branchName | Out-Null
     } catch {
-        Write-Warning "[enhance] Git repository detected but branch creation failed: $_"
+        Write-Warning "Failed to create git branch: $branchName"
     }
 } else {
-    Write-Warning "[enhance] Git repository not detected; skipped branch creation for $BranchName" -WarningAction Continue
+    Write-Warning "[enhance] Warning: Git repository not detected; skipped branch creation for $branchName"
 }
 
-# Create enhancement directory
-if (-not (Test-Path $EnhanceDir)) {
-    New-Item -ItemType Directory -Path $EnhanceDir | Out-Null
-}
+New-Item -ItemType Directory -Path $enhanceDir -Force | Out-Null
+$enhancementDir = Join-Path $enhanceDir "$enhanceNum-$words"
+New-Item -ItemType Directory -Path $enhancementDir -Force | Out-Null
 
-$EnhancementDir = Join-Path $EnhanceDir "$EnhanceNum-$Words"
-New-Item -ItemType Directory -Path $EnhancementDir | Out-Null
+$template = Join-Path $repoRoot '.specify/extensions/workflows/enhance/enhancement-template.md'
+$enhancementFile = Join-Path $enhancementDir 'enhancement.md'
 
-# Copy template
-$TemplateFile = Join-Path $RepoRoot ".specify\extensions\workflows\enhance\enhancement-template.md"
-$EnhancementFile = Join-Path $EnhancementDir "enhancement.md"
-
-if (Test-Path $TemplateFile) {
-    Copy-Item $TemplateFile $EnhancementFile
+if (Test-Path $template) {
+    Copy-Item $template $enhancementFile -Force
 } else {
-    "# Enhancement" | Out-File -FilePath $EnhancementFile -Encoding utf8
+    Set-Content -Path $enhancementFile -Value '# Enhancement'
 }
 
-# Create symlink from spec.md to enhancement.md
-$SpecLink = Join-Path $EnhancementDir "spec.md"
-# Windows symlinks require admin rights, so we'll create a copy or use mklink
-if ($PSVersionTable.Platform -eq 'Win32NT' -or $PSVersionTable.PSVersion.Major -lt 6) {
-    # On Windows, try to create symlink, fall back to copy
-    try {
-        $null = cmd /c mklink "$SpecLink" "enhancement.md" 2>&1
-    } catch {
-        Copy-Item $EnhancementFile $SpecLink
-    }
-} else {
-    # On Unix-like systems (PowerShell Core on Linux/Mac)
-    New-Item -ItemType SymbolicLink -Path $SpecLink -Target "enhancement.md" -Force | Out-Null
+$specLink = Join-Path $enhancementDir 'spec.md'
+try {
+    if (Test-Path $specLink) { Remove-Item $specLink -Force }
+    New-Item -ItemType SymbolicLink -Path $specLink -Target 'enhancement.md' | Out-Null
+} catch {
+    Copy-Item $enhancementFile $specLink -Force
 }
 
-# Set environment variable for current session
-$env:SPECIFY_ENHANCE = $EnhanceId
+$env:SPECIFY_ENHANCE = $enhanceId
 
 if ($Json) {
-    $result = @{
-        ENHANCE_ID = $EnhanceId
-        BRANCH_NAME = $BranchName
-        ENHANCEMENT_FILE = $EnhancementFile
-        ENHANCE_NUM = $EnhanceNum
+    [PSCustomObject]@{
+        ENHANCE_ID = $enhanceId
+        BRANCH_NAME = $branchName
+        ENHANCEMENT_FILE = $enhancementFile
+        ENHANCE_NUM = $enhanceNum
     } | ConvertTo-Json -Compress
-    Write-Output $result
 } else {
-    Write-Output "ENHANCE_ID: $EnhanceId"
-    Write-Output "BRANCH_NAME: $BranchName"
-    Write-Output "ENHANCEMENT_FILE: $EnhancementFile"
-    Write-Output "ENHANCE_NUM: $EnhanceNum"
-    Write-Output "SPECIFY_ENHANCE environment variable set to: $EnhanceId"
+    Write-Output "ENHANCE_ID: $enhanceId"
+    Write-Output "BRANCH_NAME: $branchName"
+    Write-Output "ENHANCEMENT_FILE: $enhancementFile"
+    Write-Output "ENHANCE_NUM: $enhanceNum"
+    Write-Output "SPECIFY_ENHANCE environment variable set to: $enhanceId"
 }
