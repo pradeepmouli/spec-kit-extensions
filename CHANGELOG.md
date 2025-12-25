@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.0
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.1
 
 ---
 
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Extension Templates Version**: v2.4.1
 - **Compatible Spec Kit Version**: v0.0.80+
-- **Compatible specify-extend**: v1.5.0+
+- **Compatible specify-extend**: v1.5.1+
 
 ---
 
@@ -117,6 +117,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.1] - 2025-12-24
+
+#### 🔧 Improved
+
+- **Version Alignment** - Patch release to align CLI version with template v2.4.1
+  - No functional changes to CLI code
+  - Ensures version consistency across components
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.4.1
+
+---
 
 ### [1.5.0] - 2025-12-24
 
