@@ -560,7 +560,7 @@ def validate_speckit_installation(repo_root: Path) -> bool:
 
 def download_latest_release(temp_dir: Path, github_token: str = None) -> Optional[Path]:
     """Download the latest template release from GitHub
-    
+
     Fetches the latest templates-v* tag from the repository, as templates
     are now versioned separately from the CLI tool.
     """
@@ -588,11 +588,11 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
 
             # Find latest templates-v* tag
             template_tags = [tag for tag in tags_data if tag["name"].startswith("templates-v")]
-            
+
             if not template_tags:
                 console.print("[red]No template tags found (looking for templates-v* pattern)[/red]")
                 return None
-            
+
             # Get the first one (GitHub returns tags in reverse chronological order)
             tag_name = template_tags[0]["name"]
 
