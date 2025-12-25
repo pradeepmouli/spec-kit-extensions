@@ -1,23 +1,24 @@
 # IMMEDIATE ACTION REQUIRED
 
-## TL;DR - Run this command:
+## Current Status
+
+✅ Local tag `cli-v1.5.2` has been created at the correct commit (`3eea581`)
+❌ Remote tag `cli-v1.5.2` still points to incorrect commit (`259a288`)
+
+## TL;DR - Run these commands:
+
+```bash
+# Delete remote tag
+git push --delete origin cli-v1.5.2
+
+# Push corrected local tag
+git push origin cli-v1.5.2
+```
+
+Or run the full automated script:
 
 ```bash
 ./fix-tag-cli-v1.5.2.sh
-```
-
-Or manually:
-
-```bash
-# Delete old tag
-git tag -d cli-v1.5.2
-git push --delete origin cli-v1.5.2
-
-# Create new tag at correct commit
-git tag -a cli-v1.5.2 3eea581 -m "Release CLI v1.5.2"
-
-# Push new tag
-git push origin cli-v1.5.2
 ```
 
 ## Why?
