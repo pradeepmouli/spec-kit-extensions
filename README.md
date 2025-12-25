@@ -49,7 +49,6 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
 | **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
 | **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
-### Benefits
 ## Real-World Validation
 
 These workflows are **production-tested** on a React Router v7 Twitter clone ("Tweeter") with:
@@ -87,13 +86,13 @@ specify-extend --all
 
 This will:
 - Detect your configured AI agent
-- Install all 5 workflow extensions into `.specify/`
+- Install all 9 workflow extensions into `.specify/`
 - Set up quality gates
 - Configure branch naming patterns
 
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
-**Alternative: Manual Installation**
+**Alternative: Install the CLI tool manually**
 ```bash
 # 1. Initialize spec-kit in your project
 cd your-project
@@ -139,7 +138,7 @@ This creates a one-time prompt that uses your AI agent to intelligently merge qu
 
 See [specify-extend documentation](docs/specify-extend.md) for details.
 
-**Alternative: Manual Installation**
+**Manual install (copy files)**
 
 If you prefer manual installation or need more control:
 
@@ -295,15 +294,26 @@ Reviewing completed work?
 
 ### AI Agents
 
-These extensions work with any AI agent that supports spec-kit:
+These extensions work with any AI agent that supports spec-kit. Command files are installed per agent:
 
-- ✅ **Claude Code** (fully tested, native commands)
-- ✅ **GitHub Copilot** (via `.github/copilot-instructions.md`)
-- ✅ **Cursor** (via `.cursorrules`)
-- ✅ **Windsurf** (via project rules)
-- ✅ **Gemini CLI** (via specify CLI)
-- ✅ **Other CLI tools** (Qwen, opencode, Codex)
-- ✅ **Any AI agent** (universal fallback via bash scripts; PowerShell optional with --script ps)
+| Agent | Command directory | Format |
+|-------|-------------------|--------|
+| Claude Code | `.claude/commands` | Markdown |
+| GitHub Copilot | `.github/agents` | Markdown |
+| Cursor | `.cursor/commands` | Markdown |
+| Windsurf | `.windsurf/workflows` | Markdown |
+| Gemini CLI | `.gemini/commands` | TOML |
+| Qwen Code | `.qwen/commands` | TOML |
+| opencode | `.opencode/commands` | Markdown |
+| Codex CLI | `.codex/commands` | Markdown |
+| Amazon Q Developer CLI | `.q/commands` | Markdown |
+| Manual/Generic | None (use scripts directly) | N/A |
+
+Detection also recognizes:
+- Copilot: `.github/copilot-instructions.md`
+- Cursor: `.cursorrules`
+
+If no agent is detected, you can pass `--agent` explicitly or use the scripts directly.
 
 **See [AI-AGENTS.md](AI-AGENTS.md) for detailed setup guides for each agent.**
 
@@ -319,9 +329,9 @@ These extensions work with any AI agent that supports spec-kit:
 
 This project has two independently versioned components:
 
-- **Extension Templates** (v2.1.1) - Workflow templates, commands, and scripts
+- **Extension Templates** (v2.5.1) - Workflow templates, commands, and scripts
   - See [CHANGELOG.md](CHANGELOG.md) for template version history
-- **CLI Tool** (v1.0.1) - `specify-extend` installation tool
+- **CLI Tool** (v1.5.2) - `specify-extend` installation tool
   - Check version with `specify-extend --version`
   - See [CHANGELOG.md](CHANGELOG.md) for CLI version history
 
@@ -369,19 +379,19 @@ your-project/
 │   │   └── create-cleanup.ps1
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
-└── .claude/commands/            # If using Claude Code
-    ├── baseline.md
-    ├── bugfix.md
-    ├── enhance.md
-    ├── modify.md
-    ├── refactor.md
-    ├── hotfix.md
-    ├── deprecate.md
-    ├── cleanup.md
-    └── review.md
+└── .claude/commands/            # Example: Claude Code command files
+    ├── speckit.baseline.md
+    ├── speckit.bugfix.md
+    ├── speckit.enhance.md
+    ├── speckit.modify.md
+    ├── speckit.refactor.md
+    ├── speckit.hotfix.md
+    ├── speckit.deprecate.md
+    ├── speckit.cleanup.md
+    └── speckit.review.md
 ```
 
-**Note**: PowerShell scripts are available for Windows users. Bash scripts work on Linux, Mac, and Windows (via Git Bash or WSL).
+**Note**: `specify-extend` installs **either** bash or PowerShell scripts based on `--script` (default: bash). Bash scripts work on Linux, macOS, and Windows (via Git Bash or WSL).
 
 ## FAQ
 
