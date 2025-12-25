@@ -202,13 +202,13 @@ MEASURE_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/refactor/measure-metric
 if [ -f "$MEASURE_SCRIPT" ]; then
     # Ensure script is executable
     chmod +x "$MEASURE_SCRIPT"
-    
+
     if ! $JSON_MODE; then
         echo ""
         echo "=== Capturing Baseline Metrics ==="
         echo ""
     fi
-    
+
     # Run the measure-metrics script to capture baseline
     if "$MEASURE_SCRIPT" --before --dir "$REFACTOR_DIR"; then
         if ! $JSON_MODE; then

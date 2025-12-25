@@ -231,7 +231,7 @@ if (Test-Path $measureScript) {
         Write-Output "=== Capturing Baseline Metrics ==="
         Write-Output ""
     }
-    
+
     # Try to run the bash script
     try {
         $bashAvailable = Get-Command bash -ErrorAction SilentlyContinue
@@ -240,7 +240,7 @@ if (Test-Path $measureScript) {
             if ($IsLinux -or $IsMacOS) {
                 chmod +x $measureScript
             }
-            
+
             # Run the measure-metrics script
             $metricsResult = bash $measureScript --before --dir $refactorDir
             if ($LASTEXITCODE -eq 0) {
