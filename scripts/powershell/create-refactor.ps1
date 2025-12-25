@@ -161,6 +161,13 @@ Run the following command to capture baseline metrics:
 This should be done BEFORE making any code changes.
 "@ | Set-Content -Path $metricsBefore
 
+# NOTE:
+# The metrics measurement is currently implemented as a bash script
+# located at `.specify/extensions/workflows/refactor/measure-metrics.sh`.
+# When using this PowerShell workflow, you will need to invoke the bash script
+# manually (as shown in the instructions above) or ensure bash is available
+# on your system to run the script via `bash measure-metrics.sh`.
+
 @"
 # Post-Refactoring Metrics (After Refactoring)
 

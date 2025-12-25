@@ -43,7 +43,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.4.4"
+__version__ = "1.5.0"
 
 # Initialize Rich console
 console = Console()
@@ -60,7 +60,7 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
+AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
@@ -848,23 +848,9 @@ def install_extension_files(
         else:
             console.print(f"[yellow]⚠[/yellow] Workflow directory for {ext} not found")
 
-    # Copy bash scripts
-    source_scripts = source_dir / "scripts"
-    if source_scripts.exists():
-        for ext in extensions:
-            script_name = get_script_name(ext)
-            source_script = source_scripts / script_name
-
-            if source_script.exists():
-                if not dry_run:
-                    dest_script = scripts_dir / script_name
-                    shutil.copy(source_script, dest_script)
-                    dest_script.chmod(0o755)  # Make executable
-                console.print(f"[green]✓[/green] Copied {script_name} script")
-            else:
-                console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
-
+    # Copy scripts based on selected script type (consistent with spec-kit behavior)
     if install_powershell:
+        # Install PowerShell scripts only
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
             for ext in extensions:
@@ -875,6 +861,22 @@ def install_extension_files(
                     if not dry_run:
                         dest_script = powershell_scripts_dir / script_name
                         shutil.copy(source_script, dest_script)
+                    console.print(f"[green]✓[/green] Copied {script_name} script")
+                else:
+                    console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
+    else:
+        # Install bash scripts only
+        source_scripts = source_dir / "scripts"
+        if source_scripts.exists():
+            for ext in extensions:
+                script_name = get_script_name(ext)
+                source_script = source_scripts / script_name
+
+                if source_script.exists():
+                    if not dry_run:
+                        dest_script = scripts_dir / script_name
+                        shutil.copy(source_script, dest_script)
+                        dest_script.chmod(0o755)  # Make executable
                     console.print(f"[green]✓[/green] Copied {script_name} script")
                 else:
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
@@ -963,9 +965,12 @@ def install_agent_commands(
             if not dry_run:
                 if install_powershell:
                     content = source_file.read_text()
+                    # Replace bash script paths with PowerShell paths
                     content = content.replace(
                         ".specify/scripts/bash/", ".specify/scripts/powershell/"
-                    ).replace(".sh", ".ps1")
+                    )
+                    # Only replace `.sh` when it appears as a file extension (word boundary)
+                    content = re.sub(r"\.sh\b", ".ps1", content)
                     dest_file.write_text(content)
                 else:
                     install_file(source_file, dest_file)
@@ -1649,10 +1654,13 @@ def main(
         console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
         console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
+        # Default the script type only once we reach installation. At this point,
+        # agent resolution and related checks have already completed, so it's safe
+        # to fall back to "sh" if the user did not explicitly pass --script.
         selected_script = script_type or "sh"
         if selected_script not in {"sh", "ps"}:
             console.print(
-                f"[red]Error:[/red] Invalid script type '{selected_script}'. Choose from: sh, ps"
+                f"[red]Error:[/red] Invalid --script option '{selected_script}'. Must be 'sh' or 'ps'."
             )
             raise typer.Exit(1)
 

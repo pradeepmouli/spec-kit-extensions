@@ -109,7 +109,7 @@ git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .speci
 
 # 2. Create symlinks to extension files
 ln -s ..extension-source/extensions .specify/extensions
-ln -s ../../.specify/extension-source/scripts/* .specify/scripts/bash/
+ln -s ../../.specify/extension-source/scripts/bash/* .specify/scripts/bash/
 # Optional: PowerShell scripts (only if you want PowerShell workflows)
 ln -s ../../.specify/extension-source/scripts/powershell/* .specify/scripts/powershell/
 mkdir -p .claude/commands
@@ -170,8 +170,9 @@ ls .specify/extensions/
 
 # Verify scripts
 ls .specify/scripts/bash/create-*.sh
-ls .specify/scripts/powershell/create-*.ps1
 # Should show: create-bugfix.sh, create-modification.sh, etc.
+ls .specify/scripts/powershell/create-*.ps1
+# Should show: create-bugfix.ps1, create-modification.ps1, etc.
 
 # Verify commands (if using Claude Code)
 ls .claude/commands/*.md
