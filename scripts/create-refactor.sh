@@ -7,11 +7,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Try to find and source common.sh
 COMMON_SH_FOUND=false
-# First try the extension location
-if [ -f "$SCRIPT_DIR/../common.sh" ]; then
+# First try same directory (when installed to .specify/scripts/bash/)
+if [ -f "$SCRIPT_DIR/common.sh" ]; then
+    source "$SCRIPT_DIR/common.sh"
+    COMMON_SH_FOUND=true
+# Then try parent directory
+elif [ -f "$SCRIPT_DIR/../common.sh" ]; then
     source "$SCRIPT_DIR/../common.sh"
     COMMON_SH_FOUND=true
-# Then try spec-kit integrated location
+# Then try spec-kit nested location
 elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     source "$SCRIPT_DIR/../bash/common.sh"
     COMMON_SH_FOUND=true

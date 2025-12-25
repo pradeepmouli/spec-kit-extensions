@@ -6,7 +6,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if we're in spec-kit repo (scripts/bash/common.sh) or extensions (need to go up to spec-kit)
-if [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
+if [ -f "$SCRIPT_DIR/common.sh" ]; then
+    # Running from same directory (most common case)
+    source "$SCRIPT_DIR/common.sh"
+elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     # Running from spec-kit integrated location: .specify/scripts/bash/
     source "$SCRIPT_DIR/../bash/common.sh"
 elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
