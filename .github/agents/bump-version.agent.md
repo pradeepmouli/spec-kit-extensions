@@ -122,6 +122,41 @@ After CHANGELOG is updated and user confirms:
    git push origin main --tags
    ```
 
+5. **Monitor the release workflow:**
+   ```bash
+   # Get the latest workflow run for the release
+   gh run list --workflow=release.yml --limit 1
+   
+   # Watch the workflow run in real-time
+   gh run watch
+   ```
+   
+   Or open in browser:
+   ```
+   https://github.com/pradeepmouli/spec-kit-extensions/actions/workflows/release.yml
+   ```
+   
+   **Expected workflow steps:**
+   - ✅ Version validation (pyproject.toml, specify_extend.py, CHANGELOG.md match)
+   - ✅ Build Python package
+   - ✅ Create GitHub release with notes
+   - ✅ Publish to PyPI
+   
+   **If workflow fails:**
+   - Check the failed step in GitHub Actions
+   - Common issues:
+     - Version mismatch → Verify CHANGELOG.md has correct version
+     - Build failure → Check pyproject.toml dependencies
+     - PyPI publish failure → Verify API token is configured
+   - Fix the issue, delete the tag, and recreate:
+     ```bash
+     git tag -d cli-v<version>
+     git push --delete origin cli-v<version>
+     # Fix the issue, commit, then recreate tag
+     git tag -a cli-v<version> -m "..."
+     git push origin cli-v<version>
+     ```
+
 ### If Template version has changed:
 
 1. Commit CHANGELOG changes:
@@ -144,6 +179,27 @@ After CHANGELOG is updated and user confirms:
    git push origin main --tags
    ```
 
+4. **Monitor the release creation:**
+   ```bash
+   # Check that GitHub created the release
+   gh release view templates-v<version>
+   ```
+   
+   Or verify in browser:
+   ```
+   https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/templates-v<version>
+   ```
+   
+   **Expected outcome:**
+   - ✅ Release appears on GitHub Releases page
+   - ✅ Release notes from tag message are displayed
+   - ✅ Source code archives are available
+   
+   **If release not created:**
+   - Verify tag was pushed: `git ls-remote --tags origin | grep templates-v<version>`
+   - Check tag annotation: `git show templates-v<version>`
+   - Manually create release if needed via GitHub UI
+
 ## Quality Gates
 
 - ✅ CHANGELOG.md is updated BEFORE creating tags
@@ -155,6 +211,62 @@ After CHANGELOG is updated and user confirms:
 - ✅ Git tag prefix matches release type (cli-v or templates-v)
 - ✅ User reviews CHANGELOG before executing commands
 - ✅ CHANGELOG commit is included before the tag is created
+- ✅ **Release workflow completes successfully (CLI releases only)**
+- ✅ **GitHub release is created and visible (all releases)**
+
+## Post-Release Verification
+
+After pushing tags, always verify:
+
+### For CLI Releases
+
+1. **Workflow Status**
+   ```bash
+   gh run list --workflow=release.yml --limit 1 --json conclusion,status,name
+   ```
+   Expected: `"conclusion": "success"`
+
+2. **PyPI Package**
+   ```bash
+   pip index versions specify-extend | grep <version>
+   ```
+   Or visit: https://pypi.org/project/specify-extend/<version>/
+
+3. **GitHub Release**
+   ```bash
+   gh release view cli-v<version>
+   ```
+   Or visit: https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/cli-v<version>
+
+### For Template Releases
+
+1. **GitHub Release**
+   ```bash
+   gh release view templates-v<version>
+   ```
+   Or visit: https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/templates-v<version>
+
+2. **Verify Download URL**
+   ```bash
+   curl -I https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/templates-v<version>.zip
+   ```
+   Expected: HTTP 200 or 302
+
+### If Verification Fails
+
+1. **Check workflow logs** (CLI only):
+   ```bash
+   gh run view --log
+   ```
+
+2. **Verify versions match**:
+   ```bash
+   git show cli-v<version>:pyproject.toml | grep '^version'
+   git show cli-v<version>:specify_extend.py | grep '^__version__'
+   git show cli-v<version>:CHANGELOG.md | sed -n '/## CLI Tool/,/^## /p' | grep '^### \['
+   ```
+
+3. **If needed, delete and recreate tag** (see troubleshooting steps above)
 
 ## Notes
 
