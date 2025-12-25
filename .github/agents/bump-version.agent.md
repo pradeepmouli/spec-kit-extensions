@@ -86,48 +86,75 @@ Given the version number (e.g., "1.4.2" for CLI or "2.3.1" for templates), do th
 
 4. Provide a summary of changes added to CHANGELOG for user review.
 
-## Step 3: Execute Version Bump Script
+## Step 3: Execute Version Bump and Tag Creation
 
 After CHANGELOG is updated and user confirms:
 
 ### If CLI version has changed:
 
-1. Run the version bump script:
+1. Update version files manually (bump-version.sh is interactive):
    ```bash
-   ./scripts/bump-version.sh <version>
+   # Update pyproject.toml
+   sed -i.bak 's/^version = ".*"/version = "<version>"/' pyproject.toml && rm pyproject.toml.bak
+   
+   # Update specify_extend.py
+   sed -i.bak 's/^__version__ = ".*"/__version__ = "<version>"/' specify_extend.py && rm specify_extend.py.bak
    ```
 
-2. The script will:
-   - Update version in `pyproject.toml` and `specify_extend.py`
-   - Show diff of changes
-   - Prompt for confirmation
-   - Commit changes with message "Bump version to X.Y.Z"
-   - Create git tag (`cli-vX.Y.Z`)
+2. Commit CHANGELOG and version changes together:
+   ```bash
+   git add CHANGELOG.md pyproject.toml specify_extend.py
+   git commit -m "Bump CLI version to <version>
 
-3. Push changes and tag to remote:
+   - Update version in pyproject.toml and specify_extend.py
+   - Update CHANGELOG.md with release notes"
+   ```
+
+3. Create git tag:
+   ```bash
+   git tag -a cli-v<version> -m "Release CLI v<version>
+
+   [Summary of key changes from CHANGELOG]"
+   ```
+
+4. Push changes and tag to remote:
    ```bash
    git push origin main --tags
    ```
 
 ### If Template version has changed:
 
-1. Create git tag:
+1. Commit CHANGELOG changes:
    ```bash
-   git tag -a templates-v<version> -m "Release Extension Templates v<version>"
+   git add CHANGELOG.md
+   git commit -m "Update CHANGELOG for templates v<version>
+
+   [Summary of key changes]"
    ```
-2. Push tag to remote:
+
+2. Create git tag:
    ```bash
-   git push origin templates-v<version>
+   git tag -a templates-v<version> -m "Release Extension Templates v<version>
+
+   [Summary of key changes from CHANGELOG]"
+   ```
+
+3. Push changes and tag to remote:
+   ```bash
+   git push origin main --tags
    ```
 
 ## Quality Gates
 
+- ✅ CHANGELOG.md is updated BEFORE creating tags
+- ✅ CHANGELOG.md is committed WITH version file changes (for CLI) or separately (for templates)
 - ✅ All changes since last release are documented in CHANGELOG
 - ✅ Change categories are appropriate (Added/Changed/Fixed/etc.)
 - ✅ Version numbers follow semantic versioning (MAJOR.MINOR.PATCH)
 - ✅ Component versions are updated consistently
 - ✅ Git tag prefix matches release type (cli-v or templates-v)
-- ✅ User reviews CHANGELOG before executing bump script
+- ✅ User reviews CHANGELOG before executing commands
+- ✅ CHANGELOG commit is included before the tag is created
 
 ## Notes
 
