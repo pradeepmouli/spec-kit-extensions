@@ -51,8 +51,7 @@ Given that refactoring description, do this:
 
 📋 **Next Steps:**
 1. Review refactoring goals and behaviors to preserve
-2. Capture baseline metrics:
-   .specify/extensions/workflows/refactor/measure-metrics.sh --before
+2. Baseline metrics have been automatically captured
 3. Run `/speckit.plan` to create refactoring plan
 4. Run `/speckit.tasks` to break down into tasks
 5. Run `/speckit.implement` to execute refactoring
@@ -60,4 +59,4 @@ Given that refactoring description, do this:
 💡 **Reminder**: Behavior must not change - all tests must still pass
 ```
 
-Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after.
+Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after. Baseline metrics are automatically captured during workflow creation.

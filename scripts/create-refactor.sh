@@ -129,9 +129,11 @@ METRICS_AFTER="$REFACTOR_DIR/metrics-after.md"
 cat > "$METRICS_BEFORE" << 'EOF'
 # Baseline Metrics (Before Refactoring)
 
-**Status**: Not yet captured
+**Status**: Automatically captured during workflow creation
 
-Run the following command to capture baseline metrics:
+Baseline metrics are automatically captured when the refactor workflow is created.
+
+If you need to re-capture baseline metrics, run:
 
 ```bash
 .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir "$REFACTOR_DIR"
@@ -194,6 +196,42 @@ EOF
 
 # Set environment variable
 export SPECIFY_REFACTOR="$REFACTOR_ID"
+
+# Capture baseline metrics automatically
+MEASURE_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/refactor/measure-metrics.sh"
+if [ -f "$MEASURE_SCRIPT" ]; then
+    # Ensure script is executable
+    chmod +x "$MEASURE_SCRIPT"
+    
+    if ! $JSON_MODE; then
+        echo ""
+        echo "=== Capturing Baseline Metrics ==="
+        echo ""
+    fi
+    
+    # Run the measure-metrics script to capture baseline
+    if "$MEASURE_SCRIPT" --before --dir "$REFACTOR_DIR"; then
+        if ! $JSON_MODE; then
+            echo ""
+            echo "✓ Baseline metrics captured successfully"
+            echo ""
+        fi
+    else
+        if ! $JSON_MODE; then
+            echo ""
+            echo "⚠ Warning: Failed to capture baseline metrics automatically"
+            echo "  Run manually: .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $REFACTOR_DIR"
+            echo ""
+        fi
+    fi
+else
+    if ! $JSON_MODE; then
+        echo ""
+        echo "⚠ Warning: measure-metrics.sh not found at $MEASURE_SCRIPT"
+        echo "  Baseline metrics must be captured manually"
+        echo ""
+    fi
+fi
 
 if $JSON_MODE; then
     printf '{"REFACTOR_ID":"%s","BRANCH_NAME":"%s","REFACTOR_SPEC_FILE":"%s","METRICS_BEFORE":"%s","METRICS_AFTER":"%s","BEHAVIORAL_SNAPSHOT":"%s","REFACTOR_NUM":"%s"}\n' \

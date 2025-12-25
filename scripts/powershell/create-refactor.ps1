@@ -150,9 +150,11 @@ $metricsAfter = Join-Path $refactorDir 'metrics-after.md'
 @"
 # Baseline Metrics (Before Refactoring)
 
-**Status**: Not yet captured
+**Status**: Automatically captured during workflow creation
 
-Run the following command to capture baseline metrics:
+Baseline metrics are automatically captured when the refactor workflow is created.
+
+If you need to re-capture baseline metrics, run:
 
 ```bash
 .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir "$refactorDir"
@@ -220,6 +222,65 @@ npm run dev # Manual testing steps...
 "@ | Set-Content -Path $behavioralSnapshot
 
 $env:SPECIFY_REFACTOR = $refactorId
+
+# Capture baseline metrics automatically
+$measureScript = Join-Path $repoRoot '.specify/extensions/workflows/refactor/measure-metrics.sh'
+if (Test-Path $measureScript) {
+    if (-not $Json) {
+        Write-Output ""
+        Write-Output "=== Capturing Baseline Metrics ==="
+        Write-Output ""
+    }
+    
+    # Try to run the bash script
+    try {
+        $bashAvailable = Get-Command bash -ErrorAction SilentlyContinue
+        if ($bashAvailable) {
+            # Make script executable (Unix-like systems)
+            if ($IsLinux -or $IsMacOS) {
+                chmod +x $measureScript
+            }
+            
+            # Run the measure-metrics script
+            $metricsResult = bash $measureScript --before --dir $refactorDir
+            if ($LASTEXITCODE -eq 0) {
+                if (-not $Json) {
+                    Write-Output ""
+                    Write-Output "✓ Baseline metrics captured successfully"
+                    Write-Output ""
+                }
+            } else {
+                if (-not $Json) {
+                    Write-Output ""
+                    Write-Warning "Failed to capture baseline metrics automatically"
+                    Write-Output "  Run manually: bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+                    Write-Output ""
+                }
+            }
+        } else {
+            if (-not $Json) {
+                Write-Output ""
+                Write-Warning "Bash not found. Please run baseline metrics manually:"
+                Write-Output "  bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+                Write-Output ""
+            }
+        }
+    } catch {
+        if (-not $Json) {
+            Write-Output ""
+            Write-Warning "Failed to capture baseline metrics automatically: $($_.Exception.Message)"
+            Write-Output "  Run manually: bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+            Write-Output ""
+        }
+    }
+} else {
+    if (-not $Json) {
+        Write-Output ""
+        Write-Warning "measure-metrics.sh not found at $measureScript"
+        Write-Output "  Baseline metrics must be captured manually"
+        Write-Output ""
+    }
+}
 
 if ($Json) {
     [PSCustomObject]@{

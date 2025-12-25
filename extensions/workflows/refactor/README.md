@@ -30,7 +30,8 @@ All existing tests should pass before, during, and after the refactor. If tests 
 ## Process
 
 ### 1. Baseline Capture
-- Run `measure-metrics.sh before` to capture current state
+- Baseline metrics are **automatically captured** when you run `/speckit.refactor`
+- To manually re-capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
 - Document current metrics (LOC, complexity, performance, bundle size)
 - Run all tests and record pass rate
 - Create behavioral snapshot
