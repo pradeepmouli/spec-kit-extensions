@@ -6,12 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.1
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.1
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.2
 
 ---
 
 ## Extension Templates
+
+### [2.5.1] - 2025-12-25
+
+#### 🐛 Fixed
+
+- **Script Path Resolution** - Fixed common.sh sourcing in all extension scripts
+  - Scripts now check same directory first for common.sh
+  - Resolves "generate_branch_name is not available" error
+  - Fixes installation path compatibility with .specify/scripts/bash/
+  - Affects: All create-*.sh scripts
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.2+
+
+### [2.5.0] - 2025-12-25
+
+#### ✨ New Features
+
+- **Automatic Baseline Metrics** - Refactor workflow now automatically captures baseline metrics
+  - Baseline metrics are captured immediately after spec creation
+  - Eliminates manual step of running measure-metrics.sh --before
+  - PowerShell version supports bash script execution
+  - Affects: scripts/create-refactor.sh, scripts/powershell/create-refactor.ps1
+
+#### 📚 Documentation
+
+- Updated documentation to reflect automatic baseline capture
+- Added fallback instructions if automatic capture fails
+- Updated refactor command, README, and QUICKSTART guides
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.0
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.2+
 
 ### [2.4.1] - 2025-12-24
 
@@ -117,6 +155,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.2] - 2025-12-25
+
+#### 🐛 Fixed
+
+- **Template Download** - Fixed template download to use templates-v* tags
+  - Changed from fetching `/releases/latest` to `/tags` endpoint
+  - Filters for tags starting with `templates-v` prefix
+  - Downloads latest template release (templates-v2.5.1)
+  - Displays template version in UI during download
+
+#### 🧪 Testing
+
+- **Added Unit Tests** - Created comprehensive test suite for download functionality
+  - Tests template tag filtering and selection
+  - Mocks GitHub API responses
+  - Verifies correct tag is downloaded
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.2
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.1
+
+---
 
 ### [1.5.1] - 2025-12-24
 
