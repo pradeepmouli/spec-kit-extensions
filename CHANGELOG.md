@@ -6,12 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.4.0
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.4.1
 - **CLI Tool** (`specify-extend`) - Currently at v1.5.0
 
 ---
 
 ## Extension Templates
+
+### [2.4.1] - 2025-12-24
+
+#### 🐛 Fixed
+
+- **Documentation Accuracy** - Corrected workflow count from 8 to 9 in all README sections
+  - Updated references to reflect the addition of the enhance workflow
+  - Ensures documentation accurately represents all available workflows
+  - Affects: README.md
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.4.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.0+
+
+---
 
 ### [2.4.0] - 2025-12-24
 
