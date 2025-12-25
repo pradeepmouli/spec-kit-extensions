@@ -559,12 +559,16 @@ def validate_speckit_installation(repo_root: Path) -> bool:
 
 
 def download_latest_release(temp_dir: Path, github_token: str = None) -> Optional[Path]:
-    """Download the latest release from GitHub"""
+    """Download the latest template release from GitHub
+    
+    Fetches the latest templates-v* tag from the repository, as templates
+    are now versioned separately from the CLI tool.
+    """
 
     with console.status("[bold blue]Downloading latest extensions...") as status:
         try:
-            # Get latest release info
-            url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/releases/latest"
+            # Get all tags to find latest templates-v* tag
+            url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/tags"
             response = client.get(
                 url,
                 timeout=30,
@@ -577,14 +581,22 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
                 return None
 
             try:
-                release_data = response.json()
+                tags_data = response.json()
             except ValueError as je:
-                console.print(f"[red]Failed to parse release JSON:[/red] {je}")
+                console.print(f"[red]Failed to parse tags JSON:[/red] {je}")
                 return None
 
-            tag_name = release_data["tag_name"]
+            # Find latest templates-v* tag
+            template_tags = [tag for tag in tags_data if tag["name"].startswith("templates-v")]
+            
+            if not template_tags:
+                console.print("[red]No template tags found (looking for templates-v* pattern)[/red]")
+                return None
+            
+            # Get the first one (GitHub returns tags in reverse chronological order)
+            tag_name = template_tags[0]["name"]
 
-            console.print(f"[blue]ℹ[/blue] Latest version: {tag_name}")
+            console.print(f"[blue]ℹ[/blue] Latest template version: {tag_name}")
 
             # Download zipball
             zipball_url = f"https://github.com/{GITHUB_REPO}/archive/refs/tags/{tag_name}.zip"
