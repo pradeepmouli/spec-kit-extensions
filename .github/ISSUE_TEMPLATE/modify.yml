@@ -1,0 +1,127 @@
+name: 🔄 Modification Request
+description: Request modification to existing features using spec-kit modify workflow
+title: "[Modify]: "
+labels: ["modification", "spec-kit:modify"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Modification Request
+
+        This template helps you create a well-structured modification request using the spec-kit modify workflow.
+        After this issue is created, you can start the modification with:
+
+        ```bash
+        /speckit.modify "modification description"
+        # ... implement ...
+        /speckit.review
+        ```
+
+  - type: input
+    id: original_feature
+    attributes:
+      label: Original Feature
+      description: Which existing feature is being modified?
+      placeholder: e.g., "User profile system (Feature #42)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Modification Description
+      description: What modifications are needed?
+      placeholder: Describe the modifications in detail...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior
+      description: How does the feature currently work?
+      placeholder: Describe the current functionality...
+    validations:
+      required: true
+
+  - type: textarea
+    id: modified_behavior
+    attributes:
+      label: Modified Behavior
+      description: How should it work after modification?
+      placeholder: Describe the new functionality...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason for Modification
+      description: Why is this modification needed?
+      placeholder: |
+        Explain why the original feature needs to change:
+        - Requirements changed
+        - User feedback
+        - Business needs
+    validations:
+      required: true
+
+  - type: textarea
+    id: breaking_changes
+    attributes:
+      label: Breaking Changes
+      description: Will this modification break existing functionality?
+      placeholder: List any breaking changes or backward compatibility concerns...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this modification to be considered complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Modification Scope
+      description: How extensive is this modification?
+      options:
+        - Minor - Small tweaks
+        - Moderate - Significant changes
+        - Major - Substantial rework
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: considerations
+    attributes:
+      label: Considerations
+      description: Important factors to consider
+      options:
+        - label: I have considered backward compatibility
+          required: true
+        - label: I have identified affected users/systems
+          required: true
+        - label: I have a migration plan (if needed)
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have identified the original feature clearly
+          required: true
+        - label: I am willing to help implement this modification
+          required: false

@@ -90,6 +90,22 @@ This will:
 - Set up quality gates
 - Configure branch naming patterns
 
+**Optional: Install GitHub integration**:
+```bash
+specify-extend --all --github-integration
+```
+
+The `--github-integration` flag will interactively prompt you to select GitHub features:
+- **Review enforcement workflows** - Automatically require reviews before merge
+- **Review reminder workflow** - Auto-comment on PRs with instructions
+- **PR template** - Structured PR template with review checklist
+- **Issue templates** - 9 templates for all workflow types
+- **GitHub Copilot config** - PR review configuration
+- **CODEOWNERS template** - Automatic reviewer assignment
+- **Documentation** - Complete guide for all features
+
+You can select individual features or install all with `all`. Non-interactive: `specify-extend --all --github-integration --no-interactive`
+
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
 **Alternative: Install the CLI tool manually**
@@ -336,6 +352,165 @@ This project has two independently versioned components:
   - See [CHANGELOG.md](CHANGELOG.md) for CLI version history
 
 Both components are released together but versioned separately to allow independent updates.
+
+## Optional GitHub Integration
+
+**New in vX.Y.Z**: spec-kit-extensions now includes optional GitHub workflows, issue templates, and AI agent configuration to enhance your development workflow.
+
+### Features
+
+- **🔒 Review Enforcement** - Automatically require code reviews before merging spec-kit branches
+- **💬 Review Reminders** - Auto-comment on PRs with helpful review instructions
+- **📝 PR Template** - Structured PR template with review checklist
+- **👥 CODEOWNERS** - Automatic reviewer assignment based on workflow type
+- **🤖 Copilot for PRs** - GitHub Copilot integration for AI-assisted code review
+- **📋 Issue Templates** - Structured templates for all 9 workflow types
+- **✅ Review Helper** - Tools to check review status and validate branches
+
+### What's Included
+
+1. **GitHub Actions Workflows** (3 workflows)
+   - `spec-kit-review-required.yml` - Enforces review completion before merge
+   - `spec-kit-review-helper.yml` - Manual tools for checking review status
+   - `spec-kit-review-reminder.yml` - Auto-comments on PRs with review instructions
+
+2. **GitHub Code Review Integration**
+   - `pull_request_template.md` - Structured PR template with review checklist
+   - `CODEOWNERS.example` - Automatic reviewer assignment configuration
+   - `copilot.yml` - GitHub Copilot for PRs configuration with spec-kit awareness
+
+3. **Issue Templates** (9 templates)
+   - Feature Request, Bug Report, Enhancement Request
+   - Modification Request, Refactoring Request, Hotfix Request
+   - Deprecation Request, Cleanup Request, Baseline/Documentation Request
+
+4. **AI Agent Configuration**
+   - `copilot-instructions.md` - GitHub Copilot workflow guidance
+   - Includes review requirements and best practices
+
+### Installation (Optional)
+
+**Option 1: Automated Installation (Recommended)**
+
+Use the `--github-integration` flag during installation:
+
+```bash
+specify-extend --all --github-integration
+```
+
+This will:
+- Interactively prompt you to select which GitHub features to install
+- Download and install selected features from the latest release
+- Set up the `.github/` directory automatically
+
+Available features to select:
+- `review-enforcement` - Review requirement enforcement workflow
+- `review-reminder` - PR review reminder workflow
+- `review-helper` - Manual review checking tools
+- `pr-template` - Pull request template
+- `issue-templates` - 9 issue templates for all workflows
+- `copilot-config` - GitHub Copilot configuration
+- `codeowners` - CODEOWNERS template
+- `documentation` - Complete docs
+- `all` - Install everything
+
+Non-interactive mode (installs all features):
+```bash
+specify-extend --all --github-integration --no-interactive
+```
+
+**Option 2: Manual Installation**
+
+If you prefer manual control, first obtain the spec-kit-extensions files:
+
+```bash
+# Clone the spec-kit-extensions repository
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+
+# Or download a specific release
+# wget https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/vX.Y.Z.tar.gz
+# tar -xzf vX.Y.Z.tar.gz
+```
+
+Then copy the desired files to your project:
+
+```bash
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Copy workflows (recommended for review enforcement)
+cp /tmp/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
+
+# Copy PR template (recommended for structured PRs)
+cp /tmp/spec-kit-extensions/.github/pull_request_template.md .github/
+
+# Copy issue templates (optional)
+cp -r /tmp/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
+
+# Copy GitHub Copilot configuration (optional, for Copilot users)
+cp /tmp/spec-kit-extensions/.github/copilot-instructions.md .github/
+cp /tmp/spec-kit-extensions/.github/copilot.yml.example .github/
+# NOTE: copilot.yml.example is instructional. Configure it for your GitHub Copilot
+# setup according to the actual Copilot configuration schema, then rename to
+# copilot.yml to activate (if applicable to your Copilot version).
+
+# Copy CODEOWNERS template (optional, for teams)
+cp /tmp/spec-kit-extensions/.github/CODEOWNERS.example .github/CODEOWNERS
+# IMPORTANT: Edit .github/CODEOWNERS to replace placeholder values
+
+# Commit the files
+git add .github/
+git commit -m "Add spec-kit GitHub workflows and code review integration"
+git push
+```
+
+### Usage
+
+**Complete Review Workflow**:
+1. Implement your work using spec-kit workflows
+2. Run `/speckit.review` before creating a PR (REQUIRED)
+3. Commit the review file to your branch
+4. Create PR - fill out the PR template checklist
+5. GitHub Actions automatically:
+   - Post reminder comment with review instructions
+   - Validate review file exists and is approved
+   - Add appropriate labels
+   - Request reviewers (via CODEOWNERS)
+   - Block merge if review missing or not approved
+6. GitHub Copilot assists with PR review (if configured)
+7. Human reviewers perform additional review
+8. Merge when both AI review + human review approved
+
+**Issue Templates**:
+1. Click "New Issue" → Select appropriate template
+2. Fill out structured form
+3. Use suggested workflow commands to start implementation
+
+**Review Helper**:
+- Go to Actions → Spec-Kit Review Helper → Run workflow
+- Check status, list pending reviews, or validate branches
+
+**GitHub Copilot for PRs** (if configured):
+- Ask Copilot to "Review this PR for spec-kit workflow compliance"
+- Copilot checks review completion, specification alignment, and code quality
+- Works alongside `/speckit.review` for comprehensive coverage
+
+### Documentation
+
+See [.github/README.md](.github/README.md) for complete documentation including:
+- Detailed workflow descriptions
+- Configuration options
+- Troubleshooting guide
+- Examples and best practices
+
+### Benefits
+
+- **Consistent Quality** - All code reviewed before merge
+- **Automated Enforcement** - No manual checking needed
+- **Better Documentation** - Reviews committed with code
+- **Structured Issues** - Complete information from the start
+
+**Note**: These are entirely optional. Use what helps your workflow!
 
 ## Project Structure
 

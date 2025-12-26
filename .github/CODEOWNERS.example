@@ -1,0 +1,222 @@
+# CODEOWNERS - Automatic Review Request Configuration
+#
+# IMPORTANT: This is an EXAMPLE file. Before activating:
+# 1. Replace ALL "@your-org/..." placeholders with actual GitHub usernames or team names
+# 2. Verify all teams exist in your organization settings
+# 3. Test with a draft PR to ensure proper assignment
+# 4. Invalid references will cause GitHub to silently ignore CODEOWNERS rules
+#
+# To activate this file:
+# 1. Review and update all placeholder values below
+# 2. Rename this file to "CODEOWNERS" (without .example)
+# 3. Commit and push to your repository
+#
+# When a PR modifies files matching these patterns, GitHub will automatically
+# request review from the specified users or teams.
+#
+# Integration with Spec-Kit Workflows:
+# - Use this to ensure appropriate reviewers are assigned based on workflow type
+# - Combine with spec-kit review enforcement for comprehensive quality control
+# - Teams/users will be notified to perform human review after /speckit.review
+#
+# Syntax:
+# pattern @username @org/team-name
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ==============================================================================
+# Default Owners (Fallback)
+# ==============================================================================
+
+# Default owners for everything in the repo (unless a more specific rule below)
+# *       @your-org/engineering-team
+
+# ==============================================================================
+# Spec-Kit Workflow Directories
+# ==============================================================================
+
+# All spec-kit specifications (any workflow type)
+specs/                          @your-org/tech-leads
+
+# Feature specifications
+specs/[0-9][0-9][0-9]-*/       @your-org/product-team @your-org/engineering-leads
+
+# ==============================================================================
+# Bug Fix Workflows
+# ==============================================================================
+
+# Bug fix specifications and implementations
+specs/bugfix/                   @your-org/qa-team @your-org/senior-engineers
+
+# Critical bug fixes (hotfix workflow)
+specs/hotfix/                   @your-org/engineering-leads @your-org/tech-leads
+
+# ==============================================================================
+# Enhancement and Modification Workflows
+# ==============================================================================
+
+# Enhancement specifications
+specs/enhance/                  @your-org/product-team
+
+# Modification specifications (changes to existing features)
+specs/modify/                   @your-org/product-team @your-org/architecture-team
+
+# ==============================================================================
+# Code Quality Workflows
+# ==============================================================================
+
+# Refactoring work
+specs/refactor/                 @your-org/senior-engineers @your-org/architecture-team
+
+# Code cleanup
+specs/cleanup/                  @your-org/senior-engineers
+
+# ==============================================================================
+# Deprecation and Baseline Workflows
+# ==============================================================================
+
+# Feature deprecation (impacts users)
+specs/deprecate/                @your-org/product-team @your-org/engineering-leads
+
+# Baseline documentation
+specs/baseline/                 @your-org/tech-writers @your-org/documentation-team
+
+# ==============================================================================
+# Source Code by Technology/Component
+# ==============================================================================
+
+# Frontend code
+src/components/                 @your-org/frontend-team
+src/pages/                      @your-org/frontend-team
+*.tsx                          @your-org/frontend-team
+*.jsx                          @your-org/frontend-team
+
+# Backend code
+src/api/                       @your-org/backend-team
+src/services/                  @your-org/backend-team
+src/models/                    @your-org/backend-team
+
+# Database migrations
+src/migrations/                @your-org/database-team @your-org/backend-team
+*.sql                          @your-org/database-team
+
+# Infrastructure and DevOps
+.github/workflows/             @your-org/devops-team
+docker/                        @your-org/devops-team
+Dockerfile                     @your-org/devops-team
+*.yaml                         @your-org/devops-team
+*.yml                          @your-org/devops-team
+
+# ==============================================================================
+# Security-Sensitive Files
+# ==============================================================================
+
+# Authentication and authorization
+src/auth/                      @your-org/security-team @your-org/senior-engineers
+src/middleware/auth*           @your-org/security-team
+
+# Configuration files (may contain secrets or sensitive settings)
+*.config.js                    @your-org/security-team @your-org/devops-team
+*.env.example                  @your-org/security-team
+
+# ==============================================================================
+# Documentation
+# ==============================================================================
+
+# All markdown documentation
+*.md                           @your-org/tech-writers
+
+# API documentation
+docs/api/                      @your-org/backend-team @your-org/tech-writers
+
+# User-facing documentation
+docs/user-guide/               @your-org/product-team @your-org/tech-writers
+
+# ==============================================================================
+# Dependencies and Package Management
+# ==============================================================================
+
+# Package dependencies (security implications)
+package.json                   @your-org/security-team @your-org/senior-engineers
+package-lock.json              @your-org/security-team @your-org/senior-engineers
+yarn.lock                      @your-org/security-team @your-org/senior-engineers
+requirements.txt               @your-org/security-team @your-org/senior-engineers
+Gemfile                        @your-org/security-team @your-org/senior-engineers
+go.mod                         @your-org/security-team @your-org/senior-engineers
+
+# ==============================================================================
+# Testing
+# ==============================================================================
+
+# Test files
+**/*.test.ts                   @your-org/qa-team
+**/*.test.js                   @your-org/qa-team
+**/*.spec.ts                   @your-org/qa-team
+**/*.spec.js                   @your-org/qa-team
+tests/                         @your-org/qa-team
+
+# ==============================================================================
+# Configuration Examples for Different Team Structures
+# ==============================================================================
+
+# Example 1: Solo Developer with AI Agents
+# (Review all changes yourself, rely on /speckit.review for AI review)
+# *       @yourusername
+
+# Example 2: Small Team (2-5 developers)
+# *       @dev1 @dev2 @dev3
+# specs/  @dev1    # Lead developer reviews all specs
+
+# Example 3: Medium Team with Specialization
+# src/frontend/    @frontend-lead @frontend-team
+# src/backend/     @backend-lead @backend-team
+# specs/           @tech-lead
+
+# Example 4: Large Team with Multiple Teams
+# (See examples above with @your-org/team-name)
+
+# ==============================================================================
+# Integration with Spec-Kit Review Workflow
+# ==============================================================================
+
+# How CODEOWNERS works with spec-kit review:
+#
+# 1. Developer completes implementation
+# 2. Developer runs: /speckit.review (AI code review)
+# 3. Review file generated with findings
+# 4. Developer commits review file
+# 5. Developer creates PR
+# 6. GitHub automatically requests human reviewers (via CODEOWNERS)
+# 7. Automated workflow checks for approved review file
+# 8. Human reviewers perform additional review
+# 9. Both AI review (approved) + human review (approved) required to merge
+#
+# This creates a comprehensive review process:
+# - AI Review (/speckit.review): Fast, consistent, catches common issues
+# - Human Review (CODEOWNERS): Context-aware, architectural decisions, UX
+# - Automated Enforcement (GitHub Actions): Ensures process is followed
+
+# ==============================================================================
+# Customization Instructions
+# ==============================================================================
+
+# To use this file:
+# 1. Rename: CODEOWNERS.example → CODEOWNERS
+# 2. Replace @your-org/team-name with your actual GitHub org and team names
+# 3. Replace @username with actual GitHub usernames
+# 4. Customize patterns to match your project structure
+# 5. Commit to .github/CODEOWNERS
+# 6. Enable branch protection requiring reviews
+#
+# Tips:
+# - Start simple, add complexity as needed
+# - Use teams rather than individuals for flexibility
+# - More specific rules override general rules
+# - Use wildcards (*) for pattern matching
+# - Test with a draft PR to verify correct reviewers assigned
+#
+# Advanced: Require different numbers of reviewers
+# - Set in: Settings → Branches → Branch protection rules
+# - Require X number of approving reviews
+# - Dismiss stale reviews when new commits pushed
+# - Require review from code owners

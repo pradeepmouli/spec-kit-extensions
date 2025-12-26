@@ -1,0 +1,249 @@
+name: Spec-Kit Review Required
+
+# This workflow enforces that spec-kit branches have completed code review
+# before they can be merged. It checks for a review.md file with "Approved" status.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+      - master
+      - develop
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  check-review:
+    name: Check Spec-Kit Review Completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if spec-kit branch
+        id: check_branch
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "Branch: $BRANCH_NAME"
+
+          # Check if branch matches spec-kit extension patterns
+          if [[ "$BRANCH_NAME" =~ ^(bugfix|modify|refactor|hotfix|deprecate|cleanup|baseline|enhance)/ ]] || \
+             [[ "$BRANCH_NAME" =~ ^[0-9]+-.*$ ]]; then
+            echo "is_speckit=true" >> $GITHUB_OUTPUT
+            echo "✓ This is a spec-kit workflow branch"
+
+            # Extract workflow type and spec number
+            if [[ "$BRANCH_NAME" =~ ^([a-z]+)/([0-9]+) ]]; then
+              WORKFLOW_TYPE="${BASH_REMATCH[1]}"
+              SPEC_NUMBER="${BASH_REMATCH[2]}"
+            elif [[ "$BRANCH_NAME" =~ ^([0-9]+)- ]]; then
+              WORKFLOW_TYPE="feature"
+              SPEC_NUMBER="${BASH_REMATCH[1]}"
+            else
+              # Handle edge cases
+              WORKFLOW_TYPE="unknown"
+              SPEC_NUMBER=""
+            fi
+
+            # Validate extracted values to surface potential parsing issues
+            if [[ -z "$WORKFLOW_TYPE" || -z "$SPEC_NUMBER" ]]; then
+              echo "Warning: Failed to extract workflow type or spec number from branch '$BRANCH_NAME'." >&2
+            fi
+            echo "workflow_type=$WORKFLOW_TYPE" >> $GITHUB_OUTPUT
+            echo "spec_number=$SPEC_NUMBER" >> $GITHUB_OUTPUT
+          else
+            echo "is_speckit=false" >> $GITHUB_OUTPUT
+            echo "⊘ Not a spec-kit workflow branch - skipping review check"
+          fi
+
+      - name: Find spec directory
+        if: steps.check_branch.outputs.is_speckit == 'true'
+        id: find_spec
+        run: |
+          WORKFLOW_TYPE="${{ steps.check_branch.outputs.workflow_type }}"
+          SPEC_NUMBER="${{ steps.check_branch.outputs.spec_number }}"
+
+          # Search for spec directory
+          SPEC_DIR=""
+
+          # Try workflow-specific directory first (e.g., specs/bugfix/001-*)
+          if [ "$WORKFLOW_TYPE" != "feature" ] && [ "$WORKFLOW_TYPE" != "unknown" ]; then
+            PATTERN="specs/${WORKFLOW_TYPE}/${SPEC_NUMBER}-*"
+            echo "Searching for: $PATTERN"
+            MATCHES=$(find specs -maxdepth 3 -type d -path "$PATTERN" 2>/dev/null || true)
+            if [ -n "$MATCHES" ]; then
+              SPEC_DIR=$(echo "$MATCHES" | head -n 1)
+            fi
+          fi
+
+          # Try standard feature directory (e.g., specs/001-*)
+          if [ -z "$SPEC_DIR" ] && [ -n "$SPEC_NUMBER" ]; then
+            PATTERN="specs/${SPEC_NUMBER}-*"
+            echo "Searching for: $PATTERN"
+            MATCHES=$(find specs -maxdepth 2 -type d -path "$PATTERN" 2>/dev/null || true)
+            if [ -n "$MATCHES" ]; then
+              SPEC_DIR=$(echo "$MATCHES" | head -n 1)
+            fi
+          fi
+
+          # Try .specify/specs directory (alternative location)
+          if [ -z "$SPEC_DIR" ] && [ -n "$SPEC_NUMBER" ]; then
+            if [ "$WORKFLOW_TYPE" != "feature" ] && [ "$WORKFLOW_TYPE" != "unknown" ]; then
+              PATTERN=".specify/specs/${WORKFLOW_TYPE}/${SPEC_NUMBER}-*"
+            else
+              PATTERN=".specify/specs/${SPEC_NUMBER}-*"
+            fi
+            echo "Searching for: $PATTERN"
+            MATCHES=$(find .specify/specs -type d -path "$PATTERN" 2>/dev/null || true)
+            if [ -n "$MATCHES" ]; then
+              SPEC_DIR=$(echo "$MATCHES" | head -n 1)
+            fi
+          fi
+
+          if [ -n "$SPEC_DIR" ]; then
+            echo "spec_dir=$SPEC_DIR" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "✓ Found spec directory: $SPEC_DIR"
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "⚠ Could not find spec directory for $WORKFLOW_TYPE/$SPEC_NUMBER"
+          fi
+
+      - name: Check for review file
+        if: steps.find_spec.outputs.found == 'true'
+        id: check_review
+        run: |
+          SPEC_DIR="${{ steps.find_spec.outputs.spec_dir }}"
+
+          # Look for review files
+          REVIEW_FILE=""
+          for filename in review.md review-report.md review-notes.md REVIEW.md; do
+            if [ -f "$SPEC_DIR/$filename" ]; then
+              REVIEW_FILE="$SPEC_DIR/$filename"
+              break
+            fi
+          done
+
+          if [ -z "$REVIEW_FILE" ]; then
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "❌ No review file found in $SPEC_DIR"
+            exit 0
+          fi
+
+          echo "review_file=$REVIEW_FILE" >> $GITHUB_OUTPUT
+          echo "found=true" >> $GITHUB_OUTPUT
+          echo "✓ Found review file: $REVIEW_FILE"
+
+      - name: Validate review approval
+        if: steps.check_review.outputs.found == 'true'
+        id: validate_review
+        run: |
+          REVIEW_FILE="${{ steps.check_review.outputs.review_file }}"
+
+          echo "Checking review status in: $REVIEW_FILE"
+          echo "----------------------------------------"
+
+          # Check for approval markers
+          APPROVED=false
+          NEEDS_CHANGES=false
+
+          # Check for rejection markers first
+          if grep -qiE '\*\*Status\*\*:?\s*(❌|:x:)?\s*Needs\s+Changes' "$REVIEW_FILE"; then
+            NEEDS_CHANGES=true
+          fi
+
+          # Only check approval if not marked as needs changes
+          if [ "$NEEDS_CHANGES" = false ]; then
+            # Look for various approval patterns
+            if grep -qiE '\*\*Status\*\*:?\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE 'Status:\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE '##\s*Status.*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE '^- Status:\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            fi
+
+            # Check for "Approved with Notes" (also acceptable)
+            if grep -qiE '\*\*Status\*\*:?\s*(⚠️|:warning:)?\s*Approved\s+with\s+(Notes|Minor\s+Notes)' "$REVIEW_FILE"; then
+              APPROVED=true
+            fi
+          fi
+
+          if [ "$NEEDS_CHANGES" = true ]; then
+            echo "needs_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+          if [ "$APPROVED" = true ]; then
+            echo "approved=true" >> $GITHUB_OUTPUT
+            echo "✅ Review status: APPROVED"
+
+            # Extract and display review summary
+            echo ""
+            echo "Review Summary:"
+            echo "----------------------------------------"
+            grep -A 5 "^## Summary" "$REVIEW_FILE" || true
+
+            exit 0
+          else
+            echo "approved=false" >> $GITHUB_OUTPUT
+            echo "❌ Review status: NOT APPROVED or NEEDS CHANGES"
+
+            # Show why it's not approved
+            echo ""
+            echo "Review Status:"
+            echo "----------------------------------------"
+            grep -E "Status:" "$REVIEW_FILE" || echo "No status line found"
+
+            exit 1
+          fi
+
+      - name: Report missing review
+        if: steps.check_branch.outputs.is_speckit == 'true' && (steps.find_spec.outputs.found == 'false' || steps.check_review.outputs.found == 'false')
+        run: |
+          echo "❌ Spec-Kit Review Required"
+          echo ""
+          echo "This pull request is from a spec-kit workflow branch but does not have"
+          echo "a completed code review."
+          echo ""
+          echo "Branch: ${{ github.head_ref }}"
+          echo "Workflow Type: ${{ steps.check_branch.outputs.workflow_type }}"
+          echo "Spec Number: ${{ steps.check_branch.outputs.spec_number }}"
+          echo ""
+
+          if [ "${{ steps.find_spec.outputs.found }}" = "false" ]; then
+            echo "⚠ Could not find spec directory."
+            echo "Expected location: specs/${{ steps.check_branch.outputs.workflow_type }}/${{ steps.check_branch.outputs.spec_number }}-*"
+            echo "              or: specs/${{ steps.check_branch.outputs.spec_number }}-*"
+          else
+            echo "⚠ Spec directory found but no review file present."
+            echo "Location checked: ${{ steps.find_spec.outputs.spec_dir }}"
+          fi
+
+          echo ""
+          echo "To complete this PR, please:"
+          echo "1. Run '/speckit.review' command to perform code review"
+          echo "2. Ensure the review status is 'Approved' or 'Approved with Notes'"
+          echo "3. Commit the review file to your branch"
+          echo "4. Push the changes"
+          echo ""
+          echo "For more information, see the spec-kit documentation."
+
+          exit 1
+
+      - name: Success
+        if: steps.check_branch.outputs.is_speckit != 'true' || steps.validate_review.outputs.approved == 'true'
+        run: |
+          if [ "${{ steps.check_branch.outputs.is_speckit }}" = "true" ]; then
+            echo "✅ Spec-kit review check passed!"
+            echo "Branch has been properly reviewed and approved."
+          else
+            echo "✓ Non-spec-kit branch - no review required"
+          fi

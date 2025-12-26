@@ -1,0 +1,147 @@
+name: ⚠️ Deprecation Request
+description: Request deprecation of existing functionality using spec-kit deprecate workflow
+title: "[Deprecate]: "
+labels: ["deprecation", "spec-kit:deprecate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Deprecation Request
+
+        This template helps you create a well-structured deprecation request using the spec-kit deprecate workflow.
+        After this issue is created, you can start the deprecation with:
+
+        ```bash
+        /speckit.deprecate "deprecation description"
+        # ... implement ...
+        /speckit.review
+        ```
+
+  - type: input
+    id: feature_to_deprecate
+    attributes:
+      label: Feature to Deprecate
+      description: Which feature/API/functionality should be deprecated?
+      placeholder: e.g., "Legacy authentication API v1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Deprecation Description
+      description: What is being deprecated?
+      placeholder: Describe what will be deprecated...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason for Deprecation
+      description: Why is this being deprecated?
+      placeholder: |
+        Explain why this should be deprecated:
+        - Replaced by better alternative
+        - No longer needed
+        - Security concerns
+        - Maintenance burden
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternative
+    attributes:
+      label: Alternative Solution
+      description: What should users use instead?
+      placeholder: Describe the replacement or alternative approach...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact_analysis
+    attributes:
+      label: Impact Analysis
+      description: Who/what will be affected by this deprecation?
+      placeholder: |
+        - Affected users: [e.g., all API consumers, internal services only]
+        - Affected systems: [list systems]
+        - Usage statistics: [if available]
+    validations:
+      required: true
+
+  - type: textarea
+    id: migration_plan
+    attributes:
+      label: Migration Plan
+      description: How should users migrate to the alternative?
+      placeholder: |
+        Provide step-by-step migration guidance:
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: deprecation_timeline
+    attributes:
+      label: Deprecation Timeline
+      description: When should this be deprecated and removed?
+      placeholder: e.g., "Deprecate in v2.0, remove in v3.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: deprecation_steps
+    attributes:
+      label: Deprecation Steps
+      description: What steps will be taken to deprecate this?
+      placeholder: |
+        - [ ] Add deprecation warnings
+        - [ ] Update documentation
+        - [ ] Notify users
+        - [ ] Provide migration guide
+        - [ ] Set removal date
+    validations:
+      required: true
+
+  - type: dropdown
+    id: breaking_change
+    attributes:
+      label: Breaking Change
+      description: Will this be a breaking change when removed?
+      options:
+        - "Yes - Breaking change"
+        - "No - Backward compatible"
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: Deprecation Requirements
+      description: Required for proper deprecation
+      options:
+        - label: Alternative solution is available and documented
+          required: true
+        - label: Migration path is clear
+          required: true
+        - label: Adequate notice period planned
+          required: true
+        - label: Impact assessment completed
+          required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have identified a viable alternative
+          required: true
+        - label: I have considered the impact on users
+          required: true
+        - label: I am willing to help with this deprecation
+          required: false

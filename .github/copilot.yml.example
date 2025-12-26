@@ -1,0 +1,224 @@
+# GitHub Copilot Configuration Example for Pull Request Reviews
+#
+# IMPORTANT: This is an EXAMPLE/INSTRUCTIONAL file demonstrating how to configure
+# GitHub Copilot for spec-kit workflows. The fields shown here are for illustration
+# and may not match GitHub Copilot's actual configuration schema.
+#
+# For actual GitHub Copilot configuration, refer to:
+# - GitHub Copilot official documentation
+# - Your organization's Copilot setup guide
+# - .github/copilot-instructions.md for spec-kit integration instructions
+#
+# This file shows the INTENT and RECOMMENDED SETTINGS for Copilot integration.
+# Adapt these concepts to your actual Copilot configuration method.
+#
+# Documentation: https://docs.github.com/en/copilot/using-github-copilot/asking-github-copilot-questions-in-github
+
+# ==============================================================================
+# Pull Request Review Configuration (EXAMPLE)
+# ==============================================================================
+
+# Enable Copilot for pull request reviews
+enabled: true
+
+# Configure Copilot to understand spec-kit workflows
+context:
+  # Include spec-kit workflow context in reviews
+  include_workflow_context: true
+
+  # Paths to include for context when reviewing PRs
+  paths:
+    - "specs/**/*"
+    - ".specify/**/*"
+    - "*.md"
+    - "src/**/*"
+    - "tests/**/*"
+
+# ==============================================================================
+# Review Instructions for Copilot
+# ==============================================================================
+
+# Instructions for Copilot when performing code reviews
+review_instructions: |
+  When reviewing pull requests for this repository, follow these guidelines:
+
+  ## Spec-Kit Workflow Context
+
+  This repository uses spec-kit-extensions workflows. Understand the workflow type:
+
+  - **Feature**: New functionality (specs/NNN-name/ or /speckit.specify)
+  - **Bugfix**: Bug fixes (specs/bugfix/NNN-*/ or /speckit.bugfix)
+  - **Enhance**: Enhancements (specs/enhance/NNN-*/ or /speckit.enhance)
+  - **Modify**: Modifications (specs/modify/NNN^MMM-*/ or /speckit.modify)
+  - **Refactor**: Code refactoring (specs/refactor/NNN-*/ or /speckit.refactor)
+  - **Hotfix**: Production emergencies (specs/hotfix/NNN-*/ or /speckit.hotfix)
+  - **Deprecate**: Feature deprecation (specs/deprecate/NNN-*/ or /speckit.deprecate)
+  - **Cleanup**: Code cleanup (specs/cleanup/NNN-*/ or /speckit.cleanup)
+  - **Baseline**: Documentation (specs/baseline/NNN-*/ or /speckit.baseline)
+
+  ## Review Checklist
+
+  ### 1. Spec-Kit Review Completion (CRITICAL)
+
+  - **Check if review file exists**: Look for `review.md` in the spec directory
+  - **Verify review status**: Must be "✅ Approved" or "⚠️ Approved with Notes"
+  - **Flag missing reviews**: If no review file or status is "❌ Needs Changes", comment that `/speckit.review` must be completed
+
+  ### 2. Specification Alignment
+
+  - Read the spec file (spec.md) in the spec directory
+  - Verify implementation matches specification requirements
+  - Check that acceptance criteria are met
+  - Flag any scope creep or deviations from spec
+
+  ### 3. Code Quality
+
+  - Check for code clarity and maintainability
+  - Look for proper error handling
+  - Verify edge cases are handled
+  - Check for security vulnerabilities
+  - Ensure no hardcoded secrets or sensitive data
+  - Verify logging and debugging code is appropriate (not excessive)
+
+  ### 4. Testing
+
+  - Verify tests exist for new functionality
+  - Check that tests cover edge cases
+  - Look for test coverage of bug fixes (regression tests)
+  - Ensure tests are clear and maintainable
+  - For refactoring: verify tests unchanged and still passing
+
+  ### 5. Documentation
+
+  - Check that code comments explain "why" not "what"
+  - Verify public APIs are documented
+  - Check that README is updated if needed
+  - For breaking changes: verify migration guide exists
+
+  ### 6. Workflow-Specific Checks
+
+  **For Bugfix**:
+  - Verify regression test exists and would catch the bug
+  - Check that root cause is addressed (not just symptoms)
+  - Look for similar bugs elsewhere in codebase
+
+  **For Modify**:
+  - Check impact-analysis.md for completeness
+  - Verify backward compatibility or migration plan
+  - Check that affected systems are updated
+
+  **For Refactor**:
+  - Ensure behavior is unchanged
+  - Verify metrics show improvement (if provided)
+  - Check that all tests still pass
+
+  **For Hotfix**:
+  - Verify critical issue is addressed
+  - Check for post-mortem documentation
+  - Ensure fix doesn't introduce new issues
+
+  **For Deprecate**:
+  - Verify deprecation warnings are in place
+  - Check migration guide exists
+  - Verify phased rollout plan
+
+  ### 7. Best Practices
+
+  - Check for SOLID principles
+  - Look for DRY violations
+  - Verify proper separation of concerns
+  - Check for appropriate abstraction levels
+  - Look for performance issues
+
+  ## Review Output Format
+
+  Provide your review in this structure:
+
+  ### Summary
+  Brief overview of the changes and overall assessment.
+
+  ### Spec-Kit Review Status
+  - ✅ Review file exists and approved
+  - ⚠️ Review file exists but needs attention
+  - ❌ No review file found - `/speckit.review` required
+
+  ### Strengths
+  What's done well in this PR.
+
+  ### Issues / Concerns
+  List any problems found (categorized by severity: Critical, High, Medium, Low).
+
+  ### Suggestions
+  Improvements that would make the code better.
+
+  ### Specification Alignment
+  How well the implementation matches the spec.
+
+  ### Recommendation
+  - ✅ Approve (ready to merge)
+  - ⚠️ Approve with minor comments (can merge, address comments in follow-up)
+  - ❌ Request changes (must fix before merge)
+
+# ==============================================================================
+# Copilot Chat Configuration
+# ==============================================================================
+
+# Enable Copilot Chat for this repository
+chat:
+  enabled: true
+
+  # Suggested prompts for common review tasks
+  suggested_prompts:
+    - "Review this PR for spec-kit workflow compliance"
+    - "Check if the spec-kit review is completed and approved"
+    - "Compare this implementation to the specification in specs/"
+    - "Look for security vulnerabilities in this PR"
+    - "Check test coverage for this PR"
+    - "Review for backward compatibility issues"
+    - "Find potential performance issues"
+    - "Check if documentation is adequate"
+
+# ==============================================================================
+# AI-Assisted Review Workflow
+# ==============================================================================
+
+# Workflow for using Copilot in reviews:
+#
+# 1. Developer completes implementation
+# 2. Developer runs: /speckit.review (generates AI review file)
+# 3. Developer commits review file and creates PR
+# 4. GitHub Copilot provides initial PR review
+# 5. Human reviewers perform detailed review
+# 6. Both AI review (approved) + human review (approved) required
+#
+# This creates a multi-layer review process:
+# - Layer 1: /speckit.review (spec alignment, tests, quality)
+# - Layer 2: GitHub Copilot (code review, best practices, security)
+# - Layer 3: Human reviewers (architecture, UX, business logic)
+# - Layer 4: Automated checks (CI/CD, linting, tests)
+
+# ==============================================================================
+# Integration with GitHub Features
+# ==============================================================================
+
+# This configuration works with:
+# - GitHub Copilot for Pull Requests (PR summaries and reviews)
+# - GitHub Actions (automated review enforcement)
+# - CODEOWNERS (automatic reviewer assignment)
+# - Branch protection rules (require reviews before merge)
+# - Pull request templates (structured PR information)
+
+# ==============================================================================
+# Customization Notes
+# ==============================================================================
+
+# To customize for your project:
+# 1. Update review_instructions with project-specific guidelines
+# 2. Add project-specific patterns to watch for
+# 3. Modify suggested_prompts for your common review tasks
+# 4. Adjust paths in context.paths to match your project structure
+#
+# Remember:
+# - Copilot assists but doesn't replace human review
+# - Use in conjunction with /speckit.review for comprehensive coverage
+# - Configure branch protection to require both AI and human approval
