@@ -52,6 +52,10 @@ jobs:
               SPEC_NUMBER=""
             fi
 
+            # Validate extracted values to surface potential parsing issues
+            if [[ -z "$WORKFLOW_TYPE" || -z "$SPEC_NUMBER" ]]; then
+              echo "Warning: Failed to extract workflow type or spec number from branch '$BRANCH_NAME'." >&2
+            fi
             echo "workflow_type=$WORKFLOW_TYPE" >> $GITHUB_OUTPUT
             echo "spec_number=$SPEC_NUMBER" >> $GITHUB_OUTPUT
           else
