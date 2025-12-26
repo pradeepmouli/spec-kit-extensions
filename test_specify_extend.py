@@ -208,7 +208,7 @@ def test_get_repo_root_windows_native_path():
 
 
 def test_get_repo_root_windows_native_path_with_backslashes():
-    """Test that native Windows paths with backslashes are normalized and converted"""
+    """Test that native Windows paths with backslashes are normalized to use forward slashes"""
     
     with patch('subprocess.run') as mock_run:
         # Mock git command returning a native Windows path with backslashes
