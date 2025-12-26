@@ -180,7 +180,7 @@ jobs:
             💡 **Tip**: You can run the review helper workflow to check your review status:
             \`Actions → Spec-Kit Review Helper → Run workflow → check-status\`
 
-            📚 **Need help?** See the [review workflow documentation](https://github.com/pradeepmouli/spec-kit-extensions/blob/main/extensions/workflows/review/README.md)
+            📚 **Need help?** See the [review workflow documentation](../../extensions/workflows/review/README.md)
             `;
 
             // Post the comment

@@ -1,12 +1,21 @@
-# GitHub Copilot Configuration for Pull Request Reviews
+# GitHub Copilot Configuration Example for Pull Request Reviews
 #
-# This file configures GitHub Copilot to assist with pull request reviews,
-# integrating with the spec-kit workflow system.
+# IMPORTANT: This is an EXAMPLE/INSTRUCTIONAL file demonstrating how to configure
+# GitHub Copilot for spec-kit workflows. The fields shown here are for illustration
+# and may not match GitHub Copilot's actual configuration schema.
+#
+# For actual GitHub Copilot configuration, refer to:
+# - GitHub Copilot official documentation
+# - Your organization's Copilot setup guide
+# - .github/copilot-instructions.md for spec-kit integration instructions
+#
+# This file shows the INTENT and RECOMMENDED SETTINGS for Copilot integration.
+# Adapt these concepts to your actual Copilot configuration method.
 #
 # Documentation: https://docs.github.com/en/copilot/using-github-copilot/asking-github-copilot-questions-in-github
 
 # ==============================================================================
-# Pull Request Review Configuration
+# Pull Request Review Configuration (EXAMPLE)
 # ==============================================================================
 
 # Enable Copilot for pull request reviews

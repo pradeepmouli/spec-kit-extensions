@@ -421,25 +421,40 @@ specify-extend --all --github-integration --no-interactive
 
 **Option 2: Manual Installation**
 
-If you prefer manual control, copy files from this repository:
+If you prefer manual control, first obtain the spec-kit-extensions files:
 
 ```bash
+# Clone the spec-kit-extensions repository
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+
+# Or download a specific release
+# wget https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/vX.Y.Z.tar.gz
+# tar -xzf vX.Y.Z.tar.gz
+```
+
+Then copy the desired files to your project:
+
+```bash
+# Navigate to your project directory
+cd /path/to/your/project
+
 # Copy workflows (recommended for review enforcement)
-cp path/to/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
+cp /tmp/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
 
 # Copy PR template (recommended for structured PRs)
-cp path/to/spec-kit-extensions/.github/pull_request_template.md .github/
+cp /tmp/spec-kit-extensions/.github/pull_request_template.md .github/
 
 # Copy issue templates (optional)
-cp -r path/to/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
+cp -r /tmp/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
 
 # Copy GitHub Copilot configuration (optional, for Copilot users)
-cp path/to/spec-kit-extensions/.github/copilot-instructions.md .github/
-cp path/to/spec-kit-extensions/.github/copilot.yml .github/
+cp /tmp/spec-kit-extensions/.github/copilot-instructions.md .github/
+cp /tmp/spec-kit-extensions/.github/copilot.yml.example .github/
+# Edit copilot.yml.example and rename if needed
 
 # Copy CODEOWNERS template (optional, for teams)
-cp path/to/spec-kit-extensions/.github/CODEOWNERS.example .github/CODEOWNERS
-# Then edit .github/CODEOWNERS to customize for your team
+cp /tmp/spec-kit-extensions/.github/CODEOWNERS.example .github/CODEOWNERS
+# IMPORTANT: Edit .github/CODEOWNERS to replace placeholder values
 
 # Commit the files
 git add .github/
