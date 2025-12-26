@@ -177,16 +177,16 @@ else
 ## Phase 0: Pre-Baseline Testing Gap Analysis
 
 ### Step 1: Identify Affected Functionality
-[Document code areas that will be modified during refactoring]
+`[Document code areas that will be modified during refactoring]`
 
 ### Step 2: Assess Current Test Coverage
-[For each affected area, document current test coverage]
+`[For each affected area, document current test coverage]`
 
 ### Step 3: Document Gaps
-[List critical, important, and nice-to-have testing gaps]
+`[List critical, important, and nice-to-have testing gaps]`
 
 ### Step 4: Add Missing Tests
-[Add tests for critical gaps before proceeding to baseline]
+`[Add tests for critical gaps before proceeding to baseline]`
 
 ---
 *Complete this assessment BEFORE running measure-metrics.sh --before*
