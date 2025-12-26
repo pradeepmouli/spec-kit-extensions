@@ -70,8 +70,32 @@ ComponentB → Repository → Database
 ComponentC → Repository → Database
 ```
 
+## Phase 0: Testing Gap Assessment
+*CRITICAL: Complete BEFORE capturing baseline metrics - see testing-gaps.md*
+
+### Pre-Baseline Testing Requirement
+- [ ] **Testing gaps assessment completed** (see `testing-gaps.md`)
+- [ ] **Critical gaps identified and addressed**
+- [ ] **All affected functionality has adequate test coverage**
+- [ ] **Ready to capture baseline metrics**
+
+**Rationale**: Refactoring requires behavior preservation validation. If code lacks test coverage, we cannot verify behavior is preserved. All impacted functionality MUST be tested BEFORE establishing the baseline.
+
+### Testing Coverage Status
+**Affected Code Areas**:
+- [File/Function 1]: Coverage [X%] - [ ] ✅ Adequate [ ] ❌ Needs Tests
+- [File/Function 2]: Coverage [X%] - [ ] ✅ Adequate [ ] ❌ Needs Tests
+- [File/Function 3]: Coverage [X%] - [ ] ✅ Adequate [ ] ❌ Needs Tests
+
+**Action Taken**:
+- [ ] No gaps found - proceeded to baseline
+- [ ] Gaps found - added [N] tests before baseline
+- [ ] Gaps documented but deferred (with justification)
+
+---
+
 ## Baseline Metrics
-*Captured before refactoring begins - see metrics-before.md*
+*Captured AFTER testing gaps are addressed - see metrics-before.md*
 
 ### Code Complexity
 - **Cyclomatic Complexity**: [number or "not measured"]
@@ -185,10 +209,23 @@ Revert if any of these occur within 24-48 hours:
 
 ## Implementation Plan
 
+### Phase 0: Testing Gap Assessment (Pre-Baseline)
+**CRITICAL FIRST STEP**: Assess and address testing gaps BEFORE baseline
+
+1. Review `testing-gaps.md` template
+2. Identify all code that will be modified during refactoring
+3. Assess test coverage for each affected area
+4. Document gaps (critical, important, nice-to-have)
+5. **Add tests for critical gaps** - DO NOT proceed without these
+6. Verify all new tests pass
+7. Mark testing gaps assessment as complete
+
+**Checkpoint**: Only proceed to Phase 1 when adequate test coverage exists
+
 ### Phase 1: Baseline (Before Refactoring)
-1. Capture all baseline metrics (run `.specify/extensions/workflows/refactor/measure-metrics.sh`)
+1. Capture all baseline metrics (run `.specify/extensions/workflows/refactor/measure-metrics.sh --before`)
 2. Create behavioral snapshot (document current outputs)
-3. Ensure 100% test pass rate
+3. Ensure 100% test pass rate (including newly added tests)
 4. Tag current state in git: `git tag pre-refactor-### -m "Baseline before refactor-###"`
 
 ### Phase 2: Refactoring (Incremental)
@@ -215,7 +252,16 @@ Revert if any of these occur within 24-48 hours:
 
 ## Verification Checklist
 
-### Pre-Refactoring
+### Phase 0: Testing Gap Assessment
+- [ ] Testing gaps assessment completed (testing-gaps.md)
+- [ ] All affected code areas identified
+- [ ] Test coverage assessed for each area
+- [ ] Critical gaps identified and documented
+- [ ] Tests added for all critical gaps
+- [ ] All new tests passing
+- [ ] Ready to proceed to baseline capture
+
+### Pre-Refactoring (Phase 1)
 - [ ] Baseline metrics captured and documented
 - [ ] All tests passing (100% pass rate)
 - [ ] Behavioral snapshot created

@@ -160,6 +160,39 @@ Run the following command to capture post-refactoring metrics:
 This should be done AFTER refactoring is complete and all tests pass.
 EOF
 
+# Create placeholder for testing gaps assessment
+TESTING_GAPS="$REFACTOR_DIR/testing-gaps.md"
+TESTING_GAPS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/refactor/testing-gaps-template.md"
+
+if [ -f "$TESTING_GAPS_TEMPLATE" ]; then
+    cp "$TESTING_GAPS_TEMPLATE" "$TESTING_GAPS"
+else
+    cat > "$TESTING_GAPS" << 'EOF'
+# Testing Gaps Assessment
+
+**Purpose**: Identify and address test coverage gaps BEFORE establishing baseline metrics.
+
+**Status**: [ ] Assessment Complete | [ ] Gaps Identified | [ ] Tests Added | [ ] Ready for Baseline
+
+## Phase 0: Pre-Baseline Testing Gap Analysis
+
+### Step 1: Identify Affected Functionality
+[Document code areas that will be modified during refactoring]
+
+### Step 2: Assess Current Test Coverage
+[For each affected area, document current test coverage]
+
+### Step 3: Document Gaps
+[List critical, important, and nice-to-have testing gaps]
+
+### Step 4: Add Missing Tests
+[Add tests for critical gaps before proceeding to baseline]
+
+---
+*Complete this assessment BEFORE running measure-metrics.sh --before*
+EOF
+fi
+
 # Create placeholder for behavioral snapshot
 BEHAVIORAL_SNAPSHOT="$REFACTOR_DIR/behavioral-snapshot.md"
 cat > "$BEHAVIORAL_SNAPSHOT" << 'EOF'
@@ -238,12 +271,13 @@ else
 fi
 
 if $JSON_MODE; then
-    printf '{"REFACTOR_ID":"%s","BRANCH_NAME":"%s","REFACTOR_SPEC_FILE":"%s","METRICS_BEFORE":"%s","METRICS_AFTER":"%s","BEHAVIORAL_SNAPSHOT":"%s","REFACTOR_NUM":"%s"}\n' \
-        "$REFACTOR_ID" "$BRANCH_NAME" "$REFACTOR_SPEC_FILE" "$METRICS_BEFORE" "$METRICS_AFTER" "$BEHAVIORAL_SNAPSHOT" "$REFACTOR_NUM"
+    printf '{"REFACTOR_ID":"%s","BRANCH_NAME":"%s","REFACTOR_SPEC_FILE":"%s","TESTING_GAPS":"%s","METRICS_BEFORE":"%s","METRICS_AFTER":"%s","BEHAVIORAL_SNAPSHOT":"%s","REFACTOR_NUM":"%s"}\n' \
+        "$REFACTOR_ID" "$BRANCH_NAME" "$REFACTOR_SPEC_FILE" "$TESTING_GAPS" "$METRICS_BEFORE" "$METRICS_AFTER" "$BEHAVIORAL_SNAPSHOT" "$REFACTOR_NUM"
 else
     echo "REFACTOR_ID: $REFACTOR_ID"
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "REFACTOR_SPEC_FILE: $REFACTOR_SPEC_FILE"
+    echo "TESTING_GAPS: $TESTING_GAPS"
     echo "METRICS_BEFORE: $METRICS_BEFORE"
     echo "METRICS_AFTER: $METRICS_AFTER"
     echo "BEHAVIORAL_SNAPSHOT: $BEHAVIORAL_SNAPSHOT"
