@@ -90,6 +90,22 @@ This will:
 - Set up quality gates
 - Configure branch naming patterns
 
+**Optional: Install GitHub integration**:
+```bash
+specify-extend --all --github-integration
+```
+
+The `--github-integration` flag will interactively prompt you to select GitHub features:
+- **Review enforcement workflows** - Automatically require reviews before merge
+- **Review reminder workflow** - Auto-comment on PRs with instructions
+- **PR template** - Structured PR template with review checklist
+- **Issue templates** - 9 templates for all workflow types
+- **GitHub Copilot config** - PR review configuration
+- **CODEOWNERS template** - Automatic reviewer assignment
+- **Documentation** - Complete guide for all features
+
+You can select individual features or install all with `all`. Non-interactive: `specify-extend --all --github-integration --no-interactive`
+
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
 **Alternative: Install the CLI tool manually**
@@ -374,7 +390,38 @@ Both components are released together but versioned separately to allow independ
 
 ### Installation (Optional)
 
-These GitHub configurations are **NOT** automatically installed to keep repositories clean. To add them to your project:
+**Option 1: Automated Installation (Recommended)**
+
+Use the `--github-integration` flag during installation:
+
+```bash
+specify-extend --all --github-integration
+```
+
+This will:
+- Interactively prompt you to select which GitHub features to install
+- Download and install selected features from the latest release
+- Set up the `.github/` directory automatically
+
+Available features to select:
+- `review-enforcement` - Review requirement enforcement workflow
+- `review-reminder` - PR review reminder workflow
+- `review-helper` - Manual review checking tools
+- `pr-template` - Pull request template
+- `issue-templates` - 9 issue templates for all workflows
+- `copilot-config` - GitHub Copilot configuration
+- `codeowners` - CODEOWNERS template
+- `documentation` - Complete docs
+- `all` - Install everything
+
+Non-interactive mode (installs all features):
+```bash
+specify-extend --all --github-integration --no-interactive
+```
+
+**Option 2: Manual Installation**
+
+If you prefer manual control, copy files from this repository:
 
 ```bash
 # Copy workflows (recommended for review enforcement)

@@ -18,10 +18,12 @@ Usage:
     python specify_extend.py bugfix modify refactor
     python specify_extend.py --agent claude --all
     python specify_extend.py --dry-run --all
+    python specify_extend.py --all --github-integration
 
 Or install globally:
     uv tool install --from specify_extend.py specify-extend
     specify-extend --all
+    specify-extend --all --github-integration
 """
 
 import os
@@ -1452,7 +1454,183 @@ def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> Non
         console.print("  [dim]Would patch update-agent-context.sh COPILOT_FILE path[/dim]")
 
 
-@app.command()
+def install_github_integration(
+    repo_root: Path,
+    source_dir: Path,
+    dry_run: bool = False,
+    non_interactive: bool = False,
+) -> None:
+    """Install optional GitHub workflows, PR template, issue templates, and code review integration"""
+
+    # Source .github directory from downloaded release
+    source_github = source_dir / ".github"
+
+    if not source_github.exists():
+        console.print("[yellow]⚠[/yellow] .github directory not found in release")
+        return
+
+    # Define available features with descriptions
+    github_features = {
+        "review-enforcement": {
+            "name": "Review Enforcement Workflow",
+            "description": "Automatically requires code reviews before merging spec-kit branches",
+            "files": {
+                "workflows": ["spec-kit-review-required.yml"],
+            },
+        },
+        "review-reminder": {
+            "name": "Review Reminder Workflow",
+            "description": "Auto-comments on PRs with review instructions",
+            "files": {
+                "workflows": ["spec-kit-review-reminder.yml"],
+            },
+        },
+        "review-helper": {
+            "name": "Review Helper Workflow",
+            "description": "Manual tools to check review status and validate branches",
+            "files": {
+                "workflows": ["spec-kit-review-helper.yml"],
+            },
+        },
+        "pr-template": {
+            "name": "Pull Request Template",
+            "description": "Structured PR template with review checklist",
+            "files": {
+                "root": ["pull_request_template.md"],
+            },
+        },
+        "issue-templates": {
+            "name": "Issue Templates",
+            "description": "9 structured issue templates for all workflow types",
+            "files": {
+                "directories": ["ISSUE_TEMPLATE"],
+            },
+        },
+        "copilot-config": {
+            "name": "GitHub Copilot Configuration",
+            "description": "Copilot instructions and PR review configuration",
+            "files": {
+                "root": ["copilot-instructions.md", "copilot.yml"],
+            },
+        },
+        "codeowners": {
+            "name": "CODEOWNERS Template",
+            "description": "Example configuration for automatic reviewer assignment",
+            "files": {
+                "root": ["CODEOWNERS.example"],
+            },
+        },
+        "documentation": {
+            "name": "Documentation",
+            "description": "Complete documentation for GitHub integration",
+            "files": {
+                "root": ["README.md"],
+            },
+        },
+    }
+
+    # Prompt user to select features (unless non-interactive)
+    if non_interactive:
+        # Install all features
+        features_to_install = list(github_features.keys())
+    else:
+        console.print("\n[bold]GitHub Integration Features:[/bold]\n")
+
+        for key, feature in github_features.items():
+            console.print(f"  [cyan]{key:20}[/cyan] - {feature['description']}")
+
+        console.print("\n[dim]Enter feature keys to install (comma-separated) or 'all' for everything:[/dim]")
+        console.print("[dim]Example: review-enforcement,pr-template,issue-templates[/dim]")
+
+        user_input = input("\nFeatures to install [all]: ").strip()
+
+        if not user_input or user_input.lower() == "all":
+            features_to_install = list(github_features.keys())
+        else:
+            features_to_install = [f.strip() for f in user_input.split(",")]
+            # Validate feature keys
+            invalid = [f for f in features_to_install if f not in github_features]
+            if invalid:
+                console.print(f"[red]✗[/red] Invalid feature(s): {', '.join(invalid)}")
+                console.print(f"[dim]Available: {', '.join(github_features.keys())}[/dim]")
+                return
+
+    if not features_to_install:
+        console.print("[yellow]⚠[/yellow] No features selected. Skipping GitHub integration.")
+        return
+
+    console.print(f"\n[blue]ℹ[/blue] Installing GitHub integration features: {', '.join(features_to_install)}\n")
+
+    github_dir = repo_root / ".github"
+
+    if not dry_run:
+        github_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect all files to install from selected features
+    files_by_type = {"workflows": [], "root": [], "directories": []}
+
+    for feature_key in features_to_install:
+        feature = github_features[feature_key]
+        for file_type, files in feature["files"].items():
+            files_by_type[file_type].extend(files)
+
+    # Remove duplicates
+    for file_type in files_by_type:
+        files_by_type[file_type] = list(set(files_by_type[file_type]))
+
+    # Install workflow files
+    if files_by_type["workflows"]:
+        workflows_dir = github_dir / "workflows"
+        if not dry_run:
+            workflows_dir.mkdir(parents=True, exist_ok=True)
+
+        for workflow in files_by_type["workflows"]:
+            source_file = source_github / "workflows" / workflow
+            if source_file.exists():
+                if not dry_run:
+                    shutil.copy(source_file, workflows_dir / workflow)
+                console.print(f"[green]✓[/green] Installed workflow: {workflow}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] Workflow {workflow} not found")
+
+    # Install root .github files
+    if files_by_type["root"]:
+        for file in files_by_type["root"]:
+            source_file = source_github / file
+            if source_file.exists():
+                if not dry_run:
+                    shutil.copy(source_file, github_dir / file)
+                console.print(f"[green]✓[/green] Installed: {file}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] File {file} not found")
+
+    # Install directories
+    if files_by_type["directories"]:
+        for directory in files_by_type["directories"]:
+            source_directory = source_github / directory
+            if source_directory.exists():
+                dest_directory = github_dir / directory
+                if not dry_run:
+                    if dest_directory.exists():
+                        shutil.rmtree(dest_directory)
+                    shutil.copytree(source_directory, dest_directory)
+                console.print(f"[green]✓[/green] Installed directory: {directory}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] Directory {directory} not found")
+
+    console.print("\n[bold green]✓ GitHub integration installed![/bold green]")
+    console.print("\n[dim]Installed features:[/dim]")
+    for feature_key in features_to_install:
+        console.print(f"  [dim]✓ {github_features[feature_key]['name']}[/dim]")
+
+    console.print("\n[bold cyan]Next steps:[/bold cyan]")
+    console.print("  1. Review .github/README.md for complete documentation")
+    if "codeowners" in features_to_install:
+        console.print("  2. Customize .github/CODEOWNERS.example and rename to CODEOWNERS")
+    console.print("  3. Commit and push the .github/ directory")
+    console.print("\n  [dim]See .github/README.md for detailed usage instructions[/dim]")
+
+
 def main(
     extensions: List[str] = typer.Argument(
         None,
@@ -1524,6 +1702,11 @@ def main(
         None,
         "--script",
         help="Script type to install: sh (bash) or ps (PowerShell)",
+    ),
+    github_integration: bool = typer.Option(
+        False,
+        "--github-integration",
+        help="Install optional GitHub workflows, PR template, issue templates, and code review integration",
     ),
 ) -> None:
     """
@@ -1625,6 +1808,8 @@ def main(
         console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
         console.print(f"  Link mode: {'symlink' if link else 'copy'}")
+        if github_integration:
+            console.print(f"  GitHub integration: yes (interactive)" if interactive else "  GitHub integration: yes (all features)")
         raise typer.Exit(0)
 
     # Handle workflow enabling
@@ -1698,6 +1883,15 @@ def main(
         update_constitution(repo_root, source_dir, resolved_agents[0], dry_run, llm_enhance)
         patch_common_sh(repo_root, dry_run)
         patch_update_agent_context_sh(repo_root, dry_run)
+
+        # Install GitHub integration if requested
+        if github_integration:
+            install_github_integration(
+                repo_root,
+                source_dir,
+                dry_run=dry_run,
+                non_interactive=(not interactive),
+            )
 
     # Update enabled.conf with selected workflows
     if workflows_to_enable and not dry_run:
