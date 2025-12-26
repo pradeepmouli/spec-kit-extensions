@@ -355,7 +355,7 @@ Both components are released together but versioned separately to allow independ
 
 ## Optional GitHub Integration
 
-**New in v2.5.1**: spec-kit-extensions now includes optional GitHub workflows, issue templates, and AI agent configuration to enhance your development workflow.
+**New in vX.Y.Z**: spec-kit-extensions now includes optional GitHub workflows, issue templates, and AI agent configuration to enhance your development workflow.
 
 ### Features
 
