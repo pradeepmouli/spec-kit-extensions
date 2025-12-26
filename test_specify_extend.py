@@ -7,7 +7,8 @@ Tests the core functionality of downloading and installing spec-kit-extensions.
 
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
+import subprocess
 import sys
 
 # Add the current directory to path so we can import specify_extend
@@ -133,6 +134,115 @@ def test_no_template_tags_found():
             print("✓ Test passed: Returns None when no template tags found")
 
 
+def test_get_repo_root_windows_git_bash_path():
+    """Test that Windows Git Bash paths are correctly converted"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command returning a Git Bash path
+        mock_result = Mock()
+        mock_result.stdout = "/c/Users/test/project"
+        mock_run.return_value = mock_result
+        
+        with patch('sys.platform', 'win32'):
+            result = specify_extend.get_repo_root()
+            
+            # Should convert /c/Users/test/project to C:/Users/test/project
+            assert str(result) == "C:/Users/test/project", f"Expected C:/Users/test/project, got {result}"
+            
+            print("✓ Test passed: Windows Git Bash path converted correctly")
+
+
+def test_get_repo_root_windows_drive_root():
+    """Test that Windows Git Bash drive root paths are correctly converted"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command returning a Git Bash drive root path
+        mock_result = Mock()
+        mock_result.stdout = "/d"
+        mock_run.return_value = mock_result
+        
+        with patch('sys.platform', 'win32'):
+            result = specify_extend.get_repo_root()
+            
+            # Should convert /d to D:/ (Path normalizes to D:)
+            # Path() on Windows normalizes D:/ to D:
+            assert str(result) in ["D:/", "D:"], f"Expected D:/ or D:, got {result}"
+            
+            print("✓ Test passed: Windows Git Bash drive root converted correctly")
+
+
+def test_get_repo_root_unix_no_conversion():
+    """Test that Unix paths are not modified on non-Windows platforms"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command returning a Unix path
+        mock_result = Mock()
+        mock_result.stdout = "/home/user/project"
+        mock_run.return_value = mock_result
+        
+        with patch('sys.platform', 'linux'):
+            result = specify_extend.get_repo_root()
+            
+            # Should remain unchanged on Linux
+            assert str(result) == "/home/user/project", f"Expected /home/user/project, got {result}"
+            
+            print("✓ Test passed: Unix paths unchanged on non-Windows platforms")
+
+
+def test_get_repo_root_windows_native_path():
+    """Test that native Windows paths are left unchanged"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command returning a native Windows path
+        mock_result = Mock()
+        mock_result.stdout = "C:/Users/test/project"
+        mock_run.return_value = mock_result
+        
+        with patch('sys.platform', 'win32'):
+            result = specify_extend.get_repo_root()
+            
+            # Should remain unchanged
+            assert str(result) == "C:/Users/test/project", f"Expected C:/Users/test/project, got {result}"
+            
+            print("✓ Test passed: Native Windows paths unchanged")
+
+
+def test_get_repo_root_error_handling():
+    """Test that get_repo_root falls back to cwd on error"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command failing
+        mock_run.side_effect = subprocess.CalledProcessError(1, 'git')
+        
+        result = specify_extend.get_repo_root()
+        
+        # Should fall back to current working directory
+        assert result == Path.cwd(), f"Expected current directory, got {result}"
+        
+        print("✓ Test passed: Falls back to cwd on git error")
+
+
+def test_get_repo_root_multiple_drive_letters():
+    """Test conversion works for different drive letters"""
+    
+    drive_letters = ['a', 'b', 'c', 'd', 'e', 'z']
+    
+    for drive in drive_letters:
+        with patch('subprocess.run') as mock_run:
+            # Mock git command returning a Git Bash path with different drive letters
+            mock_result = Mock()
+            mock_result.stdout = f"/{drive}/test/path"
+            mock_run.return_value = mock_result
+            
+            with patch('sys.platform', 'win32'):
+                result = specify_extend.get_repo_root()
+                expected = f"{drive.upper()}:/test/path"
+                
+                assert str(result) == expected, f"Expected {expected}, got {result}"
+    
+    print("✓ Test passed: All drive letters convert correctly")
+
+
 if __name__ == "__main__":
     print("Running specify_extend tests...\n")
 
@@ -140,6 +250,12 @@ if __name__ == "__main__":
         test_download_latest_template_tag()
         test_filters_template_tags_only()
         test_no_template_tags_found()
+        test_get_repo_root_windows_git_bash_path()
+        test_get_repo_root_windows_drive_root()
+        test_get_repo_root_unix_no_conversion()
+        test_get_repo_root_windows_native_path()
+        test_get_repo_root_error_handling()
+        test_get_repo_root_multiple_drive_letters()
 
         print("\n✅ All tests passed!")
         sys.exit(0)

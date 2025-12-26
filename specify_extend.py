@@ -529,7 +529,19 @@ def get_repo_root() -> Path:
             text=True,
             check=True,
         )
-        return Path(result.stdout.strip())
+        path_str = result.stdout.strip()
+        
+        # On Windows with Git Bash, git returns Unix-style paths like /c/Users/...
+        # Convert these to Windows format (C:/Users/...) for Python's Path
+        if sys.platform == "win32":
+            # Match /c, /d, /c/... or /d/... etc. (Git Bash format)
+            match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
+            if match:
+                drive = match.group(1).upper()
+                rest = match.group(2) or "/"
+                path_str = f"{drive}:{rest}"
+        
+        return Path(path_str)
     except subprocess.CalledProcessError:
         return Path.cwd()
 
