@@ -49,7 +49,7 @@ __version__ = "1.5.2"
 
 # Initialize Rich console with UTF-8 encoding for Windows compatibility
 # On Windows, the default console encoding (cp1252) can't handle Unicode symbols like ✓, ✗, ⚠, ℹ
-# Rich automatically handles UTF-8 when legacy_windows=False (Windows 10+)
+# Rich automatically handles UTF-8 when legacy_windows=False (Windows 10 v1511+)
 console = Console(legacy_windows=False)
 
 # Set up SSL context for HTTPS requests
