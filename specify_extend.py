@@ -1631,7 +1631,7 @@ def install_github_integration(
     console.print("\n  [dim]See .github/README.md for detailed usage instructions[/dim]")
 
 
-@app.command()
+@app.callback(invoke_without_command=True)
 def main(
     extensions: List[str] = typer.Argument(
         None,
