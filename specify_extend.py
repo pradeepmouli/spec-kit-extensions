@@ -536,6 +536,9 @@ def get_repo_root() -> Path:
         # On Windows with Git Bash, git returns Unix-style paths like /c/Users/...
         # Convert these to Windows format (C:/Users/...) for Python's Path
         if sys.platform == "win32":
+            # Normalize backslashes to forward slashes first
+            path_str = path_str.replace('\\', '/')
+            
             # Match /c, /d, /c/... or /d/... etc. (Git Bash format)
             match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
             if match:

@@ -207,6 +207,24 @@ def test_get_repo_root_windows_native_path():
             print("✓ Test passed: Native Windows paths unchanged")
 
 
+def test_get_repo_root_windows_native_path_with_backslashes():
+    """Test that native Windows paths with backslashes are normalized to use forward slashes"""
+    
+    with patch('subprocess.run') as mock_run:
+        # Mock git command returning a native Windows path with backslashes
+        mock_result = Mock()
+        mock_result.stdout = "C:\\Users\\test\\project"
+        mock_run.return_value = mock_result
+        
+        with patch('sys.platform', 'win32'):
+            result = specify_extend.get_repo_root()
+            
+            # Should normalize backslashes and remain as C:/Users/test/project
+            assert str(result) == "C:/Users/test/project", f"Expected C:/Users/test/project, got {result}"
+            
+            print("✓ Test passed: Native Windows paths with backslashes normalized")
+
+
 def test_get_repo_root_error_handling():
     """Test that get_repo_root falls back to cwd on error"""
     
@@ -254,6 +272,7 @@ if __name__ == "__main__":
         test_get_repo_root_windows_drive_root()
         test_get_repo_root_unix_no_conversion()
         test_get_repo_root_windows_native_path()
+        test_get_repo_root_windows_native_path_with_backslashes()
         test_get_repo_root_error_handling()
         test_get_repo_root_multiple_drive_letters()
 
