@@ -1809,7 +1809,7 @@ def main(
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
         console.print(f"  Link mode: {'symlink' if link else 'copy'}")
         if github_integration:
-            console.print(f"  GitHub integration: yes (all features)" if not interactive else "  GitHub integration: yes (interactive)")
+            console.print(f"  GitHub integration: yes (interactive)" if interactive else "  GitHub integration: yes (all features)")
         raise typer.Exit(0)
 
     # Handle workflow enabling
