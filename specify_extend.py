@@ -540,8 +540,13 @@ def get_repo_root() -> Path:
             match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
             if match:
                 drive = match.group(1).upper()
-                rest = match.group(2) or "/"
-                path_str = f"{drive}:{rest}"
+                rest = match.group(2)
+                # Ensure we have an absolute path: C:/ not C:
+                # (C: means "current directory on C drive", C:/ means "root of C drive")
+                if rest:
+                    path_str = f"{drive}:{rest}"
+                else:
+                    path_str = f"{drive}:/"
         
         return Path(path_str)
     except subprocess.CalledProcessError:
