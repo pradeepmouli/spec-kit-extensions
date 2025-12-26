@@ -631,8 +631,8 @@ To improve these workflows:
 
 For questions or issues:
 
-- **GitHub Issues**: [spec-kit-extensions issues](https://github.com/pradeepmouli/spec-kit-extensions/issues)
-- **Discussions**: [spec-kit-extensions discussions](https://github.com/pradeepmouli/spec-kit-extensions/discussions)
+- **GitHub Issues**: [Project issues](../issues)
+- **Discussions**: [Project discussions](../discussions)
 - **Documentation**: [Main README](../README.md)
 
 ## License
