@@ -6,6 +6,7 @@ This directory contains optional GitHub workflows, issue templates, and AI agent
 
 - [Overview](#overview)
 - [GitHub Actions Workflows](#github-actions-workflows)
+- [GitHub Code Review Integration](#github-code-review-integration)
 - [Issue Templates](#issue-templates)
 - [AI Agent Integration](#ai-agent-integration)
 - [Installation](#installation)
@@ -17,9 +18,13 @@ This directory contains optional GitHub workflows, issue templates, and AI agent
 These optional GitHub configurations provide:
 
 1. **Review Enforcement** - Automatically require code reviews before merging spec-kit branches
-2. **Issue Templates** - Structured templates for each workflow type
-3. **Review Helper** - Tools to check review status and validate branches
-4. **AI Agent Instructions** - Configuration for GitHub Copilot and other AI agents
+2. **Review Reminders** - Auto-comment on PRs with review instructions
+3. **Pull Request Template** - Structured PR template with review checklist
+4. **CODEOWNERS Integration** - Automatic reviewer assignment
+5. **GitHub Copilot for PRs** - AI-assisted code review with spec-kit awareness
+6. **Issue Templates** - Structured templates for each workflow type
+7. **Review Helper** - Tools to check review status and validate branches
+8. **AI Agent Instructions** - Configuration for GitHub Copilot and other AI agents
 
 ## GitHub Actions Workflows
 
@@ -106,6 +111,146 @@ To complete this PR, please:
 - Go to Actions tab → Spec-Kit Review Helper → Run workflow
 - Select action and optionally specify branch name
 
+### 3. Spec-Kit Review Reminder (`spec-kit-review-reminder.yml`)
+
+**Purpose**: Automatically comments on PRs to remind about review requirements and integrates with GitHub's code review system.
+
+**Triggers**: Runs when PRs are opened or reopened
+
+**What it does**:
+- Detects spec-kit workflow branches
+- Checks if review file exists and is approved
+- Posts helpful comment with review instructions
+- Automatically adds labels (`spec-kit:{workflow-type}`, `needs-review`, `review-approved`)
+- Optionally requests reviewers (configurable)
+
+**Example comment**:
+```markdown
+📋 Spec-Kit Review Reminder
+
+## 📋 Review Required
+
+This PR is from a spec-kit workflow branch but doesn't have a completed code review yet.
+
+### Before merging this PR:
+
+1. Complete the code review:
+   /speckit.review
+
+2. Verify review status:
+   - Review file should be created in your spec directory
+   - Status should be "✅ Approved" or "⚠️ Approved with Notes"
+
+3. Commit the review file:
+   git add specs/*/review.md
+   git commit -m "Add code review"
+   git push
+
+💡 Tip: You can run the review helper workflow to check your review status
+```
+
+**Features**:
+- Provides clear instructions for completing review
+- Links to documentation
+- Shows workflow-specific guidance
+- Auto-labels PRs for tracking
+- Integrates with CODEOWNERS for reviewer assignment
+
+## GitHub Code Review Integration
+
+### 4. Pull Request Template (`pull_request_template.md`)
+
+**Purpose**: Structured PR template that guides developers through the spec-kit review process.
+
+**Features**:
+- Workflow type selection (bugfix, enhance, modify, etc.)
+- Required spec-kit review checklist
+- Review file path and status fields
+- Testing checklist
+- Documentation checklist
+- Quality gates checklist
+
+**Key sections**:
+- **Spec-Kit Review Completed** - Forces acknowledgment of review requirement
+- **Review File Path** - Documents where review is located
+- **Review Status** - Documents approval status
+- **Pre-Review Checklist** - Ensures review is done before requesting human review
+
+**Integration**:
+- Works with automated review enforcement workflow
+- Provides context for human reviewers
+- Ensures both AI review (/speckit.review) and human review are completed
+
+### 5. CODEOWNERS Configuration (`CODEOWNERS.example`)
+
+**Purpose**: Example configuration for automatic reviewer assignment based on file paths and workflow types.
+
+**Features**:
+- Automatic reviewer assignment for different workflow types
+- Path-based reviewer assignment (frontend, backend, security, etc.)
+- Integration with spec-kit directory structure
+- Team and individual reviewer support
+
+**Example patterns**:
+```
+# Bug fixes reviewed by QA and senior engineers
+specs/bugfix/                   @your-org/qa-team @your-org/senior-engineers
+
+# Hotfixes reviewed by engineering leads
+specs/hotfix/                   @your-org/engineering-leads
+
+# Frontend code reviewed by frontend team
+src/components/                 @your-org/frontend-team
+
+# Security-sensitive files require security team review
+src/auth/                       @your-org/security-team
+```
+
+**Usage**:
+1. Rename `CODEOWNERS.example` to `CODEOWNERS`
+2. Replace `@your-org/team-name` with your actual teams
+3. Customize patterns for your project structure
+4. Commit to `.github/CODEOWNERS`
+
+**How it works with spec-kit**:
+1. Developer runs `/speckit.review` (AI review)
+2. Developer commits review file and creates PR
+3. GitHub automatically requests human reviewers via CODEOWNERS
+4. Automated workflow checks AI review is approved
+5. Human reviewers perform additional review
+6. Both AI + human approval required for merge
+
+### 6. GitHub Copilot for PRs (`copilot.yml`)
+
+**Purpose**: Configures GitHub Copilot to assist with pull request reviews, understanding spec-kit workflows.
+
+**Features**:
+- Copilot understands spec-kit workflow types
+- Provides review instructions specific to each workflow
+- Checks for spec-kit review completion
+- Reviews for specification alignment
+- Workflow-specific review checklists
+
+**Review instructions include**:
+- **Spec-Kit Review Completion** - Verify `/speckit.review` was run
+- **Specification Alignment** - Compare implementation to spec.md
+- **Workflow-Specific Checks** - Different checks for bugfix vs refactor vs modify
+- **Code Quality** - Best practices, security, performance
+- **Testing** - Coverage, edge cases, regression tests
+
+**Suggested prompts**:
+- "Review this PR for spec-kit workflow compliance"
+- "Check if the spec-kit review is completed and approved"
+- "Compare this implementation to the specification in specs/"
+- "Look for security vulnerabilities in this PR"
+- "Check test coverage for this PR"
+
+**Integration**:
+- Works with GitHub Copilot for Pull Requests feature
+- Complements `/speckit.review` AI review
+- Provides context-aware code review assistance
+- Helps human reviewers focus on architecture and UX
+
 ## Issue Templates
 
 Structured issue templates for each spec-kit workflow type:
@@ -179,25 +324,39 @@ When you install spec-kit-extensions with `specify-extend --all`, these GitHub c
 
 To add GitHub workflows and templates to your project:
 
-1. **Copy workflows** (optional):
+1. **Copy workflows** (recommended):
    ```bash
    cp path/to/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
    ```
 
-2. **Copy issue templates** (optional):
+2. **Copy PR template** (recommended):
+   ```bash
+   cp path/to/spec-kit-extensions/.github/pull_request_template.md .github/
+   ```
+
+3. **Copy issue templates** (optional):
    ```bash
    cp -r path/to/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
    ```
 
-3. **Copy Copilot instructions** (optional, for Copilot users):
+4. **Copy GitHub Copilot configuration** (optional, for Copilot users):
    ```bash
    cp path/to/spec-kit-extensions/.github/copilot-instructions.md .github/
+   cp path/to/spec-kit-extensions/.github/copilot.yml .github/
    ```
 
-4. **Commit the files**:
+5. **Copy CODEOWNERS template** (optional, for teams):
+   ```bash
+   cp path/to/spec-kit-extensions/.github/CODEOWNERS.example .github/
+   # Then customize and rename:
+   mv .github/CODEOWNERS.example .github/CODEOWNERS
+   # Edit .github/CODEOWNERS to replace @your-org/team-name with actual teams
+   ```
+
+6. **Commit the files**:
    ```bash
    git add .github/
-   git commit -m "Add spec-kit GitHub workflows and templates"
+   git commit -m "Add spec-kit GitHub workflows and code review integration"
    git push
    ```
 
