@@ -76,7 +76,7 @@ jobs:
           REVIEW_APPROVED=false
 
           # Search in specs directory
-          for review_file in $(find specs .specify/specs -name "review*.md" -o -name "REVIEW.md" 2>/dev/null); do
+          for review_file in $(find specs .specify/specs \( -name "review.md" -o -name "review-report.md" -o -name "review-notes.md" -o -name "REVIEW.md" \) 2>/dev/null); do
             if [ -f "$review_file" ]; then
               REVIEW_FOUND=true
 
