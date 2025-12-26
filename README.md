@@ -337,6 +337,83 @@ This project has two independently versioned components:
 
 Both components are released together but versioned separately to allow independent updates.
 
+## Optional GitHub Integration
+
+**New in v2.5.1**: spec-kit-extensions now includes optional GitHub workflows, issue templates, and AI agent configuration to enhance your development workflow.
+
+### Features
+
+- **🔒 Review Enforcement** - Automatically require code reviews before merging spec-kit branches
+- **📋 Issue Templates** - Structured templates for all 9 workflow types
+- **🤖 AI Agent Instructions** - GitHub Copilot integration and guidance
+- **✅ Review Helper** - Tools to check review status and validate branches
+
+### What's Included
+
+1. **GitHub Actions Workflows**
+   - `spec-kit-review-required.yml` - Enforces review completion before merge
+   - `spec-kit-review-helper.yml` - Manual tools for checking review status
+
+2. **Issue Templates** (9 templates)
+   - Feature Request, Bug Report, Enhancement Request
+   - Modification Request, Refactoring Request, Hotfix Request
+   - Deprecation Request, Cleanup Request, Baseline/Documentation Request
+
+3. **AI Agent Configuration**
+   - `copilot-instructions.md` - GitHub Copilot workflow guidance
+   - Includes review requirements and best practices
+
+### Installation (Optional)
+
+These GitHub configurations are **NOT** automatically installed to keep repositories clean. To add them to your project:
+
+```bash
+# Copy from spec-kit-extensions repository
+cp path/to/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
+cp -r path/to/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
+cp path/to/spec-kit-extensions/.github/copilot-instructions.md .github/
+
+# Commit the files
+git add .github/
+git commit -m "Add spec-kit GitHub workflows and templates"
+git push
+```
+
+### Usage
+
+**Review Enforcement**:
+1. Implement your work using spec-kit workflows
+2. Run `/speckit.review` before creating a PR (REQUIRED)
+3. Commit the review file to your branch
+4. Create PR - GitHub Actions automatically validates review
+5. PR is blocked if review is missing or shows "Needs Changes"
+
+**Issue Templates**:
+1. Click "New Issue" → Select appropriate template
+2. Fill out structured form
+3. Use suggested workflow commands to start implementation
+
+**Review Helper**:
+- Go to Actions → Spec-Kit Review Helper → Run workflow
+- Check status, list pending reviews, or validate branches
+
+### Documentation
+
+See [.github/README.md](.github/README.md) for complete documentation including:
+- Detailed workflow descriptions
+- Configuration options
+- Troubleshooting guide
+- Examples and best practices
+
+### Benefits
+
+- **Consistent Quality** - All code reviewed before merge
+- **Automated Enforcement** - No manual checking needed
+- **Better Documentation** - Reviews committed with code
+- **Structured Issues** - Complete information from the start
+
+**Note**: These are entirely optional. Use what helps your workflow!
+
 ## Project Structure
 
 After installation, your project will have:

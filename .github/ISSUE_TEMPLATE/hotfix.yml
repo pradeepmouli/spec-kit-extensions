@@ -1,0 +1,136 @@
+name: 🚨 Hotfix Request
+description: Critical production issue requiring immediate fix using spec-kit hotfix workflow
+title: "[HOTFIX]: "
+labels: ["hotfix", "priority:critical", "spec-kit:hotfix"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚨 Hotfix Request
+
+        This template is for **critical production issues** requiring immediate attention.
+        Use the spec-kit hotfix workflow for urgent fixes:
+
+        ```bash
+        /speckit.hotfix "critical issue description"
+        # ... implement fix ...
+        /speckit.review
+        ```
+
+        ⚠️ **Note**: Hotfixes should be for production-critical issues only!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Critical Issue Description
+      description: What is the critical issue affecting production?
+      placeholder: Describe the production issue clearly...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Production Impact
+      description: What is the impact on production?
+      options:
+        - System completely down
+        - Major features broken
+        - Data loss or corruption risk
+        - Security vulnerability
+        - Performance degradation
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected_users
+    attributes:
+      label: Affected Users
+      description: How many users are affected?
+      placeholder: e.g., "All users", "10% of users", "Users in EU region"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this critical issue?
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: What is actually happening in production?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_fix
+    attributes:
+      label: Proposed Fix
+      description: What is the proposed fix? (if known)
+      placeholder: Describe the fix or workaround...
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Production Environment
+      description: Information about the production environment
+      placeholder: |
+        - Environment: [e.g., Production, Staging]
+        - Version: [e.g., 1.3.9]
+        - Deployment: [e.g., AWS, GCP, Azure]
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Messages / Logs
+      description: Production error messages or stack traces
+      placeholder: Paste production errors here...
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Temporary Workaround
+      description: Is there a temporary workaround in place?
+      placeholder: Describe any temporary fixes or rollbacks...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Pre-submission Verification
+      description: Please confirm the following
+      options:
+        - label: This is a critical production issue requiring immediate attention
+          required: true
+        - label: I have verified this issue is affecting production users
+          required: true
+        - label: I have alerted the team through appropriate channels
+          required: true
+        - label: I have considered rollback as an option
+          required: false

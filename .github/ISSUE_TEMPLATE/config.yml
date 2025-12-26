@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/pradeepmouli/spec-kit-extensions/blob/main/README.md
+    about: View the spec-kit-extensions documentation
+  - name: 💬 Discussions
+    url: https://github.com/pradeepmouli/spec-kit-extensions/discussions
+    about: Ask questions and discuss with the community

@@ -1,0 +1,121 @@
+name: 🔨 Refactoring Request
+description: Request code refactoring using spec-kit refactor workflow
+title: "[Refactor]: "
+labels: ["refactoring", "spec-kit:refactor"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Refactoring Request
+
+        This template helps you create a well-structured refactoring request using the spec-kit refactor workflow.
+        After this issue is created, you can start the refactoring with:
+
+        ```bash
+        /speckit.refactor "refactoring description"
+        # ... implement ...
+        /speckit.review
+        ```
+
+  - type: input
+    id: code_to_refactor
+    attributes:
+      label: Code to Refactor
+      description: Which code/module should be refactored?
+      placeholder: e.g., "Authentication module", "Database layer"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Refactoring Description
+      description: What refactoring should be done?
+      placeholder: Describe the refactoring work...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this refactoring needed?
+      placeholder: |
+        Explain the problems with current code:
+        - Technical debt
+        - Maintainability issues
+        - Performance concerns
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_structure
+    attributes:
+      label: Current Structure
+      description: Describe the current code structure
+      placeholder: How is the code currently organized?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_structure
+    attributes:
+      label: Proposed Structure
+      description: Describe the proposed new structure
+      placeholder: How should the code be reorganized?
+    validations:
+      required: true
+
+  - type: textarea
+    id: goals
+    attributes:
+      label: Refactoring Goals
+      description: What should this refactoring achieve?
+      placeholder: |
+        - [ ] Improve code readability
+        - [ ] Reduce complexity
+        - [ ] Improve performance
+        - [ ] Better testability
+        - [ ] Remove duplication
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: How large is this refactoring?
+      options:
+        - Small - Single file/function
+        - Medium - Single module
+        - Large - Multiple modules
+        - Very Large - Major architectural change
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: Requirements
+      description: Refactoring must meet these requirements
+      options:
+        - label: Behavior remains unchanged (no functional changes)
+          required: true
+        - label: All existing tests still pass
+          required: true
+        - label: Code is backward compatible
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have identified specific code that needs refactoring
+          required: true
+        - label: I understand this should not change behavior
+          required: true
+        - label: I am willing to help with this refactoring
+          required: false
