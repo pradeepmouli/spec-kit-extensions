@@ -1,7 +1,15 @@
 # CODEOWNERS - Automatic Review Request Configuration
 #
-# This file configures automatic review requests based on file paths and patterns.
-# Rename this file to "CODEOWNERS" (without .example) to activate it.
+# IMPORTANT: This is an EXAMPLE file. Before activating:
+# 1. Replace ALL "@your-org/..." placeholders with actual GitHub usernames or team names
+# 2. Verify all teams exist in your organization settings
+# 3. Test with a draft PR to ensure proper assignment
+# 4. Invalid references will cause GitHub to silently ignore CODEOWNERS rules
+#
+# To activate this file:
+# 1. Review and update all placeholder values below
+# 2. Rename this file to "CODEOWNERS" (without .example)
+# 3. Commit and push to your repository
 #
 # When a PR modifies files matching these patterns, GitHub will automatically
 # request review from the specified users or teams.

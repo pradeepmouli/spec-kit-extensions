@@ -1508,9 +1508,9 @@ def install_github_integration(
         },
         "copilot-config": {
             "name": "GitHub Copilot Configuration",
-            "description": "Copilot instructions and PR review configuration",
+            "description": "Copilot instructions and PR review configuration example",
             "files": {
-                "root": ["copilot-instructions.md", "copilot.yml"],
+                "root": ["copilot-instructions.md", "copilot.yml.example"],
             },
         },
         "codeowners": {

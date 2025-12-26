@@ -76,7 +76,7 @@ jobs:
           if [ "$WORKFLOW_TYPE" != "feature" ] && [ "$WORKFLOW_TYPE" != "unknown" ]; then
             PATTERN="specs/${WORKFLOW_TYPE}/${SPEC_NUMBER}-*"
             echo "Searching for: $PATTERN"
-            MATCHES=$(find specs -type d -path "$PATTERN" 2>/dev/null || true)
+            MATCHES=$(find specs -maxdepth 3 -type d -path "$PATTERN" 2>/dev/null || true)
             if [ -n "$MATCHES" ]; then
               SPEC_DIR=$(echo "$MATCHES" | head -n 1)
             fi
@@ -86,7 +86,7 @@ jobs:
           if [ -z "$SPEC_DIR" ] && [ -n "$SPEC_NUMBER" ]; then
             PATTERN="specs/${SPEC_NUMBER}-*"
             echo "Searching for: $PATTERN"
-            MATCHES=$(find specs -type d -path "$PATTERN" -maxdepth 1 2>/dev/null || true)
+            MATCHES=$(find specs -maxdepth 2 -type d -path "$PATTERN" 2>/dev/null || true)
             if [ -n "$MATCHES" ]; then
               SPEC_DIR=$(echo "$MATCHES" | head -n 1)
             fi
@@ -151,26 +151,33 @@ jobs:
 
           # Check for approval markers
           APPROVED=false
+          NEEDS_CHANGES=false
 
-          # Look for various approval patterns
-          if grep -qiE '\*\*Status\*\*:?\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
-            APPROVED=true
-          elif grep -qiE 'Status:\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
-            APPROVED=true
-          elif grep -qiE '##\s*Status.*Approved' "$REVIEW_FILE"; then
-            APPROVED=true
-          elif grep -qiE '^- Status:\s*Approved' "$REVIEW_FILE"; then
-            APPROVED=true
-          fi
-
-          # Check for "Approved with Notes" (also acceptable)
-          if grep -qiE '\*\*Status\*\*:?\s*(⚠️|:warning:)?\s*Approved\s+with\s+(Notes|Minor\s+Notes)' "$REVIEW_FILE"; then
-            APPROVED=true
-          fi
-
-          # Check for rejection markers (takes precedence)
+          # Check for rejection markers first
           if grep -qiE '\*\*Status\*\*:?\s*(❌|:x:)?\s*Needs\s+Changes' "$REVIEW_FILE"; then
-            APPROVED=false
+            NEEDS_CHANGES=true
+          fi
+
+          # Only check approval if not marked as needs changes
+          if [ "$NEEDS_CHANGES" = false ]; then
+            # Look for various approval patterns
+            if grep -qiE '\*\*Status\*\*:?\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE 'Status:\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE '##\s*Status.*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            elif grep -qiE '^- Status:\s*Approved' "$REVIEW_FILE"; then
+              APPROVED=true
+            fi
+
+            # Check for "Approved with Notes" (also acceptable)
+            if grep -qiE '\*\*Status\*\*:?\s*(⚠️|:warning:)?\s*Approved\s+with\s+(Notes|Minor\s+Notes)' "$REVIEW_FILE"; then
+              APPROVED=true
+            fi
+          fi
+
+          if [ "$NEEDS_CHANGES" = true ]; then
             echo "needs_changes=true" >> $GITHUB_OUTPUT
           fi
 

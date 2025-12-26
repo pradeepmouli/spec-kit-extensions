@@ -31,6 +31,8 @@
 ## ✅ Spec-Kit Review Completed
 
 <!-- REQUIRED for spec-kit workflows before merge -->
+<!-- NOTE: GitHub does not enforce checkbox completion - these are guidelines.
+     The spec-kit-review-required workflow will validate your review file and status. -->
 
 - [ ] **I have run `/speckit.review`** and completed the code review
 - [ ] **Review file committed** to branch (e.g., `specs/*/review.md`)
