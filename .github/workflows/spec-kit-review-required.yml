@@ -76,7 +76,7 @@ jobs:
           if [ "$WORKFLOW_TYPE" != "feature" ] && [ "$WORKFLOW_TYPE" != "unknown" ]; then
             PATTERN="specs/${WORKFLOW_TYPE}/${SPEC_NUMBER}-*"
             echo "Searching for: $PATTERN"
-            MATCHES=$(find specs -type d -path "$PATTERN" -maxdepth 3 2>/dev/null || true)
+            MATCHES=$(find specs -maxdepth 3 -type d -path "$PATTERN" 2>/dev/null || true)
             if [ -n "$MATCHES" ]; then
               SPEC_DIR=$(echo "$MATCHES" | head -n 1)
             fi
@@ -86,7 +86,7 @@ jobs:
           if [ -z "$SPEC_DIR" ] && [ -n "$SPEC_NUMBER" ]; then
             PATTERN="specs/${SPEC_NUMBER}-*"
             echo "Searching for: $PATTERN"
-            MATCHES=$(find specs -type d -path "$PATTERN" -maxdepth 1 2>/dev/null || true)
+            MATCHES=$(find specs -maxdepth 2 -type d -path "$PATTERN" 2>/dev/null || true)
             if [ -n "$MATCHES" ]; then
               SPEC_DIR=$(echo "$MATCHES" | head -n 1)
             fi

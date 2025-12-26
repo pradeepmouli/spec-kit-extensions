@@ -450,7 +450,9 @@ cp -r /tmp/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
 # Copy GitHub Copilot configuration (optional, for Copilot users)
 cp /tmp/spec-kit-extensions/.github/copilot-instructions.md .github/
 cp /tmp/spec-kit-extensions/.github/copilot.yml.example .github/
-# Edit copilot.yml.example and rename if needed
+# NOTE: copilot.yml.example is instructional. Configure it for your GitHub Copilot
+# setup according to the actual Copilot configuration schema, then rename to
+# copilot.yml to activate (if applicable to your Copilot version).
 
 # Copy CODEOWNERS template (optional, for teams)
 cp /tmp/spec-kit-extensions/.github/CODEOWNERS.example .github/CODEOWNERS
