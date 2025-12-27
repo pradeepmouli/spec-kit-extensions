@@ -66,7 +66,7 @@ GITHUB_API_BASE = "https://api.github.com"
 WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup"]
 
 # Command extensions: Provide commands without creating workflow directories
-COMMAND_EXTENSIONS = ["review"]
+COMMAND_EXTENSIONS = ["review", "incorporate"]
 
 # All available extensions for validation and documentation
 AVAILABLE_EXTENSIONS = WORKFLOW_EXTENSIONS + COMMAND_EXTENSIONS
@@ -253,7 +253,7 @@ def get_powershell_script_name(extension: str) -> str:
 
 def is_workflow_extension(extension: str) -> bool:
     """Check if an extension is a workflow extension.
-    
+
     Workflow extensions create workflow directories with specs, plans, and tasks.
     Command extensions provide commands without creating workflow structures.
     """

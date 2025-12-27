@@ -24,6 +24,7 @@
 ### Command Extensions (provide commands without workflow structure)
 
 - **`/speckit.review`** - Review completed work with structured feedback
+- **`/speckit.incorporate`** - Incorporate documents into workflows and advance stages
 ## Why Use These Extensions?
 
 ### The Problem
@@ -37,6 +38,7 @@ With vanilla spec-kit, you get structure for ~25% of your work (new features), b
 - **Feature removal**: No plan → angry users
 - **Codebase Cleanup**: No automation → manual effort
 - **Work Review**: No structure → inconsistent feedback
+- **Document Integration**: Manual copy-paste → context lost, inconsistent
 
 ### The Solution
 
@@ -54,6 +56,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
 | **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
 | **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
+| **Document Integration** | ❌ Manual copy-paste | ✅ `/speckit.incorporate` with smart stage advancement |
 ## Real-World Validation
 
 These workflows are **production-tested** on a React Router v7 Twitter clone ("Tweeter") with:

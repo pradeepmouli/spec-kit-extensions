@@ -42,10 +42,10 @@ JSON_MODE=false
 for arg in "$@"; do
     case "$arg" in
         --json) JSON_MODE=true ;;
-        --help|-h) 
+        --help|-h)
             echo "Usage: $0 [--json]"
             echo "Creates baseline documentation for the project state"
-            exit 0 
+            exit 0
             ;;
         *)
             echo "Unknown argument: $arg" >&2
@@ -75,19 +75,19 @@ if [ "$HAS_GIT" = true ]; then
     if [ -d "$SPECS_DIR" ]; then
         # Find first commit that created or modified anything in specs/
         FIRST_SPECKIT_COMMIT=$(git log --reverse --format="%H" -- "$SPECS_DIR" 2>/dev/null | head -1 || echo "")
-        
+
         if [ -n "$FIRST_SPECKIT_COMMIT" ]; then
             HAS_EXISTING_SPECS=true
             # Get the commit before the first spec-kit commit
             BASELINE_COMMIT=$(git rev-parse "${FIRST_SPECKIT_COMMIT}^" 2>/dev/null || echo "")
-            
+
             # If we can't get parent (first commit in repo), use the first commit itself
             if [ -z "$BASELINE_COMMIT" ]; then
                 BASELINE_COMMIT="$FIRST_SPECKIT_COMMIT"
             fi
         fi
     fi
-    
+
     # If no baseline found yet, use current HEAD
     if [ -z "$BASELINE_COMMIT" ]; then
         BASELINE_COMMIT=$(git rev-parse HEAD)

@@ -96,7 +96,7 @@ After CHANGELOG is updated and user confirms:
    ```bash
    # Update pyproject.toml
    sed -i.bak 's/^version = ".*"/version = "<version>"/' pyproject.toml && rm pyproject.toml.bak
-   
+
    # Update specify_extend.py
    sed -i.bak 's/^__version__ = ".*"/__version__ = "<version>"/' specify_extend.py && rm specify_extend.py.bak
    ```
@@ -126,22 +126,22 @@ After CHANGELOG is updated and user confirms:
    ```bash
    # Get the latest workflow run for the release
    gh run list --workflow=release.yml --limit 1
-   
+
    # Watch the workflow run in real-time
    gh run watch
    ```
-   
+
    Or open in browser:
    ```
    https://github.com/pradeepmouli/spec-kit-extensions/actions/workflows/release.yml
    ```
-   
+
    **Expected workflow steps:**
    - ✅ Version validation (pyproject.toml, specify_extend.py, CHANGELOG.md match)
    - ✅ Build Python package
    - ✅ Create GitHub release with notes
    - ✅ Publish to PyPI
-   
+
    **If workflow fails:**
    - Check the failed step in GitHub Actions
    - Common issues:
@@ -184,17 +184,17 @@ After CHANGELOG is updated and user confirms:
    # Check that GitHub created the release
    gh release view templates-v<version>
    ```
-   
+
    Or verify in browser:
    ```
    https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/templates-v<version>
    ```
-   
+
    **Expected outcome:**
    - ✅ Release appears on GitHub Releases page
    - ✅ Release notes from tag message are displayed
    - ✅ Source code archives are available
-   
+
    **If release not created:**
    - Verify tag was pushed: `git ls-remote --tags origin | grep templates-v<version>`
    - Check tag annotation: `git show templates-v<version>`
