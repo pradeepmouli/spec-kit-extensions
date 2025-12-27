@@ -38,6 +38,19 @@ from typing import Optional, List, Tuple
 from enum import Enum
 from datetime import datetime, timezone
 
+# Fix Windows UTF-8 encoding for console output
+# On Windows, Python defaults to cp1252 which can't handle Unicode symbols like ✓, ✗, ⚠, ℹ
+# This must be set before importing rich or any other libraries that use console output
+if sys.platform == "win32":
+    # Set environment variable for Python I/O encoding
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    # Reconfigure stdout and stderr to use UTF-8 encoding
+    # This is needed because the environment variable only affects subprocesses
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8')
+
 import typer
 import httpx
 import ssl
@@ -47,8 +60,10 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 __version__ = "1.5.2"
 
-# Initialize Rich console
-console = Console()
+# Initialize Rich console with UTF-8 encoding for Windows compatibility
+# On Windows, the default console encoding (cp1252) can't handle Unicode symbols like ✓, ✗, ⚠, ℹ
+# Rich automatically handles UTF-8 when legacy_windows=False (Windows 10 v1511+)
+console = Console(legacy_windows=False)
 
 # Set up SSL context for HTTPS requests
 ssl_context = ssl.create_default_context()
@@ -543,8 +558,13 @@ def get_repo_root() -> Path:
             match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
             if match:
                 drive = match.group(1).upper()
-                rest = match.group(2) or "/"
-                path_str = f"{drive}:{rest}"
+                rest = match.group(2)
+                # Ensure we have an absolute path: C:/ not C:
+                # (C: means "current directory on C drive", C:/ means "root of C drive")
+                if rest:
+                    path_str = f"{drive}:{rest}"
+                else:
+                    path_str = f"{drive}:/"
         
         return Path(path_str)
     except subprocess.CalledProcessError:
