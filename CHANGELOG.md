@@ -6,12 +6,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.2
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.3
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.3
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.4
 
 ---
 
 ## Extension Templates
+
+### [2.5.3] - 2025-12-26
+
+#### 🚀 Added
+
+- **Incorporate Command Extension** - New `/speckit.incorporate` command for intelligent document integration
+  - Automatically detects document type (spec, plan, tasks, research, checklist, post-mortem)
+  - Intelligently incorporates documents into existing workflows
+  - Advances workflow stages automatically based on document type
+  - Initiates new workflows from documents when not in a workflow
+  - Leverages native `/speckit.analyze` for smart content merging
+  - Complete handoff definitions for all 8 workflows + stage advancement
+  - Affects: commands/speckit.incorporate.md (376 lines)
+
+#### 🔧 Changed/Improved
+
+- **Code Architecture** - Distinguished between workflow and command extensions
+  - Added `WORKFLOW_EXTENSIONS` and `COMMAND_EXTENSIONS` constants
+  - Created `is_workflow_extension()` and `is_command_extension()` helpers
+  - Clearer separation of concerns in installation logic
+  - Self-documenting code structure
+
+- **Documentation** - Enhanced clarity about extension types
+  - Explicitly lists "8 workflow extensions + 2 command extensions"
+  - Separate sections for workflows vs commands in README
+  - Updated activity tables with document integration use case
+
+#### 🐛 Fixed
+
+- **Review Extension Installation** - Fixed warning about missing create-review.sh
+  - Review is a command extension, not a workflow extension
+  - Skip review when copying scripts and workflow directories
+  - Eliminates spurious installation warnings
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.4+
+
+---
 
 ### [2.5.2] - 2025-12-26
 
@@ -187,6 +228,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.4] - 2025-12-26
+
+#### 🚀 Added
+
+- **Incorporate Command Support** - Added support for new incorporate command extension
+  - Added "incorporate" to `COMMAND_EXTENSIONS` list
+  - Installs incorporate command for all supported agents
+  - Automatic detection and installation alongside review command
+
+#### 🔧 Changed/Improved
+
+- **Extension Type System** - Improved code organization with explicit extension types
+  - Split `AVAILABLE_EXTENSIONS` into `WORKFLOW_EXTENSIONS` and `COMMAND_EXTENSIONS`
+  - Added `is_workflow_extension()` and `is_command_extension()` helper functions
+  - Replaced magic string checks with semantic function calls
+  - Better maintainability and extensibility for future extensions
+
+- **Installation Logic** - Streamlined script and workflow directory installation
+  - Use extension type helpers instead of hardcoded checks
+  - Skip command extensions when installing scripts/workflows
+  - Clearer intent and reduced code duplication
+
+#### 🐛 Fixed
+
+- **Review Command Installation** - Fixed spurious warning during installation
+  - Review command is command-only, doesn't have create-review.sh script
+  - Installation now correctly skips script/workflow copy for command extensions
+  - Eliminates "Script create-review.sh not found" warning
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.4
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.3
+
+---
 
 ### [1.5.3] - 2025-12-26
 
