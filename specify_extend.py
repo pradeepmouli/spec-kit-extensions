@@ -38,6 +38,19 @@ from typing import Optional, List, Tuple
 from enum import Enum
 from datetime import datetime, timezone
 
+# Fix Windows UTF-8 encoding for console output
+# On Windows, Python defaults to cp1252 which can't handle Unicode symbols like ✓, ✗, ⚠, ℹ
+# This must be set before importing rich or any other libraries that use console output
+if sys.platform == "win32":
+    # Set environment variable for Python I/O encoding
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    # Reconfigure stdout and stderr to use UTF-8 encoding
+    # This is needed because the environment variable only affects subprocesses
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8')
+
 import typer
 import httpx
 import ssl
