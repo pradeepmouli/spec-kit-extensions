@@ -62,7 +62,14 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review"]
+# Workflow extensions: Create workflow directories with specs, plans, and tasks
+WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup"]
+
+# Command extensions: Provide commands without creating workflow directories
+COMMAND_EXTENSIONS = ["review"]
+
+# All available extensions for validation and documentation
+AVAILABLE_EXTENSIONS = WORKFLOW_EXTENSIONS + COMMAND_EXTENSIONS
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
@@ -242,6 +249,20 @@ def get_powershell_script_name(extension: str) -> str:
     if extension == "modify":
         return "create-modification.ps1"
     return f"create-{extension}.ps1"
+
+
+def is_workflow_extension(extension: str) -> bool:
+    """Check if an extension is a workflow extension.
+    
+    Workflow extensions create workflow directories with specs, plans, and tasks.
+    Command extensions provide commands without creating workflow structures.
+    """
+    return extension in WORKFLOW_EXTENSIONS
+
+
+def is_command_extension(extension: str) -> bool:
+    """Check if an extension is a command-only extension (not a workflow)."""
+    return extension in COMMAND_EXTENSIONS
 
 
 def roman_to_int(roman: str) -> int:
@@ -866,8 +887,8 @@ def install_extension_files(
         workflows_dir.mkdir(exist_ok=True)
 
     for ext in extensions:
-        # Skip review extension - it doesn't have workflow templates
-        if ext == "review":
+        # Only workflow extensions have workflow directories
+        if not is_workflow_extension(ext):
             continue
 
         source_workflow = source_extensions / "workflows" / ext
@@ -887,8 +908,8 @@ def install_extension_files(
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
             for ext in extensions:
-                # Skip review extension - it doesn't have a create script
-                if ext == "review":
+                # Only workflow extensions have create scripts
+                if not is_workflow_extension(ext):
                     continue
 
                 script_name = get_powershell_script_name(ext)
@@ -906,8 +927,8 @@ def install_extension_files(
         source_scripts = source_dir / "scripts"
         if source_scripts.exists():
             for ext in extensions:
-                # Skip review extension - it doesn't have a create script
-                if ext == "review":
+                # Only workflow extensions have create scripts
+                if not is_workflow_extension(ext):
                     continue
 
                 script_name = get_script_name(ext)
