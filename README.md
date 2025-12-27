@@ -8,7 +8,9 @@
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 9 additional workflows for the remaining ~75% of software development work:
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional **workflow extensions** and 1 **command extension** to cover the remaining ~75% of software development work:
+
+### Workflow Extensions (create specs, plans, and tasks)
 
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
@@ -18,6 +20,9 @@
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
 - **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
 - **`/speckit.cleanup`** - Clean up codebase with automated scripts
+
+### Command Extensions (provide commands without workflow structure)
+
 - **`/speckit.review`** - Review completed work with structured feedback
 ## Why Use These Extensions?
 
@@ -86,7 +91,7 @@ specify-extend --all
 
 This will:
 - Detect your configured AI agent
-- Install all 9 workflow extensions into `.specify/`
+- Install all 8 workflow extensions and 1 command extension into `.specify/`
 - Set up quality gates
 - Configure branch naming patterns
 
