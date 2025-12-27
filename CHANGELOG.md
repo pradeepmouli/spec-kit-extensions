@@ -6,12 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.2
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.2
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.3
 
 ---
 
 ## Extension Templates
+
+### [2.5.2] - 2025-12-26
+
+#### 🔧 Changed/Improved
+
+- **Windows Path Handling** - Improved path compatibility across different shell environments
+  - Added backslash normalization in get_repo_root function
+  - Better Git Bash compatibility for Windows users
+  - Improved test coverage for Windows path scenarios
+  - Affects: All scripts that use path resolution
+
+- **Documentation and Testing** - Enhanced test coverage and documentation clarity
+  - Added test cases for Windows paths with backslashes
+  - Fixed find command option order for better compatibility
+  - Improved copilot configuration documentation
+  - Updated README with agent support details
+
+#### 🐛 Fixed
+
+- **Workflow Logic** - Fixed conditional logic in spec-kit-review workflows
+  - Corrected workflow decision logic
+  - Improved review reminder notifications
+  - Better handling of review status checks
+  - Affects: spec-kit-review-required.yml, spec-kit-review-reminder.yml
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.2
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.3+
+
+---
 
 ### [2.5.1] - 2025-12-25
 
@@ -155,6 +187,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.3] - 2025-12-26
+
+#### 🚀 Added
+
+- **GitHub Integration Features** - New `--github-integration` flag for enhanced GitHub workflow support
+  - Enables GitHub code review integration for spec-kit projects
+  - Automatic GitHub workflow installation (review-required and review-reminder)
+  - Optional workflows can be enabled during setup
+  - Improves CI/CD integration and code review processes
+
+#### 🔧 Changed/Improved
+
+- **Typer CLI Framework** - Fixed entry point configuration
+  - Added @app.command() decorator to main function
+  - Proper Typer integration for CLI command execution
+  - Improved command routing and argument handling
+
+- **Path Handling** - Enhanced cross-platform compatibility
+  - Improved Windows path handling in get_repo_root function
+  - Added backslash normalization for Git Bash compatibility
+  - Better path resolution across different shell environments
+
+- **Documentation** - Improved setup and configuration documentation
+  - Clarified GitHub integration requirements
+  - Added examples for --github-integration flag
+  - Updated README with agent support and setup instructions
+  - Enhanced troubleshooting documentation
+
+#### 🧪 Testing
+
+- **Comprehensive Test Coverage** - Added extensive tests for core functionality
+  - Tests for get_repo_root function across different path scenarios
+  - Windows path handling test cases (backslashes, drive letters)
+  - Unit tests for template download and version detection
+  - Test coverage for path normalization logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.2
+
+---
 
 ### [1.5.2] - 2025-12-25
 
