@@ -532,20 +532,20 @@ def get_repo_root() -> Path:
             check=True,
         )
         path_str = result.stdout.strip()
-        
+
         # On Windows with Git Bash, git returns Unix-style paths like /c/Users/...
         # Convert these to Windows format (C:/Users/...) for Python's Path
         if sys.platform == "win32":
             # Normalize backslashes to forward slashes first
             path_str = path_str.replace('\\', '/')
-            
+
             # Match /c, /d, /c/... or /d/... etc. (Git Bash format)
             match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
             if match:
                 drive = match.group(1).upper()
                 rest = match.group(2) or "/"
                 path_str = f"{drive}:{rest}"
-        
+
         return Path(path_str)
     except subprocess.CalledProcessError:
         return Path.cwd()
@@ -866,6 +866,10 @@ def install_extension_files(
         workflows_dir.mkdir(exist_ok=True)
 
     for ext in extensions:
+        # Skip review extension - it doesn't have workflow templates
+        if ext == "review":
+            continue
+
         source_workflow = source_extensions / "workflows" / ext
         if source_workflow.exists():
             if not dry_run:
@@ -883,6 +887,10 @@ def install_extension_files(
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
             for ext in extensions:
+                # Skip review extension - it doesn't have a create script
+                if ext == "review":
+                    continue
+
                 script_name = get_powershell_script_name(ext)
                 source_script = source_powershell_scripts / script_name
 
@@ -898,6 +906,10 @@ def install_extension_files(
         source_scripts = source_dir / "scripts"
         if source_scripts.exists():
             for ext in extensions:
+                # Skip review extension - it doesn't have a create script
+                if ext == "review":
+                    continue
+
                 script_name = get_script_name(ext)
                 source_script = source_scripts / script_name
 
