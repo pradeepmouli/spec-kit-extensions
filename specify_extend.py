@@ -1395,11 +1395,14 @@ check_feature_branch() {
 
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
+        "^baseline/[0-9]{3}-"
         "^bugfix/[0-9]{3}-"
+        "^enhance/[0-9]{3}-"
         "^modify/[0-9]{3}\\^[0-9]{3}-"
         "^refactor/[0-9]{3}-"
         "^hotfix/[0-9]{3}-"
         "^deprecate/[0-9]{3}-"
+        "^cleanup/[0-9]{3}-"
     )
 
     # Check extension patterns first
@@ -1418,11 +1421,14 @@ check_feature_branch() {
     echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
     echo "Feature branches must follow one of these patterns:" >&2
     echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Baseline:    baseline/###-description" >&2
     echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Enhance:     enhance/###-description" >&2
     echo "  Modify:      modify/###^###-description" >&2
     echo "  Refactor:    refactor/###-description" >&2
     echo "  Hotfix:      hotfix/###-description" >&2
     echo "  Deprecate:   deprecate/###-description" >&2
+    echo "  Cleanup:     cleanup/###-description" >&2
     return 1
 }'''
 

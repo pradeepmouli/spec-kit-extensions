@@ -112,22 +112,63 @@ generate_branch_name() {
 }
 
 check_feature_branch() {
-    local branch="$1"
-    local has_git_repo="$2"
+    # Support both parameterized and non-parameterized calls
+    local branch="${1:-}"
+    local has_git_repo="${2:-}"
 
-    # For non-git repos, we can't enforce branch naming but still provide output
-    if [[ "$has_git_repo" != "true" ]]; then
+    # If branch not provided as parameter, get current branch
+    if [[ -z "$branch" ]]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            branch=$(git branch --show-current)
+            has_git_repo="true"
+        else
+            return 0
+        fi
+    fi
+
+    # For non-git repos, skip validation if explicitly specified
+    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
         echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
         return 0
     fi
 
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
-        echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
-        echo "Feature branches should be named like: 001-feature-name" >&2
-        return 1
+    # Extension branch patterns (spec-kit-extensions)
+    local extension_patterns=(
+        "^baseline/[0-9]{3}-"
+        "^bugfix/[0-9]{3}-"
+        "^enhance/[0-9]{3}-"
+        "^modify/[0-9]{3}\\^[0-9]{3}-"
+        "^refactor/[0-9]{3}-"
+        "^hotfix/[0-9]{3}-"
+        "^deprecate/[0-9]{3}-"
+        "^cleanup/[0-9]{3}-"
+    )
+
+    # Check extension patterns first
+    for pattern in "${extension_patterns[@]}"; do
+        if [[ "$branch" =~ $pattern ]]; then
+            return 0
+        fi
+    done
+
+    # Check standard spec-kit pattern (###-)
+    if [[ "$branch" =~ ^[0-9]{3}- ]]; then
+        return 0
     fi
 
-    return 0
+    # No match - show helpful error
+    echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
+    echo "Feature branches must follow one of these patterns:" >&2
+    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Baseline:    baseline/###-description" >&2
+    echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Enhance:     enhance/###-description" >&2
+    echo "  Modify:      modify/###^###-description" >&2
+    echo "  Refactor:    refactor/###-description" >&2
+    echo "  Hotfix:      hotfix/###-description" >&2
+    echo "  Deprecate:   deprecate/###-description" >&2
+    echo "  Cleanup:     cleanup/###-description" >&2
+    return 1
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }
