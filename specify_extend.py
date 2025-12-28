@@ -1363,10 +1363,27 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
     if not dry_run:
         content = common_sh.read_text()
 
-        # Check if already patched
+        # Check if already patched AND up-to-date
         if "check_feature_branch_old()" in content:
-            console.print("[blue]ℹ[/blue] common.sh already patched for extensions")
-            return
+            # Check if patch includes all workflow patterns (enhance, cleanup, baseline)
+            if '"^enhance/[0-9]{3}-"' in content and '"^cleanup/[0-9]{3}-"' in content and '"^baseline/[0-9]{3}-"' in content:
+                console.print("[blue]ℹ[/blue] common.sh already patched with latest patterns")
+                return
+            else:
+                console.print("[yellow]⚠[/yellow] common.sh has outdated patch, updating...")
+                # Restore from backup or remove old patched function
+                if (common_sh.parent / "common.sh.backup").exists():
+                    backup_file = common_sh.parent / "common.sh.backup"
+                    content = backup_file.read_text()
+                    console.print(f"  [dim]Restored from backup: {backup_file}[/dim]")
+                else:
+                    # Remove the old patched function by restoring check_feature_branch_old
+                    content = content.replace("check_feature_branch_old()", "check_feature_branch()", 1)
+                    # Find and remove the extended check_feature_branch function
+                    import re
+                    pattern = r'\n# Extended branch validation supporting spec-kit-extensions\ncheck_feature_branch\(\) \{.*?\n\}'
+                    content = re.sub(pattern, '', content, flags=re.DOTALL)
+                    console.print("  [dim]Removed old patched function[/dim]")
 
         # New function to append at the end
         # Supports both parameterized and non-parameterized signatures
