@@ -6,12 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.3
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.4
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.4
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.5
 
 ---
 
 ## Extension Templates
+
+### [2.5.4] - 2025-12-27
+
+#### 🔧 Changed/Improved
+
+- **Incorporate Command** - Enhanced handoff prompts and documentation clarity
+  - Added detailed, context-rich prompts for all 11 handoff definitions
+  - Improved guidance for workflow-specific incorporation strategies
+  - Enhanced stage advancement handoffs with clearer instructions
+  - Better integration with native spec-kit commands
+  - More explicit about when to use /speckit.analyze for content merging
+  - Affects: commands/speckit.incorporate.md (131 lines changed)
+
+- **Documentation** - Improved constitution template clarity
+  - Better formatting and organization of quality gates
+  - Enhanced workflow descriptions
+  - Clearer guidance for AI agents
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.4
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.5+
+
+---
 
 ### [2.5.3] - 2025-12-26
 
@@ -228,6 +253,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+### [1.5.5] - 2025-12-27
+
+#### 🐛 Fixed
+
+- **Branch Validation** - Fixed missing workflow patterns in branch validation
+  - Added support for `enhance/###-`, `cleanup/###-`, and `baseline/###-` patterns
+  - Previously only recognized bugfix, modify, refactor, hotfix, deprecate patterns
+  - Fixes "Not on a feature branch" error when using enhance, cleanup, or baseline workflows
+  - Updated error message to show all 8 valid workflow branch patterns
+  - Affects: specify_extend.py patch_common_sh() function
+
+- **Patch Versioning** - Auto-update outdated common.sh patches
+  - Detects if existing patched common.sh is missing new workflow patterns
+  - Automatically restores from backup or removes old patched function
+  - Re-applies updated patch with complete pattern support
+  - Allows `specify-extend --all` to update existing installations seamlessly
+  - No manual intervention needed to get latest patch improvements
+  - Affects: specify_extend.py patch_common_sh() detection logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.4
+
+---
+### [1.5.5] - 2025-12-27
+
+#### 🐛 Fixed
+
+- **Branch Validation** - Fixed missing workflow patterns in branch validation
+  - Added support for `enhance/###-`, `cleanup/###-`, and `baseline/###-` patterns
+  - Previously only recognized bugfix, modify, refactor, hotfix, deprecate patterns
+  - Fixes "Not on a feature branch" error when using enhance, cleanup, or baseline workflows
+  - Updated error message to show all 8 valid workflow branch patterns
+  - Affects: specify_extend.py patch_common_sh() function
+
+- **Patch Versioning** - Auto-update outdated common.sh patches
+  - Detects if existing patched common.sh is missing new workflow patterns
+  - Automatically restores from backup or removes old patched function
+  - Re-applies updated patch with complete pattern support
+  - Allows `specify-extend --all` to update existing installations seamlessly
+  - No manual intervention needed to get latest patch improvements
+  - Affects: specify_extend.py patch_common_sh() detection logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.3
+
+---
 
 ### [1.5.4] - 2025-12-26
 
