@@ -1133,9 +1133,17 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
    - Avoid duplicating content that already exists
    - Ensure smooth integration without jarring transitions
 
-4. **Self-destruct**: After updating the constitution, DELETE both files
-   - Prompt: `.github/prompts/speckit.enhance-constitution.prompt.md`
-   - Agent: `.github/agents/speckit.enhance-constitution.md`
+4. **Self-destruct**: After updating the constitution, DELETE all enhance-constitution files
+   - Delete `.github/prompts/speckit.enhance-constitution.prompt.md` (if exists)
+   - Delete `.github/agents/speckit.enhance-constitution.md` (if exists)
+   - Delete any `speckit.enhance-constitution.*` files in agent command directories:
+     * `.claude/commands/speckit.enhance-constitution.md`
+     * `.cursor/commands/speckit.enhance-constitution.md`
+     * `.windsurf/workflows/speckit.enhance-constitution.md`
+     * `.opencode/prompts/speckit.enhance-constitution.md`
+     * `.amazon-q/commands/speckit.enhance-constitution.md`
+     * `.codex/commands/speckit.enhance-constitution.md`
+     * Or any other agent directories in use
    - This prevents accidental re-use
 
 ## Template Content to Integrate
@@ -1151,10 +1159,13 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 - **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
 - **No duplication**: If workflow guidance already exists, enhance rather than duplicate
 - **One-time only**: This prompt deletes itself after use to prevent confusion
+- **Multi-agent setups**: If you have multiple agents configured, delete enhance-constitution files from all agent directories
 
 ---
 
-**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+**After completion**: 
+1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
+2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
     else:
         # For other agents (Claude, Cursor, etc.), use command format with frontmatter
@@ -1182,8 +1193,17 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
    - Avoid duplicating content that already exists
    - Ensure smooth integration without jarring transitions
 
-4. **Self-destruct**: After updating the constitution, DELETE this command file
-   - Location: `{file_location}`
+4. **Self-destruct**: After updating the constitution, DELETE this command file and any duplicates
+   - Delete this file: `{file_location}`
+   - Also check and delete any other enhance-constitution files in other agent directories:
+     * `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.md`
+     * `.claude/commands/speckit.enhance-constitution.md`
+     * `.cursor/commands/speckit.enhance-constitution.md`
+     * `.windsurf/workflows/speckit.enhance-constitution.md`
+     * `.opencode/prompts/speckit.enhance-constitution.md`
+     * `.amazon-q/commands/speckit.enhance-constitution.md`
+     * `.codex/commands/speckit.enhance-constitution.md`
+     * Or any other agent command directories in your project
    - This prevents accidental re-use
 
 ## Template Content to Integrate
@@ -1196,7 +1216,7 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 
 1. First, run `/specify.constitution` with instructions to merge the above template content intelligently
 2. Review the updated constitution to ensure quality
-3. Then delete this command file: `{file_location}`
+3. Then delete ALL enhance-constitution files from all agent directories (see self-destruct instructions above)
 
 ## Important Notes
 
@@ -1205,10 +1225,13 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 - **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
 - **No duplication**: If workflow guidance already exists, enhance rather than duplicate
 - **One-time only**: This command deletes itself after use to prevent confusion
+- **Multi-agent setups**: If you have multiple agents configured, delete enhance-constitution files from all agent directories
 
 ---
 
-**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+**After completion**: 
+1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
+2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
 
     if not dry_run:
