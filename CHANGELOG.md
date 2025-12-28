@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.4
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.5
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.6
 
 ---
 
@@ -253,6 +253,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.6] - 2025-12-27
+
+#### 🔧 Changed/Improved
+
+- **Multi-Agent Self-Destruct** - Enhanced enhance-constitution self-destruct instructions
+  - Updated to list ALL agent directory patterns where files may exist
+  - Covers copilot, claude, cursor, windsurf, opencode, amazon-q, codex
+  - Handles multi-agent setups (e.g., `--agents claude,copilot,cursor-agent`)
+  - Prevents leftover enhance-constitution files in any agent directory
+  - Clearer bullet-point list of locations to check
+  - Affects: specify_extend.py enhance-constitution generation
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.6
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.4
+
+---
+
 ### [1.5.5] - 2025-12-27
 
 #### 🐛 Fixed
