@@ -38,6 +38,11 @@ else
     fi
 fi
 
+# Source branch utilities if present (provides generate_branch_name)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 # Verify generate_branch_name function is available
 if ! declare -f generate_branch_name > /dev/null; then
     echo "Error: generate_branch_name function is not available in common.sh." >&2

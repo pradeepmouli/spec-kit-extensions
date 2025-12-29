@@ -139,6 +139,17 @@ specify-extend --all --script ps  # Optional: install PowerShell workflows
 specify-extend bugfix modify refactor
 ```
 
+**Optional: Fetch upstream spec-kit for reference**
+
+If you want the upstream spec-kit documentation and scripts on hand (purely for reference—our tools do not read from it), fetch a shallow checkout into `spec-kit/`:
+
+```bash
+scripts/fetch-spec-kit.sh            # defaults to main
+scripts/fetch-spec-kit.sh v0.12.0    # or any tag/branch
+```
+
+The fetched `spec-kit/` directory is .gitignored to keep your working tree clean.
+
 The `specify-extend` tool automatically:
 - ✅ Downloads latest extensions from GitHub
 - ✅ Detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)

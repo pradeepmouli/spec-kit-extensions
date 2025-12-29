@@ -45,7 +45,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.5.6"
+__version__ = "1.5.7"
 
 # Initialize Rich console
 console = Console()
@@ -896,7 +896,10 @@ def install_extension_files(
             if not dry_run:
                 dest_workflow = workflows_dir / ext
                 if dest_workflow.exists():
-                    shutil.rmtree(dest_workflow)
+                    if dest_workflow.is_symlink():
+                        dest_workflow.unlink()
+                    else:
+                        shutil.rmtree(dest_workflow)
                 shutil.copytree(source_workflow, dest_workflow)
             console.print(f"[green]✓[/green] Copied {ext} workflow templates")
         else:
@@ -907,6 +910,17 @@ def install_extension_files(
         # Install PowerShell scripts only
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
+            # Always copy shared helpers (e.g., BranchUtils.ps1)
+            ps_helpers = ["BranchUtils.ps1"]
+            for helper in ps_helpers:
+                helper_path = source_powershell_scripts / helper
+                if helper_path.exists():
+                    if not dry_run:
+                        dest_helper = powershell_scripts_dir / helper
+                        shutil.copy(helper_path, dest_helper)
+                        dest_helper.chmod(0o755)
+                    console.print(f"[green]✓[/green] Copied {helper} helper")
+
             for ext in extensions:
                 # Only workflow extensions have create scripts
                 if not is_workflow_extension(ext):
@@ -926,6 +940,17 @@ def install_extension_files(
         # Install bash scripts only
         source_scripts = source_dir / "scripts"
         if source_scripts.exists():
+            # Always copy shared helpers (e.g., branch-utils.sh)
+            shared_helpers = ["branch-utils.sh"]
+            for helper in shared_helpers:
+                helper_path = source_scripts / helper
+                if helper_path.exists():
+                    if not dry_run:
+                        dest_helper = scripts_dir / helper
+                        shutil.copy(helper_path, dest_helper)
+                        dest_helper.chmod(0o755)
+                    console.print(f"[green]✓[/green] Copied {helper} helper")
+
             for ext in extensions:
                 # Only workflow extensions have create scripts
                 if not is_workflow_extension(ext):
@@ -1163,7 +1188,7 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 
 ---
 
-**After completion**: 
+**After completion**:
 1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
 2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
@@ -1229,7 +1254,7 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 
 ---
 
-**After completion**: 
+**After completion**:
 1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
 2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
@@ -1499,6 +1524,165 @@ check_feature_branch() {
     else:
         console.print("  [dim]Would patch common.sh for extension branch support[/dim]")
 
+
+def patch_common_ps1(repo_root: Path, dry_run: bool = False) -> None:
+    """Patch spec-kit's common.ps1 to support extension branch patterns.
+
+    Attempts to locate the branch validation function and wrap it with an
+    extended version that recognizes spec-kit-extensions branch patterns.
+
+    Strategy mirrors patch_common_sh():
+    - Detect and backup original file
+    - Rename original function to <Name>_Old
+    - Append new function with extended patterns and helpful errors
+    """
+    console.print("[blue]ℹ[/blue] Patching common.ps1 for extension branch support...")
+
+    common_ps1 = repo_root / ".specify" / "scripts" / "powershell" / "common.ps1"
+
+    if not common_ps1.exists():
+        console.print("[yellow]⚠[/yellow] common.ps1 not found, skipping patch")
+        return
+
+    content = common_ps1.read_text() if not dry_run else ""
+
+    # Detect if already patched with our marker
+    if not dry_run and "# Extended branch validation supporting spec-kit-extensions (PowerShell)" in content:
+        # Check if latest patterns included
+        latest_required = [
+            r"^baseline/[0-9]{3}-",
+            r"^enhance/[0-9]{3}-",
+            r"^cleanup/[0-9]{3}-",
+        ]
+        if all(p in content for p in latest_required):
+            console.print("[blue]ℹ[/blue] common.ps1 already patched with latest patterns")
+            return
+        else:
+            console.print("[yellow]⚠[/yellow] common.ps1 has outdated patch, updating...")
+            # Try to restore from backup if available; otherwise proceed and replace later
+            backup_file = common_ps1.with_suffix('.ps1.backup')
+            if backup_file.exists():
+                content = backup_file.read_text()
+                console.print(f"  [dim]Restored from backup: {backup_file}[/dim]")
+
+    # Candidate function names to patch (best-effort)
+    candidate_names = [
+        "Check-FeatureBranch",
+        "Test-FeatureBranch",
+        "Validate-FeatureBranch",
+        "Assert-FeatureBranch",
+    ]
+
+    import re
+
+    def find_function(name: str) -> bool:
+        pattern = re.compile(rf"\bfunction\s+{re.escape(name)}\s*\(")
+        # Support both styles: function Name {  OR  function Name()
+        pattern_alt = re.compile(rf"\bfunction\s+{re.escape(name)}\s*\{{", re.MULTILINE)
+        return bool(pattern.search(content) or pattern_alt.search(content))
+
+    func_name = None
+    if not dry_run:
+        for n in candidate_names:
+            if find_function(n):
+                func_name = n
+                break
+
+    if not dry_run and not func_name:
+        console.print("[yellow]⚠[/yellow] Branch validation function not found in common.ps1; skipping patch")
+        return
+
+    # Build new function text
+    new_function = f'''
+# Extended branch validation supporting spec-kit-extensions (PowerShell)
+function {func_name} {{
+    param(
+        [string]$Branch,
+        [bool]$HasGitRepo = $false
+    )
+
+    if (-not $Branch) {{
+        try {{
+            $null = git rev-parse --git-dir 2>$null
+            if ($LASTEXITCODE -eq 0) {{
+                $Branch = (git branch --show-current).Trim()
+                $HasGitRepo = $true
+            }} else {{
+                return $true
+            }}
+        }} catch {{
+            return $true
+        }}
+    }}
+
+    if (-not $HasGitRepo -and $HasGitRepo -ne $true) {{
+        Write-Warning "[specify] Warning: Git repository not detected; skipped branch validation"
+        return $true
+    }}
+
+    $extensionPatterns = @(
+        '^baseline/[0-9]{3}-',
+        '^bugfix/[0-9]{3}-',
+        '^enhance/[0-9]{3}-',
+        '^modify/[0-9]{3}\^[0-9]{3}-',
+        '^refactor/[0-9]{3}-',
+        '^hotfix/[0-9]{3}-',
+        '^deprecate/[0-9]{3}-',
+        '^cleanup/[0-9]{3}-'
+    )
+
+    foreach ($p in $extensionPatterns) {{
+        if ($Branch -match $p) {{ return $true }}
+    }}
+
+    if ($Branch -match '^[0-9]{3}-') {{ return $true }}
+
+    Write-Error "ERROR: Not on a feature branch. Current branch: $Branch"
+    Write-Output "Feature branches must follow one of these patterns:"
+    Write-Output "  Standard:    ###-description (e.g., 001-add-user-authentication)"
+    Write-Output "  Baseline:    baseline/###-description"
+    Write-Output "  Bugfix:      bugfix/###-description"
+    Write-Output "  Enhance:     enhance/###-description"
+    Write-Output "  Modify:      modify/###^###-description"
+    Write-Output "  Refactor:    refactor/###-description"
+    Write-Output "  Hotfix:      hotfix/###-description"
+    Write-Output "  Deprecate:   deprecate/###-description"
+    Write-Output "  Cleanup:     cleanup/###-description"
+    return $false
+}}
+'''
+
+    if not dry_run:
+        # Backup
+        backup_file = common_ps1.with_suffix('.ps1.backup')
+        backup_file.write_text(content)
+
+        # Rename original function to <Name>_Old (first occurrence)
+        # Support both styles
+        content_renamed = re.sub(
+            rf"\bfunction\s+{re.escape(func_name)}\s*\(",
+            f"function {func_name}_Old(",
+            content,
+            count=1,
+            flags=re.MULTILINE,
+        )
+        if content_renamed == content:
+            content_renamed = re.sub(
+                rf"\bfunction\s+{re.escape(func_name)}\s*\{{",
+                f"function {func_name}_Old {{",
+                content,
+                count=1,
+                flags=re.MULTILINE,
+            )
+
+        patched = content_renamed + "\n" + new_function
+        common_ps1.write_text(patched)
+        console.print("[green]✓[/green] common.ps1 patched to support extension branch patterns")
+        console.print(f"  [dim]Original function renamed to {func_name}_Old()[/dim]")
+        console.print("  [dim]New function appended at end[/dim]")
+        console.print(f"  [dim]Backup saved to: {backup_file}[/dim]")
+    else:
+        console.print("  [dim]Would patch common.ps1 for extension branch support[/dim]")
 
 def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> None:
     """Patch spec-kit's update-agent-context.sh to prefer AGENTS.md via a compatibility shim.
@@ -1977,6 +2161,7 @@ def main(
         # Constitution update is repo-level; use the first agent for formatting conventions
         update_constitution(repo_root, source_dir, resolved_agents[0], dry_run, llm_enhance)
         patch_common_sh(repo_root, dry_run)
+        patch_common_ps1(repo_root, dry_run)
         patch_update_agent_context_sh(repo_root, dry_run)
 
         # Install GitHub integration if requested

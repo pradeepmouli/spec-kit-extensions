@@ -25,11 +25,48 @@ elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
     COMMON_SH_FOUND=true
 fi
 
-# Ensure generate_branch_name is available from common.sh
-if [ "$COMMON_SH_FOUND" = false ] || ! declare -f generate_branch_name > /dev/null; then
-    echo "Error: generate_branch_name is not available because common.sh could not be found or does not define it." >&2
-    echo "Please ensure common.sh is present and on one of the expected paths before running this script." >&2
-    exit 1
+# Source branch utilities if present (provides generate_branch_name)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
+# Ensure generate_branch_name is available from common.sh; provide a local fallback if missing
+if ! declare -f generate_branch_name > /dev/null; then
+    >&2 echo "[refactor] Warning: common.sh not found or missing generate_branch_name; using local fallback."
+    generate_branch_name() {
+        local description="$1"
+        local stop_words="^(i|a|an|the|to|for|of|in|on|at|by|with|from|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|should|could|can|may|might|must|shall|this|that|these|those|my|your|our|their|want|need|add|get|set)$"
+        local clean_name=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/ /g')
+
+        local meaningful_words=()
+        for word in $clean_name; do
+            [ -z "$word" ] && continue
+            if ! echo "$word" | grep -qiE "$stop_words"; then
+                if [ ${#word} -ge 3 ]; then
+                    meaningful_words+=("$word")
+                elif echo "$description" | grep -q "\b${word^^}\b"; then
+                    meaningful_words+=("$word")
+                fi
+            fi
+        done
+
+        if [ ${#meaningful_words[@]} -gt 0 ]; then
+            local max_words=3
+            if [ ${#meaningful_words[@]} -eq 4 ]; then max_words=4; fi
+            local result=""
+            local count=0
+            for word in "${meaningful_words[@]}"; do
+                if [ $count -ge $max_words ]; then break; fi
+                if [ -n "$result" ]; then result="$result-"; fi
+                result="$result$word"
+                count=$((count + 1))
+            done
+            echo "$result"
+        else
+            local cleaned=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
+            echo "$cleaned" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//'
+        fi
+    }
 fi
 
 JSON_MODE=false

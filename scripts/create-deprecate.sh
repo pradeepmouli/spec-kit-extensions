@@ -2,6 +2,13 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source branch utilities if present (provides generate_branch_name for consistency)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 JSON_MODE=false
 LIST_FEATURES=false
 ARGS=()

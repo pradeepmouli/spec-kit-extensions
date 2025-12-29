@@ -25,10 +25,15 @@ elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
     COMMON_SH_FOUND=true
 fi
 
-# Ensure generate_branch_name is available from common.sh
-if [ "$COMMON_SH_FOUND" = false ] || ! declare -f generate_branch_name > /dev/null; then
-    echo "Error: generate_branch_name is not available because common.sh could not be found or does not define it." >&2
-    echo "Please ensure common.sh is present and on one of the expected paths before running this script." >&2
+# Source branch utilities if present (provides generate_branch_name)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
+# Ensure generate_branch_name is available from common.sh or branch-utils fallback
+if ! declare -f generate_branch_name > /dev/null; then
+    echo "Error: generate_branch_name is not available. common.sh missing the function and branch-utils.sh not found." >&2
+    echo "Please ensure common.sh is present or update spec-kit-extensions to include branch-utils.sh." >&2
     exit 1
 fi
 

@@ -38,6 +38,11 @@ else
     fi
 fi
 
+# Source branch utilities if present (kept for consistency across workflows)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 JSON_MODE=false
 for arg in "$@"; do
     case "$arg" in

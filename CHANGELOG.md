@@ -6,12 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.4
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.6
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.5
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.7
 
 ---
 
 ## Extension Templates
+
+### [2.5.5] - 2025-12-29
+
+#### 🚀 Added
+
+- **Branch Utilities Helper** - Ship `branch-utils.sh` (bash) and `BranchUtils.ps1` (PowerShell) providing branch name generation
+  - Decouples workflows from spec-kit's `common.sh` availability
+  - Graceful fallback when older installations lack `generate_branch_name`
+  - Affects: scripts/branch-utils.sh (new)
+
+#### 🔧 Changed/Improved
+
+- **Workflow Scripts** - Source branch utilities across bash and PowerShell workflows
+  - Bash: `create-bugfix.sh`, `create-enhance.sh`, `create-modification.sh`, `create-hotfix.sh`, `create-refactor.sh`
+  - Also bash: `create-deprecate.sh` and `create-baseline.sh` for consistency
+  - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-modification.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`
+  - Also PowerShell: `create-deprecate.ps1` and `create-baseline.ps1` for consistency
+  - Refactor script retains internal fallback for extra resilience
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.7+
 
 ### [2.5.4] - 2025-12-27
 
@@ -253,6 +277,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.7] - 2025-12-29
+
+#### 🚀 Added
+
+- **Helper Installation** - Installer now copies shared helpers
+  - Copies `branch-utils.sh` to `.specify/scripts/bash/`
+  - Ensures create-* workflows have `generate_branch_name` without relying on spec-kit updates
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.7
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.5
 
 ### [1.5.6] - 2025-12-27
 

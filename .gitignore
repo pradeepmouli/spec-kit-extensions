@@ -54,5 +54,8 @@ build/
 # Development symlinks for testing (created by dev setup)
 .specify/
 
+# Local reference checkout of upstream spec-kit (optional)
+spec-kit/
+
 # Specs created during development testing
 specs/
