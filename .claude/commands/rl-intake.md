@@ -40,26 +40,68 @@ cp docs/rl-intake/intake-template.md "$INTAKE_DIR/intake.md"
 
 ### 4. Collect Data
 
-Guide through collecting each section:
+Guide through collecting each section. See `docs/rl-intake-process.md` for detailed instructions.
 
 #### Chat Logs
-- Ask user for chat log file or transcript
-- Look for: initiation, decisions, friction, completion
 
-#### Spec Documents
-If repo accessible:
+Ask the user which agent was used, then provide export instructions:
+
+**Claude Code**:
 ```bash
-ls {{REPO}}/specs/{{WORKFLOW}}/*/
+claude export --format markdown > session.md
+# Or: claude sessions list  # to find session ID
+```
+
+**GitHub Copilot**: VS Code → Copilot Chat panel → `...` menu → Export Chat History
+
+**Cursor**: Command Palette → "Cursor: Export Chat History"
+
+**Aider**: Check `.aider.chat.history.md` or `~/.aider/logs/`
+
+**Continue**: Panel → History icon → Export
+
+**Windsurf**: Cascade panel → History icon → Export
+
+**Fallback**: `script -q session.log` before starting, or copy from terminal/UI
+
+#### Spec Documents (via MCP if available)
+
+```bash
+# If GitHub MCP configured:
+mcp__github__get_file_contents owner="{{OWNER}}" repo="{{REPO}}" path="specs/{{WORKFLOW}}/*/spec.md"
+
+# Or local access:
 cat {{REPO}}/specs/{{WORKFLOW}}/*/spec.md
+cat {{REPO}}/specs/{{WORKFLOW}}/*/plan.md
+cat {{REPO}}/specs/{{WORKFLOW}}/*/tasks.md
 ```
 
-#### Git Commits
+#### Git Commits (via MCP if available)
+
 ```bash
+# If GitHub MCP configured:
+mcp__github__list_commits owner="{{OWNER}}" repo="{{REPO}}" sha="{{BRANCH}}"
+
+# Or local:
 cd {{REPO}} && git log --oneline {{BRANCH}}
+cd {{REPO}} && git diff main...{{BRANCH}}
 ```
 
-#### Test Output
-Ask for final test results
+#### Test Output (via MCP if available)
+
+```bash
+# If GitHub MCP configured:
+mcp__github__list_workflow_runs owner="{{OWNER}}" repo="{{REPO}}" branch="{{BRANCH}}"
+
+# Or ask user to paste CI output or local test results
+```
+
+#### PR Discussion (via MCP)
+
+```bash
+# If there's a PR for this workflow:
+mcp__github__get_pull_request owner="{{OWNER}}" repo="{{REPO}}" pull_number={{N}}
+```
 
 ### 5. Evaluate Against Quality Gates
 

@@ -60,6 +60,118 @@ spec-kit-extensions/
 | **Test Output** | CI/CD or local test runs | Verify quality gate compliance |
 | **Code** (optional) | Relevant source files | Analyze generated code quality |
 
+### Exporting Chat Logs by Agent
+
+#### Claude Code (CLI)
+
+```bash
+# Export current session to markdown
+claude export --format markdown > session.md
+
+# Export specific session by ID
+claude export --session <session-id> --format markdown > session.md
+
+# List recent sessions to find session ID
+claude sessions list
+```
+
+**Alternative**: Copy from terminal scrollback or use terminal logging:
+```bash
+# Enable terminal logging before session
+script -q session.log
+claude
+# ... run workflow ...
+exit
+```
+
+#### GitHub Copilot (VS Code)
+
+1. Open the Copilot Chat panel (`Ctrl+Shift+I` / `Cmd+Shift+I`)
+2. Click the `...` menu in the chat panel header
+3. Select **Export Chat History**
+4. Save as JSON or markdown
+
+**Alternative**: Select all chat content (`Ctrl+A`) and copy to a file.
+
+#### Cursor
+
+1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+2. Search for **"Cursor: Export Chat History"**
+3. Select the session to export
+4. Save to file
+
+**Alternative**: Open chat history, select conversation, copy content.
+
+**Location of chat history**: `~/.cursor/chat_history/` (may vary by version)
+
+#### Windsurf (Codeium)
+
+1. Open the Cascade panel
+2. Click the history icon to view past conversations
+3. Select the relevant session
+4. Use the export/copy option
+
+**Alternative**: Chat logs stored in `~/.codeium/` directory.
+
+#### Aider
+
+Aider automatically logs all sessions:
+
+```bash
+# Default log location
+cat .aider.chat.history.md
+
+# Or check the aider log directory
+ls ~/.aider/logs/
+```
+
+**Tip**: Aider's `--chat-history-file` flag customizes the log location.
+
+#### Continue (VS Code/JetBrains)
+
+1. Open Continue panel
+2. Click the history icon (clock) in the panel header
+3. Find the relevant session
+4. Click **Export** or copy the conversation
+
+**Log location**:
+- VS Code: `~/.continue/sessions/`
+- JetBrains: `~/.continue/sessions/`
+
+#### Amazon Q Developer
+
+1. Open the Amazon Q panel in your IDE
+2. Navigate to conversation history
+3. Select the session covering the workflow
+4. Copy or export the conversation
+
+#### Generic Fallback
+
+If no export option exists:
+
+1. **Terminal recording**: Use `script` or `asciinema` before starting
+2. **Screen capture**: Take screenshots during the session
+3. **Manual copy**: Select and copy from the chat interface
+4. **Browser DevTools**: For web-based agents, check Network tab for conversation API responses
+
+### Using GitHub MCP for Other Artifacts
+
+If the GitHub MCP server is configured, automate collection of non-chat artifacts:
+
+```bash
+# Commits from workflow branch
+mcp__github__list_commits owner="{{OWNER}}" repo="{{REPO}}" sha="{{BRANCH}}"
+
+# Spec files
+mcp__github__get_file_contents owner="{{OWNER}}" repo="{{REPO}}" path="specs/{{WORKFLOW}}/*/spec.md"
+
+# PR discussion and reviews
+mcp__github__get_pull_request owner="{{OWNER}}" repo="{{REPO}}" pull_number={{N}}
+
+# CI/CD test results
+mcp__github__list_workflow_runs owner="{{OWNER}}" repo="{{REPO}}" branch="{{BRANCH}}"
+```
+
 ### Intake Checklist
 
 - [ ] Identify the repository and workflow type being analyzed
