@@ -297,6 +297,27 @@ When a new AI agent needs support, see [AGENTS.md](AGENTS.md) for comprehensive 
 7. Verify release appears on GitHub
 8. Test installation from release: `specify-extend --all`
 
+## Reinforcement Learning Process
+
+This repo includes an internal process for improving workflows based on real-world usage data.
+
+**Commands** (for use in this repo only):
+- `/rl-intake` - Create an intake to collect usage data from another repository
+- `/rl-analyze` - Analyze an intake to generate findings and optimization recommendations
+
+**Documentation**:
+- `docs/rl-intake-process.md` - Full process documentation
+- `docs/rl-intake/` - Templates for intake, analysis, and optimization
+
+**Workflow**:
+1. Collect data from a repo that used spec-kit (chat logs, specs, commits, tests)
+2. Create intake document in `specs/rl-intake/`
+3. Analyze for prompt clarity, template effectiveness, workflow adherence
+4. Generate specific fixes with before/after diffs
+5. Apply changes and validate improvements
+
+**Note**: The `specs/` directory is gitignored - intake data stays local.
+
 ## Notes for Claude Code
 
 - This repo does NOT use spec-kit workflows on itself (it's the tool, not a project using the tool)
