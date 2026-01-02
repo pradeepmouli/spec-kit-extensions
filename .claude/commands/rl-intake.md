@@ -16,7 +16,7 @@ Create a reinforcement learning intake to collect and analyze workflow usage dat
 
 Extract from user input:
 - **Repository**: Path or URL to analyze
-- **Workflow type**: Which workflow (bugfix, feature, modify, etc.)
+- **Workflow type**: Which workflow (bugfix, feature (via /speckit.specify), modify, etc.)
 - **Specific branch/spec**: Optional focus area
 
 If missing, ask:
