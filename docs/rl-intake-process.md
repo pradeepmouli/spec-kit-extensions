@@ -43,7 +43,8 @@ spec-kit-extensions/
 │   ├── analysis-template.md
 │   └── optimization-template.md
 └── .claude/commands/                   # Claude Code commands for this repo
-    └── rl-intake.md
+    ├── rl-intake.md
+    └── rl-analyze.md
 ```
 
 ---
