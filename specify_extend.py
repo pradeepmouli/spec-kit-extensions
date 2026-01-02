@@ -45,7 +45,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.5.7"
+__version__ = "1.5.8"
 
 # Initialize Rich console
 console = Console()
@@ -1413,8 +1413,9 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
 
         # Check if already patched AND up-to-date
         if "check_feature_branch_old()" in content:
-            # Check if patch includes all workflow patterns (enhance, cleanup, baseline)
-            if '"^enhance/[0-9]{3}-"' in content and '"^cleanup/[0-9]{3}-"' in content and '"^baseline/[0-9]{3}-"' in content:
+            # Check if patch includes all workflow patterns (enhance, cleanup, baseline) AND agent prefixes
+            if ('"^enhance/[0-9]{3}-"' in content and '"^cleanup/[0-9]{3}-"' in content and
+                '"^baseline/[0-9]{3}-"' in content and '"claude/"' in content):
                 console.print("[blue]ℹ[/blue] common.sh already patched with latest patterns")
                 return
             else:
@@ -1458,6 +1459,25 @@ check_feature_branch() {
         return 0
     fi
 
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    local agent_prefixes=(
+        "claude/"
+        "copilot/"
+        "cursor/"
+        "vscode/"
+        "windsurf/"
+        "gemini/"
+        "qwen/"
+    )
+
+    # Check if branch starts with any agent prefix
+    for prefix in "${agent_prefixes[@]}"; do
+        if [[ "$branch" == "$prefix"* ]]; then
+            return 0
+        fi
+    done
+
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
         "^baseline/[0-9]{3}-"
@@ -1486,6 +1506,7 @@ check_feature_branch() {
     echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
     echo "Feature branches must follow one of these patterns:" >&2
     echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)" >&2
     echo "  Baseline:    baseline/###-description" >&2
     echo "  Bugfix:      bugfix/###-description" >&2
     echo "  Enhance:     enhance/###-description" >&2
@@ -1548,11 +1569,12 @@ def patch_common_ps1(repo_root: Path, dry_run: bool = False) -> None:
 
     # Detect if already patched with our marker
     if not dry_run and "# Extended branch validation supporting spec-kit-extensions (PowerShell)" in content:
-        # Check if latest patterns included
+        # Check if latest patterns included (including agent prefixes)
         latest_required = [
             r"^baseline/[0-9]{3}-",
             r"^enhance/[0-9]{3}-",
             r"^cleanup/[0-9]{3}-",
+            "'claude/'",
         ]
         if all(p in content for p in latest_required):
             console.print("[blue]ℹ[/blue] common.ps1 already patched with latest patterns")
@@ -1620,6 +1642,22 @@ function {func_name} {{
         return $true
     }}
 
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    $agentPrefixes = @(
+        'claude/',
+        'copilot/',
+        'cursor/',
+        'vscode/',
+        'windsurf/',
+        'gemini/',
+        'qwen/'
+    )
+
+    foreach ($prefix in $agentPrefixes) {{
+        if ($Branch.StartsWith($prefix)) {{ return $true }}
+    }}
+
     $extensionPatterns = @(
         '^baseline/[0-9]{3}-',
         '^bugfix/[0-9]{3}-',
@@ -1640,6 +1678,7 @@ function {func_name} {{
     Write-Error "ERROR: Not on a feature branch. Current branch: $Branch"
     Write-Output "Feature branches must follow one of these patterns:"
     Write-Output "  Standard:    ###-description (e.g., 001-add-user-authentication)"
+    Write-Output "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)"
     Write-Output "  Baseline:    baseline/###-description"
     Write-Output "  Bugfix:      bugfix/###-description"
     Write-Output "  Enhance:     enhance/###-description"
