@@ -266,6 +266,25 @@ check_feature_branch() {
         return 0
     fi
 
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    local agent_prefixes=(
+        "claude/"
+        "copilot/"
+        "cursor/"
+        "vscode/"
+        "windsurf/"
+        "gemini/"
+        "qwen/"
+    )
+
+    # Check if branch starts with any agent prefix
+    for prefix in "${agent_prefixes[@]}"; do
+        if [[ "$branch" == "$prefix"* ]]; then
+            return 0
+        fi
+    done
+
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
         "^baseline/[0-9]{3}-"
@@ -294,6 +313,7 @@ check_feature_branch() {
     echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
     echo "Feature branches must follow one of these patterns:" >&2
     echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)" >&2
     echo "  Baseline:    baseline/###-description" >&2
     echo "  Bugfix:      bugfix/###-description" >&2
     echo "  Enhance:     enhance/###-description" >&2
