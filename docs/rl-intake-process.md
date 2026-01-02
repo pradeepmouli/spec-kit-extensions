@@ -417,7 +417,7 @@ See the templates in `docs/rl-intake/`:
 
 1. **Collect promptly** - Gather data while context is fresh
 2. **Include failures** - Failed workflows are most valuable
-3. **Redact sensitives** - Remove proprietary/personal data
+3. **Redact sensitive information** - Remove proprietary/personal data
 4. **Be thorough** - Missing data limits analysis quality
 
 ### For Analysis
