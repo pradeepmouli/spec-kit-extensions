@@ -140,6 +140,10 @@ fi
 # Create symlink from spec.md to hotfix.md
 ln -sf "hotfix.md" "$HOTFIX_DIR/spec.md"
 
+# Create plan.md and tasks.md as standard symlinks
+ln -sf "hotfix.md" "$HOTFIX_DIR/plan.md"
+ln -sf "hotfix.md" "$HOTFIX_DIR/tasks.md"
+
 # Add incident start timestamp to hotfix file
 TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 if grep -q "\[YYYY-MM-DD HH:MM:SS UTC\]" "$HOTFIX_FILE" 2>/dev/null; then

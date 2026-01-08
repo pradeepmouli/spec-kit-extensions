@@ -145,6 +145,19 @@ try {
     Copy-Item $enhancementFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $enhancementDir 'plan.md'
+$tasksLink = Join-Path $enhancementDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'enhancement.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'enhancement.md' | Out-Null
+} catch {
+    Copy-Item $enhancementFile $planLink -Force
+    Copy-Item $enhancementFile $tasksLink -Force
+}
+
 $env:SPECIFY_ENHANCE = $enhanceId
 
 if ($Json) {

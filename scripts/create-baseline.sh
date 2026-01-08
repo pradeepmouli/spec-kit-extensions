@@ -300,6 +300,11 @@ This document tracks all changes to the project, organized by specification and 
 EOF
 fi
 
+# Create symlinks for standard spec-kit artifact names
+ln -sf "baseline-spec.md" "$HISTORY_DIR/spec.md"
+ln -sf "current-state.md" "$HISTORY_DIR/plan.md"
+ln -sf "current-state.md" "$HISTORY_DIR/tasks.md"
+
 BASELINE_ID="baseline-$(date +%Y%m%d)"
 
 if $JSON_MODE; then

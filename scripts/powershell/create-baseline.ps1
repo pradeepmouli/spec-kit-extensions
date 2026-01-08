@@ -280,6 +280,23 @@ This document tracks all changes to the project, organized by specification and 
 '@ | Set-Content -Path $currentState
 }
 
+# Create symlinks for standard spec-kit artifact names
+$specLink = Join-Path $historyDir 'spec.md'
+$planLink = Join-Path $historyDir 'plan.md'
+$tasksLink = Join-Path $historyDir 'tasks.md'
+try {
+    if (Test-Path $specLink) { Remove-Item $specLink -Force }
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $specLink -Target 'baseline-spec.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'current-state.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'current-state.md' | Out-Null
+} catch {
+    Copy-Item $baselineSpec $specLink -Force
+    Copy-Item $currentState $planLink -Force
+    Copy-Item $currentState $tasksLink -Force
+}
+
 $baselineId = "baseline-$(Get-Date -Format 'yyyyMMdd')"
 
 if ($Json) {

@@ -145,6 +145,19 @@ try {
     Copy-Item $refactorSpecFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $refactorDir 'plan.md'
+$tasksLink = Join-Path $refactorDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'refactor-spec.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'refactor-spec.md' | Out-Null
+} catch {
+    Copy-Item $refactorSpecFile $planLink -Force
+    Copy-Item $refactorSpecFile $tasksLink -Force
+}
+
 $metricsBefore = Join-Path $refactorDir 'metrics-before.md'
 $metricsAfter = Join-Path $refactorDir 'metrics-after.md'
 @"

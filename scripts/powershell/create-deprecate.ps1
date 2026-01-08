@@ -159,6 +159,19 @@ try {
     Copy-Item $deprecationFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $deprecateDir 'plan.md'
+$tasksLink = Join-Path $deprecateDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'deprecation.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'deprecation.md' | Out-Null
+} catch {
+    Copy-Item $deprecationFile $planLink -Force
+    Copy-Item $deprecationFile $tasksLink -Force
+}
+
 # NOTE:
 # The dependency scanner is currently implemented as a bash script
 # located at `.specify/extensions/workflows/deprecate/scan-dependencies.sh`.

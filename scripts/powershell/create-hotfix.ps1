@@ -154,6 +154,19 @@ try {
     Copy-Item $hotfixFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $hotfixDir 'plan.md'
+$tasksLink = Join-Path $hotfixDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'hotfix.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'hotfix.md' | Out-Null
+} catch {
+    Copy-Item $hotfixFile $planLink -Force
+    Copy-Item $hotfixFile $tasksLink -Force
+}
+
 $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
 if (Test-Path $hotfixFile) {
     $content = Get-Content -Path $hotfixFile -Raw

@@ -121,6 +121,10 @@ fi
 # Create symlink from spec.md to enhancement.md
 ln -sf "enhancement.md" "$ENHANCE_DIR/spec.md"
 
+# Create plan.md and tasks.md as standard symlinks
+ln -sf "enhancement.md" "$ENHANCE_DIR/plan.md"
+ln -sf "enhancement.md" "$ENHANCE_DIR/tasks.md"
+
 # Set environment variable for current session
 export SPECIFY_ENHANCE="$ENHANCE_ID"
 
