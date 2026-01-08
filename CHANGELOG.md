@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.6
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.7
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.8
+
+---
+
+## CLI Tool (`specify-extend`)
+
+### [1.5.8] - 2026-01-02
+
+#### 🚀 Added
+
+- **AI Agent Branch Support** - Relaxed feature branch check for agent-generated branches
+  - Branches starting with `claude/`, `copilot/`, `cursor/`, `vscode/`, `windsurf/`, `gemini/`, `qwen/` now bypass validation
+  - Allows AI agents to use their own branch naming conventions
+  - Affects: `patch_common_sh()` and `patch_common_ps1()` in specify_extend.py
+  - Updated error messages to include agent branch pattern examples
+  - Patch detection logic updated to recognize agent prefix support
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.8
+- **Compatible Extension Templates**: v2.5.5+
 
 ---
 
@@ -23,6 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports both bash and PowerShell with graceful fallback
   - Affects: 
     - Bash: `create-bugfix.sh`, `create-enhance.sh`, `create-hotfix.sh`, `create-refactor.sh`, `create-modification.sh`, `create-deprecate.sh`, `create-baseline.sh`
+    - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`, `create-modification.ps1`, `create-deprecate.ps1`, `create-baseline.ps1`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.6
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.8+
     - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`, `create-modification.ps1`, `create-deprecate.ps1`, `create-baseline.ps1`
 
 #### 📦 Components

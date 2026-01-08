@@ -39,6 +39,27 @@ Each workflow extension contains:
 - **Bash scripts** - `.specify/scripts/bash/create-{workflow}.sh` for automation
 - **Checkpoint workflow** - Multi-phase approach with review points (plan → tasks → implement)
 
+## Optional: Claude Code Skills
+
+For Claude Code users, an optional feedback skill is available that helps capture workflow usage data:
+
+### spec-kit-feedback Skill
+
+Automatically tracks friction points and reminds to export chat logs for improving spec-kit.
+
+**Install manually:**
+```bash
+cp -r .specify/extensions/skills/spec-kit-feedback .claude/skills/
+```
+
+**What it does:**
+- Activates at workflow completion
+- Notes friction points (clarifications, retries)
+- Provides end-of-session summary
+- Guides chat log export
+
+See `extensions/skills/spec-kit-feedback/README.md` for details.
+
 ## Creating Custom Extensions
 
 See `docs/extension-development.md` for guide on creating your own workflow extensions.
