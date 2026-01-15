@@ -15,7 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-_(No changes yet)_
+_(No template changes yet)_
+
+---
+
+## CLI Tool (`specify-extend`)
+
+### [Unreleased]
+
+#### 🔧 Changed
+
+- **Agent-Specific Frontmatter Handling** - Installation now automatically adapts command files for each agent
+  - Strips `handoffs:` frontmatter for agents that don't support it (Claude Code, Codex, Cursor, Qwen, Amazon Q)
+  - Preserves `handoffs:` frontmatter for agents that do support it (GitHub Copilot, OpenCode, Windsurf)
+  - Prevents confusion from unsupported frontmatter fields appearing in installed command files
+  - Added `_strip_handoffs_from_frontmatter()` helper function in `specify_extend.py`
+
+#### 📚 Documentation
+
+- **AGENTS.md** - Added comprehensive handoffs support documentation
+  - Documents which agents support handoffs/delegation (Copilot, OpenCode, Windsurf)
+  - Documents which agents don't support handoffs (Claude Code, Codex, Cursor, Qwen, Amazon Q)
+  - Explains automatic frontmatter adaptation during installation
+  - Added new "Agent-Specific Adaptations" section explaining automatic transformations
 
 ---
 

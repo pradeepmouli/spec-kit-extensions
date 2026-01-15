@@ -10,8 +10,17 @@ spec-kit-extensions supports multiple AI coding agents by:
 1. Detecting agent configuration in user projects
 2. Installing extension commands in agent-specific formats
 3. Configuring agent-specific directory structures
+4. **Automatically adapting frontmatter** - Strips unsupported features (like `handoffs:`) for agents that don't support them
 
 The integration is handled primarily through the `specify-extend` CLI tool (`specify_extend.py`).
+
+### Agent-Specific Adaptations
+
+When installing commands, `specify-extend` automatically:
+- **Removes `handoffs:` frontmatter** for agents that don't support it (Claude Code, Codex, Cursor, Qwen, Amazon Q)
+- **Preserves `handoffs:` frontmatter** for agents that do support it (GitHub Copilot, OpenCode, Windsurf)
+- **Converts script paths** when PowerShell mode is selected (bash → PowerShell)
+- **Creates prompt files** for GitHub Copilot (`.prompt.md` files pointing to `.agent.md` files)
 
 ## Steps to Add a New Agent
 
@@ -350,6 +359,20 @@ mode: speckit.command-name
 
 Command content with $ARGUMENTS placeholder.
 ```
+
+**Handoffs support (workflow delegation):**
+
+Agents that support `handoffs:` in frontmatter:
+- ✅ **GitHub Copilot** - VS Code integration supports handoff UI
+- ✅ **OpenCode** - Has `agent` and `subtask` fields for delegation
+- ✅ **Windsurf** - Cascade delegation system
+
+Agents that don't support handoffs (spec-kit-extensions automatically strips them):
+- ❌ **Claude Code** - Only 8 specific frontmatter fields supported
+- ❌ **Codex** - Only name/description/allowed-tools supported
+- ❌ **Cursor** - Only description/globs/alwaysApply supported
+- ❌ **Amazon Q** - Uses JSON config instead of YAML
+- ❌ **Qwen** - TOML format, no handoffs
 
 ### TOML Format
 

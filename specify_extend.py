@@ -880,6 +880,44 @@ def install_extension_files(
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
 
 
+def _strip_handoffs_from_frontmatter(content: str) -> str:
+    """
+    Remove handoffs section from YAML frontmatter for agents that don't support it.
+
+    Agents like Claude Code, Codex, Cursor, Qwen, and Amazon Q don't support
+    handoffs in frontmatter, so we strip them to avoid confusion.
+    """
+    import re
+
+    # Match YAML frontmatter block
+    frontmatter_pattern = r'^---\n(.*?)\n---\n(.*)$'
+    match = re.match(frontmatter_pattern, content, re.DOTALL)
+
+    if not match:
+        # No frontmatter found, return as-is
+        return content
+
+    frontmatter = match.group(1)
+    body = match.group(2)
+
+    # Remove handoffs section (handles nested YAML properly)
+    # Match: 'handoffs:' followed by any number of indented lines (2+ spaces)
+    # until we hit a non-indented line (next top-level key) or end of frontmatter
+    frontmatter_cleaned = re.sub(
+        r'handoffs:.*?(?=\n\S|\Z)',
+        '',
+        frontmatter,
+        flags=re.DOTALL
+    )
+
+    # Clean up any extra blank lines that might result
+    frontmatter_cleaned = re.sub(r'\n\n+', '\n', frontmatter_cleaned)
+    frontmatter_cleaned = frontmatter_cleaned.strip()
+
+    # Reconstruct the file
+    return f"---\n{frontmatter_cleaned}\n---\n{body}"
+
+
 def install_agent_commands(
     repo_root: Path,
     source_dir: Path,
@@ -961,14 +999,30 @@ def install_agent_commands(
 
         if source_file.exists():
             if not dry_run:
+                content = source_file.read_text()
+
+                # Apply agent-specific content transformations
+                # Agents that support handoffs: copilot, opencode, windsurf
+                # Agents that don't: claude, codex, cursor-agent, qwen, q
+                supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+
+                if not supports_handoffs:
+                    # Strip handoffs frontmatter for agents that don't support it
+                    content = _strip_handoffs_from_frontmatter(content)
+
                 if install_powershell:
-                    content = source_file.read_text()
+                    # Replace bash scripts with PowerShell equivalents
                     content = content.replace(
                         ".specify/scripts/bash/", ".specify/scripts/powershell/"
                     ).replace(".sh", ".ps1")
-                    dest_file.write_text(content)
-                else:
+
+                # Write the processed content
+                if link and not install_powershell and supports_handoffs:
+                    # Only symlink if no content transformations needed
                     install_file(source_file, dest_file)
+                else:
+                    # Write transformed content
+                    dest_file.write_text(content)
 
                 # For GitHub Copilot, also create a prompt file that points to the agent
                 if agent == "copilot":
