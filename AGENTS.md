@@ -370,8 +370,11 @@ Agents that support `handoffs:` in frontmatter (preserved as-is):
 - ✅ **OpenCode** - Has `agent` and `subtask` fields for delegation
 - ✅ **Windsurf** - Cascade delegation system
 
-Agents with native delegation support (creates subagent/skill files):
-- 🚀 **Claude Code** - Creates `.claude/agents/*.md` subagent files + adds "Recommended Next Steps" section
+Agents with native delegation support (creates subagent/skill files + hooks):
+- 🚀 **Claude Code** - Triple approach:
+  1. Creates `.claude/agents/*.md` subagent files for direct invocation
+  2. Adds `hooks:` Stop hooks in frontmatter for programmatic suggestions
+  3. Adds "Recommended Next Steps" text section for manual guidance
 - 🚀 **Codex** - Creates `.codex/skills/*.md` skill files + adds "Next Steps" section
 
 Agents with textual guidance only:
@@ -381,7 +384,7 @@ Agents with textual guidance only:
 
 **Conversion Examples:**
 
-**Claude Code** - Two-part conversion:
+**Claude Code** - Triple approach combining hooks, subagents, and text:
 
 1. **Creates subagent file** (`.claude/agents/speckit.plan.md`):
 ```markdown
@@ -396,14 +399,27 @@ model: haiku
 
 You are a workflow automation specialist for the **plan** workflow in spec-kit projects.
 
-## Your Purpose
-
-Create a plan for the bugfix. I am fixing...
-
 [... full subagent instructions ...]
 ```
 
-2. **Adds textual guidance** to command file:
+2. **Adds Stop hook** to command frontmatter (`.claude/commands/speckit.bugfix.md`):
+```yaml
+---
+description: Create a bug fix workflow
+hooks:
+  Stop:
+  - hooks:
+    - type: prompt
+      prompt: |
+        After completing this workflow, consider these next steps:
+
+        1. **Create Implementation Plan**
+           - Run: `/speckit.plan` or use the `speckit.plan` subagent
+           - Context: Create a plan for the bugfix...
+---
+```
+
+3. **Adds textual guidance** at end of command file:
 ```markdown
 ## Recommended Next Steps
 
@@ -413,7 +429,12 @@ After completing this workflow, consider these next steps:
    - Suggested prompt: Create a plan...
 ```
 
-**Codex** - Similar dual approach with `.codex/skills/speckit.plan.md` files
+This triple approach provides:
+- **Programmatic**: Stop hook suggests next steps after command completes
+- **Delegatable**: Subagent files Claude can invoke automatically
+- **Manual**: Text guidance users can read and follow
+
+**Codex** - Dual approach with `.codex/skills/speckit.plan.md` files + text guidance
 
 ### TOML Format
 

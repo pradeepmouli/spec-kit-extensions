@@ -880,6 +880,94 @@ def install_extension_files(
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
 
 
+def _convert_handoffs_to_hooks(handoffs: list) -> dict:
+    """
+    Convert handoffs list to Claude Code hooks format.
+
+    Creates a Stop hook with prompt-based suggestions for next workflow steps.
+    """
+    if not handoffs:
+        return {}
+
+    # Build the prompt text for Stop hook
+    prompt_lines = ["After completing this workflow, consider these next steps:\n"]
+
+    for i, handoff in enumerate(handoffs, 1):
+        label = handoff.get('label', 'Next step')
+        agent = handoff.get('agent', '')
+        prompt = handoff.get('prompt', '')
+
+        prompt_lines.append(f"{i}. **{label}**")
+        if agent:
+            prompt_lines.append(f"   - Run: `/{agent}` or use the `{agent}` subagent")
+        if prompt:
+            prompt_lines.append(f"   - Context: {prompt}")
+
+    prompt_text = "\n".join(prompt_lines)
+
+    # Create hooks structure
+    hooks = {
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "prompt",
+                        "prompt": prompt_text
+                    }
+                ]
+            }
+        ]
+    }
+
+    return hooks
+
+
+def _add_hooks_to_frontmatter(content: str, hooks: dict) -> str:
+    """
+    Add hooks section to YAML frontmatter.
+
+    Parses existing frontmatter, adds hooks, and reconstructs the content.
+    """
+    import re
+    import yaml
+
+    if not hooks:
+        return content
+
+    # Match YAML frontmatter block
+    frontmatter_pattern = r'^---\n(.*?)\n---\n(.*)$'
+    match = re.match(frontmatter_pattern, content, re.DOTALL)
+
+    if not match:
+        # No frontmatter, add it
+        frontmatter_data = {"hooks": hooks}
+        yaml_str = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False)
+        return f"---\n{yaml_str}---\n{content}"
+
+    frontmatter_text = match.group(1)
+    body = match.group(2)
+
+    # Parse existing frontmatter
+    try:
+        frontmatter_data = yaml.safe_load(frontmatter_text) or {}
+    except Exception:
+        frontmatter_data = {}
+
+    # Add hooks (merge if existing)
+    if 'hooks' in frontmatter_data:
+        # Merge hooks - add Stop hooks if not present
+        existing_hooks = frontmatter_data['hooks']
+        if 'Stop' not in existing_hooks:
+            existing_hooks['Stop'] = hooks['Stop']
+    else:
+        frontmatter_data['hooks'] = hooks
+
+    # Reconstruct frontmatter
+    yaml_str = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False)
+
+    return f"---\n{yaml_str}---\n{body}"
+
+
 def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
     """
     Extract and remove handoffs section from YAML frontmatter.
@@ -1134,8 +1222,8 @@ def _convert_handoffs_for_agent(content: str, agent: str) -> str:
     For agents that support handoffs in frontmatter (Copilot, OpenCode, Windsurf),
     returns content unchanged.
 
-    For agents that don't support handoffs, extracts them and converts to
-    appropriate format (subagents, textual guidance, etc.).
+    For Claude Code: Converts to hooks + textual guidance (hybrid approach)
+    For other agents: Converts to textual guidance only
     """
     supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
 
@@ -1146,7 +1234,15 @@ def _convert_handoffs_for_agent(content: str, agent: str) -> str:
     # Extract and remove handoffs from frontmatter
     cleaned_content, handoffs = _extract_handoffs_from_frontmatter(content)
 
-    # Convert handoffs to agent-specific next steps
+    # Special handling for Claude Code: Add hooks + textual guidance
+    if agent == "claude" and handoffs:
+        # Convert handoffs to hooks format
+        hooks = _convert_handoffs_to_hooks(handoffs)
+
+        # Add hooks to frontmatter
+        cleaned_content = _add_hooks_to_frontmatter(cleaned_content, hooks)
+
+    # Convert handoffs to agent-specific next steps text
     next_steps = _convert_handoffs_to_next_steps(handoffs, agent)
 
     # Append next steps to the body
