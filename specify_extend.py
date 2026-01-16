@@ -928,7 +928,6 @@ def _add_hooks_to_frontmatter(content: str, hooks: dict) -> str:
 
     Parses existing frontmatter, adds hooks, and reconstructs the content.
     """
-    import re
     import yaml
 
     if not hooks:
