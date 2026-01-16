@@ -894,12 +894,12 @@ def _convert_handoffs_to_hooks(handoffs: list) -> dict:
 
     for i, handoff in enumerate(handoffs, 1):
         label = handoff.get('label', 'Next step')
-        agent = handoff.get('agent', '')
+        command = handoff.get('agent', '')
         prompt = handoff.get('prompt', '')
 
         prompt_lines.append(f"{i}. **{label}**")
-        if agent:
-            prompt_lines.append(f"   - Run: `/{agent}` or use the `{agent}` subagent")
+        if command:
+            prompt_lines.append(f"   - Run: `/{command}` or use the `{command}` subagent")
         if prompt:
             prompt_lines.append(f"   - Context: {prompt}")
 
