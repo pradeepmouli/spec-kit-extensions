@@ -997,20 +997,22 @@ def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
         # If YAML parsing fails, fall back to no handoffs
         handoffs = []
 
-    # Remove handoffs section from frontmatter
-    frontmatter_cleaned = re.sub(
-        r'handoffs:.*?(?=\n\S|\Z)',
-        '',
-        frontmatter_text,
-        flags=re.DOTALL
-    )
-
-    # Clean up any extra blank lines
-    frontmatter_cleaned = re.sub(r'\n\n+', '\n', frontmatter_cleaned)
-    frontmatter_cleaned = frontmatter_cleaned.strip()
+    # Remove handoffs key from the parsed frontmatter dictionary
+    if frontmatter_data and 'handoffs' in frontmatter_data:
+        del frontmatter_data['handoffs']
+    
+    # Regenerate frontmatter YAML from the cleaned dictionary
+    if frontmatter_data:
+        frontmatter_cleaned = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False).strip()
+    else:
+        frontmatter_cleaned = ''
 
     # Reconstruct the file without handoffs
-    cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+    if frontmatter_cleaned:
+        cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+    else:
+        # If no frontmatter remains, just return the body
+        cleaned_content = body
 
     return cleaned_content, handoffs
 
