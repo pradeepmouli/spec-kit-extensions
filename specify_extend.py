@@ -894,12 +894,12 @@ def _convert_handoffs_to_hooks(handoffs: list) -> dict:
 
     for i, handoff in enumerate(handoffs, 1):
         label = handoff.get('label', 'Next step')
-        agent = handoff.get('agent', '')
+        command = handoff.get('agent', '')
         prompt = handoff.get('prompt', '')
 
         prompt_lines.append(f"{i}. **{label}**")
-        if agent:
-            prompt_lines.append(f"   - Run: `/{agent}` or use the `{agent}` subagent")
+        if command:
+            prompt_lines.append(f"   - Run: `/{command}` or use the `{command}` subagent")
         if prompt:
             prompt_lines.append(f"   - Context: {prompt}")
 
@@ -928,7 +928,6 @@ def _add_hooks_to_frontmatter(content: str, hooks: dict) -> str:
 
     Parses existing frontmatter, adds hooks, and reconstructs the content.
     """
-    import re
     import yaml
 
     if not hooks:
@@ -1007,6 +1006,9 @@ def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
     else:
         frontmatter_cleaned = ''
 
+    # If removing handoffs leaves no frontmatter content, drop frontmatter entirely
+    if not frontmatter_cleaned:
+        return body, handoffs
     # Reconstruct the file without handoffs
     if frontmatter_cleaned:
         cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
@@ -1335,8 +1337,10 @@ def install_agent_commands(
                 content = source_file.read_text()
 
                 # For Claude Code and Codex: Create subagent/skill files from handoffs
-                # This enables true delegation instead of just textual guidance
-                _create_subagents_from_handoffs(content, agent, repo_root, dry_run)
+                # This enables true delegation instead of just textual guidance.
+                # Note: This block only runs when not dry_run (see outer if), so we
+                # explicitly pass dry_run=False here to make that intent clear.
+                _create_subagents_from_handoffs(content, agent, repo_root, dry_run=False)
 
                 # Apply agent-specific content transformations
                 # 1. Convert handoffs to agent-specific format
