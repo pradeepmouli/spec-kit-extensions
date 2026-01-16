@@ -1010,7 +1010,11 @@ def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
     frontmatter_cleaned = frontmatter_cleaned.strip()
 
     # Reconstruct the file without handoffs
-    cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+    if frontmatter_cleaned:
+        cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+    else:
+        # If removing handoffs leaves no frontmatter, drop the frontmatter entirely
+        cleaned_content = body
 
     return cleaned_content, handoffs
 
