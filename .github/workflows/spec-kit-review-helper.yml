@@ -1,0 +1,268 @@
+name: Spec-Kit Review Helper
+
+# This workflow helps automate review reminders and can be triggered manually
+# to check review status or remind about pending reviews.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - check-status
+          - list-pending
+          - validate-branch
+        default: 'check-status'
+      branch_name:
+        description: 'Branch name (optional, defaults to current branch)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  review-helper:
+    name: Spec-Kit Review Helper
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine branch
+        id: branch
+        run: |
+          if [ -n "${{ github.event.inputs.branch_name }}" ]; then
+            BRANCH="${{ github.event.inputs.branch_name }}"
+          else
+            BRANCH="${GITHUB_REF#refs/heads/}"
+          fi
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "Working with branch: $BRANCH"
+
+      - name: Check if spec-kit branch
+        id: check
+        run: |
+          BRANCH="${{ steps.branch.outputs.branch }}"
+
+          if [[ "$BRANCH" =~ ^(bugfix|modify|refactor|hotfix|deprecate|cleanup|baseline|enhance)/ ]] || \
+             [[ "$BRANCH" =~ ^[0-9]+-.*$ ]]; then
+            echo "is_speckit=true" >> $GITHUB_OUTPUT
+
+            # Extract workflow type and number
+            if [[ "$BRANCH" =~ ^([a-z]+)/([0-9]+) ]]; then
+              WORKFLOW="${BASH_REMATCH[1]}"
+              NUMBER="${BASH_REMATCH[2]}"
+            elif [[ "$BRANCH" =~ ^([0-9]+)- ]]; then
+              WORKFLOW="feature"
+              NUMBER="${BASH_REMATCH[1]}"
+            fi
+
+            echo "workflow=$WORKFLOW" >> $GITHUB_OUTPUT
+            echo "number=$NUMBER" >> $GITHUB_OUTPUT
+          else
+            echo "is_speckit=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Status
+        if: github.event.inputs.action == 'check-status' && steps.check.outputs.is_speckit == 'true'
+        run: |
+          WORKFLOW="${{ steps.check.outputs.workflow }}"
+          NUMBER="${{ steps.check.outputs.number }}"
+
+          echo "🔍 Checking review status for $WORKFLOW/$NUMBER"
+          echo "=================================================="
+
+          # Search for spec directory
+          SPEC_DIR=""
+          if [ "$WORKFLOW" != "feature" ]; then
+            SPEC_DIR=$(find specs -type d -path "specs/${WORKFLOW}/${NUMBER}-*" 2>/dev/null | head -n 1)
+          fi
+          if [ -z "$SPEC_DIR" ]; then
+            SPEC_DIR=$(find specs -type d -path "specs/${NUMBER}-*" -maxdepth 1 2>/dev/null | head -n 1)
+          fi
+          if [ -z "$SPEC_DIR" ]; then
+            SPEC_DIR=$(find .specify/specs -type d -path "*/${NUMBER}-*" 2>/dev/null | head -n 1)
+          fi
+
+          if [ -z "$SPEC_DIR" ]; then
+            echo "⚠️  No spec directory found"
+            echo ""
+            echo "Expected locations:"
+            echo "  - specs/${WORKFLOW}/${NUMBER}-*"
+            echo "  - specs/${NUMBER}-*"
+            echo "  - .specify/specs/${WORKFLOW}/${NUMBER}-*"
+            exit 0
+          fi
+
+          echo "✓ Found spec directory: $SPEC_DIR"
+          echo ""
+
+          # Check for review file
+          REVIEW_FILE=""
+          for filename in review.md review-report.md review-notes.md REVIEW.md; do
+            if [ -f "$SPEC_DIR/$filename" ]; then
+              REVIEW_FILE="$SPEC_DIR/$filename"
+              break
+            fi
+          done
+
+          if [ -z "$REVIEW_FILE" ]; then
+            echo "❌ No review file found"
+            echo ""
+            echo "To complete the review:"
+            echo "  1. Run: /speckit.review"
+            echo "  2. Commit the generated review file"
+            echo "  3. Push to your branch"
+            exit 0
+          fi
+
+          echo "✓ Found review file: $REVIEW_FILE"
+          echo ""
+
+          # Check status
+          if grep -qiE '\*\*Status\*\*:?\s*(✅|:white_check_mark:)?\s*Approved' "$REVIEW_FILE"; then
+            echo "✅ Review Status: APPROVED"
+            echo ""
+            echo "This branch is ready to merge!"
+          elif grep -qiE '\*\*Status\*\*:?\s*(❌|:x:)?\s*Needs\s+Changes' "$REVIEW_FILE"; then
+            echo "❌ Review Status: NEEDS CHANGES"
+            echo ""
+            echo "Issues found:"
+            grep -A 10 "## Findings" "$REVIEW_FILE" || true
+            echo ""
+            echo "Please address the issues and run /speckit.review again"
+          else
+            echo "⚠️  Review status unclear"
+            echo ""
+            echo "Review file exists but status not recognized."
+            echo "Please ensure review file contains:"
+            echo "  **Status**: ✅ Approved"
+            echo "     or"
+            echo "  **Status**: ⚠️ Approved with Notes"
+          fi
+
+      - name: List Pending Reviews
+        if: github.event.inputs.action == 'list-pending'
+        run: |
+          echo "🔍 Searching for branches without reviews..."
+          echo "=============================================="
+          echo ""
+
+          # Get all spec directories
+          FOUND_PENDING=false
+
+          for SPEC_DIR in $(find specs .specify/specs -type d -name "[0-9]*-*" 2>/dev/null); do
+            # Check if review file exists
+            HAS_REVIEW=false
+            for filename in review.md review-report.md review-notes.md REVIEW.md; do
+              if [ -f "$SPEC_DIR/$filename" ]; then
+                HAS_REVIEW=true
+                break
+              fi
+            done
+
+            if [ "$HAS_REVIEW" = false ]; then
+              FOUND_PENDING=true
+              echo "⚠️  $SPEC_DIR"
+              echo "   Missing review file - run /speckit.review"
+              echo ""
+            fi
+          done
+
+          if [ "$FOUND_PENDING" = false ]; then
+            echo "✅ No pending reviews found!"
+            echo "   All specs have review files."
+          fi
+
+      - name: Validate Branch
+        if: github.event.inputs.action == 'validate-branch' && steps.check.outputs.is_speckit == 'true'
+        run: |
+          BRANCH="${{ steps.branch.outputs.branch }}"
+          WORKFLOW="${{ steps.check.outputs.workflow }}"
+          NUMBER="${{ steps.check.outputs.number }}"
+
+          echo "🔍 Validating spec-kit branch: $BRANCH"
+          echo "=============================================="
+          echo ""
+          echo "Branch type: $WORKFLOW"
+          echo "Spec number: $NUMBER"
+          echo ""
+
+          # Check if spec directory exists
+          SPEC_DIR=""
+          if [ "$WORKFLOW" != "feature" ]; then
+            SPEC_DIR=$(find specs -type d -path "specs/${WORKFLOW}/${NUMBER}-*" 2>/dev/null | head -n 1)
+          fi
+          if [ -z "$SPEC_DIR" ]; then
+            SPEC_DIR=$(find specs -type d -path "specs/${NUMBER}-*" -maxdepth 1 2>/dev/null | head -n 1)
+          fi
+
+          if [ -z "$SPEC_DIR" ]; then
+            echo "❌ Spec directory not found"
+            echo ""
+            echo "Expected: specs/${WORKFLOW}/${NUMBER}-* or specs/${NUMBER}-*"
+            exit 1
+          fi
+
+          echo "✓ Spec directory: $SPEC_DIR"
+
+          # Check for required files
+          REQUIRED_FILES=("spec.md" "plan.md" "tasks.md")
+          MISSING_FILES=()
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$SPEC_DIR/$file" ]; then
+              echo "✓ Found: $file"
+            else
+              echo "⚠️  Missing: $file"
+              MISSING_FILES+=("$file")
+            fi
+          done
+
+          # Check for review file
+          REVIEW_FILE=""
+          for filename in review.md review-report.md review-notes.md REVIEW.md; do
+            if [ -f "$SPEC_DIR/$filename" ]; then
+              REVIEW_FILE="$SPEC_DIR/$filename"
+              echo "✓ Found: $filename"
+              break
+            fi
+          done
+
+          if [ -z "$REVIEW_FILE" ]; then
+            echo "❌ Missing: review.md (REQUIRED before merge)"
+            MISSING_FILES+=("review.md")
+          fi
+
+          echo ""
+          if [ ${#MISSING_FILES[@]} -eq 0 ]; then
+            echo "✅ Branch validation passed!"
+            echo "   All required files present."
+          else
+            echo "⚠️  Branch validation incomplete"
+            echo "   Missing files: ${MISSING_FILES[*]}"
+            echo ""
+            echo "Please ensure all workflow steps are completed:"
+            echo "  1. /speckit.specify or /speckit.{workflow-type}"
+            echo "  2. /speckit.plan"
+            echo "  3. /speckit.tasks"
+            echo "  4. Implement changes"
+            echo "  5. /speckit.review (REQUIRED)"
+          fi
+
+      - name: Non spec-kit branch
+        if: steps.check.outputs.is_speckit != 'true'
+        run: |
+          echo "ℹ️  This is not a spec-kit workflow branch"
+          echo ""
+          echo "Branch: ${{ steps.branch.outputs.branch }}"
+          echo ""
+          echo "No review requirements for this branch."

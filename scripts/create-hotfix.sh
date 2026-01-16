@@ -7,11 +7,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Try to find and source common.sh
 COMMON_SH_FOUND=false
-# First try the extension location
-if [ -f "$SCRIPT_DIR/../common.sh" ]; then
+# First try same directory (when installed to .specify/scripts/bash/)
+if [ -f "$SCRIPT_DIR/common.sh" ]; then
+    source "$SCRIPT_DIR/common.sh"
+    COMMON_SH_FOUND=true
+# Then try parent directory
+elif [ -f "$SCRIPT_DIR/../common.sh" ]; then
     source "$SCRIPT_DIR/../common.sh"
     COMMON_SH_FOUND=true
-# Then try spec-kit integrated location
+# Then try spec-kit nested location
 elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     source "$SCRIPT_DIR/../bash/common.sh"
     COMMON_SH_FOUND=true
@@ -21,10 +25,15 @@ elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
     COMMON_SH_FOUND=true
 fi
 
-# Ensure generate_branch_name is available from common.sh
-if [ "$COMMON_SH_FOUND" = false ] || ! declare -f generate_branch_name > /dev/null; then
-    echo "Error: generate_branch_name is not available because common.sh could not be found or does not define it." >&2
-    echo "Please ensure common.sh is present and on one of the expected paths before running this script." >&2
+# Source branch utilities if present (provides generate_branch_name)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
+# Ensure generate_branch_name is available from common.sh or branch-utils fallback
+if ! declare -f generate_branch_name > /dev/null; then
+    echo "Error: generate_branch_name is not available. common.sh missing the function and branch-utils.sh not found." >&2
+    echo "Please ensure common.sh is present or update spec-kit-extensions to include branch-utils.sh." >&2
     exit 1
 fi
 
@@ -130,6 +139,10 @@ fi
 
 # Create symlink from spec.md to hotfix.md
 ln -sf "hotfix.md" "$HOTFIX_DIR/spec.md"
+
+# Create plan.md and tasks.md as standard symlinks
+ln -sf "hotfix.md" "$HOTFIX_DIR/plan.md"
+ln -sf "hotfix.md" "$HOTFIX_DIR/tasks.md"
 
 # Add incident start timestamp to hotfix file
 TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")

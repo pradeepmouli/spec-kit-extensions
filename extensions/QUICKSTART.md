@@ -96,10 +96,11 @@ Removing a feature?
 # Step 1: Create refactor spec
 /speckit.refactor "extract tweet submission into reusable service"
 # Creates: refactor-spec.md with behavioral snapshot
-# Shows: Next steps to capture baseline metrics
+# Automatically captures baseline metrics
 
-# Step 2: Review refactoring goals and capture baseline metrics
-.specify/extensions/workflows/refactor/measure-metrics.sh --before
+# Step 2: Review refactoring goals and captured baseline metrics
+cat specs/refactor/001-extract-tweet-service/metrics-before.md
+# Baseline metrics are automatically captured - review them to confirm
 
 # Step 3: Create refactoring plan
 /speckit.plan

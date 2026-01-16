@@ -2,6 +2,13 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source branch utilities if present (provides generate_branch_name for consistency)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 JSON_MODE=false
 LIST_FEATURES=false
 ARGS=()
@@ -156,6 +163,10 @@ fi
 
 # Create symlink from spec.md to deprecation.md
 ln -sf "deprecation.md" "$DEPRECATE_DIR/spec.md"
+
+# Create plan.md and tasks.md as standard symlinks
+ln -sf "deprecation.md" "$DEPRECATE_DIR/plan.md"
+ln -sf "deprecation.md" "$DEPRECATE_DIR/tasks.md"
 
 # Run dependency scan
 DEPENDENCIES_FILE="$DEPRECATE_DIR/dependencies.md"

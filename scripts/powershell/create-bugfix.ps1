@@ -145,6 +145,19 @@ try {
     Copy-Item $bugReportFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $bugDir 'plan.md'
+$tasksLink = Join-Path $bugDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'bug-report.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'bug-report.md' | Out-Null
+} catch {
+    Copy-Item $bugReportFile $planLink -Force
+    Copy-Item $bugReportFile $tasksLink -Force
+}
+
 $env:SPECIFY_BUGFIX = $bugId
 
 if ($Json) {

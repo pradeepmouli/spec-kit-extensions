@@ -66,19 +66,19 @@ has_git() {
 # Used by extension workflow scripts to create meaningful branch names
 generate_branch_name() {
     local description="$1"
-    
+
     # Common stop words to filter out
     local stop_words="^(i|a|an|the|to|for|of|in|on|at|by|with|from|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|should|could|can|may|might|must|shall|this|that|these|those|my|your|our|their|want|need|add|get|set)$"
-    
+
     # Convert to lowercase and split into words
     local clean_name=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/ /g')
-    
+
     # Filter words: remove stop words and words shorter than 3 chars (unless they're uppercase acronyms in original)
     local meaningful_words=()
     for word in $clean_name; do
         # Skip empty words
         [ -z "$word" ] && continue
-        
+
         # Keep words that are NOT stop words AND (length >= 3 OR are potential acronyms)
         if ! echo "$word" | grep -qiE "$stop_words"; then
             if [ ${#word} -ge 3 ]; then
@@ -89,12 +89,12 @@ generate_branch_name() {
             fi
         fi
     done
-    
+
     # If we have meaningful words, use first 3-4 of them
     if [ ${#meaningful_words[@]} -gt 0 ]; then
         local max_words=3
         if [ ${#meaningful_words[@]} -eq 4 ]; then max_words=4; fi
-        
+
         local result=""
         local count=0
         for word in "${meaningful_words[@]}"; do
@@ -111,23 +111,64 @@ generate_branch_name() {
     fi
 }
 
-check_feature_branch() {
-    local branch="$1"
-    local has_git_repo="$2"
+check_feature_branch_old() {
+    # Support both parameterized and non-parameterized calls
+    local branch="${1:-}"
+    local has_git_repo="${2:-}"
 
-    # For non-git repos, we can't enforce branch naming but still provide output
-    if [[ "$has_git_repo" != "true" ]]; then
+    # If branch not provided as parameter, get current branch
+    if [[ -z "$branch" ]]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            branch=$(git branch --show-current)
+            has_git_repo="true"
+        else
+            return 0
+        fi
+    fi
+
+    # For non-git repos, skip validation if explicitly specified
+    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
         echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
         return 0
     fi
 
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
-        echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
-        echo "Feature branches should be named like: 001-feature-name" >&2
-        return 1
+    # Extension branch patterns (spec-kit-extensions)
+    local extension_patterns=(
+        "^baseline/[0-9]{3}-"
+        "^bugfix/[0-9]{3}-"
+        "^enhance/[0-9]{3}-"
+        "^modify/[0-9]{3}\\^[0-9]{3}-"
+        "^refactor/[0-9]{3}-"
+        "^hotfix/[0-9]{3}-"
+        "^deprecate/[0-9]{3}-"
+        "^cleanup/[0-9]{3}-"
+    )
+
+    # Check extension patterns first
+    for pattern in "${extension_patterns[@]}"; do
+        if [[ "$branch" =~ $pattern ]]; then
+            return 0
+        fi
+    done
+
+    # Check standard spec-kit pattern (###-)
+    if [[ "$branch" =~ ^[0-9]{3}- ]]; then
+        return 0
     fi
 
-    return 0
+    # No match - show helpful error
+    echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
+    echo "Feature branches must follow one of these patterns:" >&2
+    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Baseline:    baseline/###-description" >&2
+    echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Enhance:     enhance/###-description" >&2
+    echo "  Modify:      modify/###^###-description" >&2
+    echo "  Refactor:    refactor/###-description" >&2
+    echo "  Hotfix:      hotfix/###-description" >&2
+    echo "  Deprecate:   deprecate/###-description" >&2
+    echo "  Cleanup:     cleanup/###-description" >&2
+    return 1
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }
@@ -203,3 +244,83 @@ EOF
 check_file() { [[ -f "$1" ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 
+# Extended branch validation supporting spec-kit-extensions
+check_feature_branch() {
+    # Support both parameterized and non-parameterized calls
+    local branch="${1:-}"
+    local has_git_repo="${2:-}"
+
+    # If branch not provided as parameter, get current branch
+    if [[ -z "$branch" ]]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            branch=$(git branch --show-current)
+            has_git_repo="true"
+        else
+            return 0
+        fi
+    fi
+
+    # For non-git repos, skip validation if explicitly specified
+    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
+        echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
+        return 0
+    fi
+
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    local agent_prefixes=(
+        "claude/"
+        "copilot/"
+        "cursor/"
+        "vscode/"
+        "windsurf/"
+        "gemini/"
+        "qwen/"
+    )
+
+    # Check if branch starts with any agent prefix
+    for prefix in "${agent_prefixes[@]}"; do
+        if [[ "$branch" == "$prefix"* ]]; then
+            return 0
+        fi
+    done
+
+    # Extension branch patterns (spec-kit-extensions)
+    local extension_patterns=(
+        "^baseline/[0-9]{3}-"
+        "^bugfix/[0-9]{3}-"
+        "^enhance/[0-9]{3}-"
+        "^modify/[0-9]{3}\^[0-9]{3}-"
+        "^refactor/[0-9]{3}-"
+        "^hotfix/[0-9]{3}-"
+        "^deprecate/[0-9]{3}-"
+        "^cleanup/[0-9]{3}-"
+    )
+
+    # Check extension patterns first
+    for pattern in "${extension_patterns[@]}"; do
+        if [[ "$branch" =~ $pattern ]]; then
+            return 0
+        fi
+    done
+
+    # Check standard spec-kit pattern (###-)
+    if [[ "$branch" =~ ^[0-9]{3}- ]]; then
+        return 0
+    fi
+
+    # No match - show helpful error
+    echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
+    echo "Feature branches must follow one of these patterns:" >&2
+    echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)" >&2
+    echo "  Baseline:    baseline/###-description" >&2
+    echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Enhance:     enhance/###-description" >&2
+    echo "  Modify:      modify/###^###-description" >&2
+    echo "  Refactor:    refactor/###-description" >&2
+    echo "  Hotfix:      hotfix/###-description" >&2
+    echo "  Deprecate:   deprecate/###-description" >&2
+    echo "  Cleanup:     cleanup/###-description" >&2
+    return 1
+}

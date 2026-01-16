@@ -1,0 +1,135 @@
+name: 📋 Baseline/Documentation Request
+description: Request baseline documentation using spec-kit baseline workflow
+title: "[Baseline]: "
+labels: ["documentation", "baseline", "spec-kit:baseline"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Baseline/Documentation Request
+
+        This template helps you create baseline documentation for existing features using the spec-kit baseline workflow.
+        After this issue is created, you can start the baseline documentation with:
+
+        ```bash
+        /speckit.baseline "baseline description"
+        # ... document ...
+        /speckit.review
+        ```
+
+  - type: input
+    id: feature_to_document
+    attributes:
+      label: Feature to Document
+      description: Which existing feature needs baseline documentation?
+      placeholder: e.g., "User authentication system"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Documentation Description
+      description: What documentation is needed?
+      placeholder: Describe what needs to be documented...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current Documentation State
+      description: What documentation currently exists (if any)?
+      placeholder: |
+        - Existing docs: [list what exists]
+        - Gaps: [list what's missing]
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: documentation_type
+    attributes:
+      label: Documentation Type
+      description: What kind of documentation is needed?
+      options:
+        - label: Feature specification
+        - label: API documentation
+        - label: Architecture documentation
+        - label: User guide
+        - label: Developer guide
+        - label: Configuration guide
+        - label: Troubleshooting guide
+        - label: Other (specify in description)
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Documentation Scope
+      description: What should be covered in the documentation?
+      placeholder: |
+        - How the feature works
+        - API endpoints/interfaces
+        - Configuration options
+        - Usage examples
+        - Edge cases and limitations
+    validations:
+      required: true
+
+  - type: textarea
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who is this documentation for?
+      placeholder: e.g., "End users", "Developers", "System administrators"
+    validations:
+      required: true
+
+  - type: textarea
+    id: goals
+    attributes:
+      label: Documentation Goals
+      description: What should this documentation achieve?
+      placeholder: |
+        - [ ] Explain feature functionality
+        - [ ] Provide usage examples
+        - [ ] Document configuration
+        - [ ] Explain architecture
+        - [ ] Enable self-service support
+    validations:
+      required: true
+
+  - type: input
+    id: related_code
+    attributes:
+      label: Related Code
+      description: Which code/modules does this document?
+      placeholder: e.g., "src/auth/, src/middleware/auth.ts"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have identified what needs to be documented
+          required: true
+        - label: I have checked for existing documentation
+          required: true
+        - label: I am willing to help write this documentation
+          required: false

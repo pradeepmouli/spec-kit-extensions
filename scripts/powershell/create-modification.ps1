@@ -191,6 +191,27 @@ try {
     Copy-Item $modSpecFile $specLink -Force
 }
 
+# Create plan.md and tasks.md as standard symlinks
+$planLink = Join-Path $modDir 'plan.md'
+$tasksLink = Join-Path $modDir 'tasks.md'
+try {
+    if (Test-Path $planLink) { Remove-Item $planLink -Force }
+    if (Test-Path $tasksLink) { Remove-Item $tasksLink -Force }
+    New-Item -ItemType SymbolicLink -Path $planLink -Target 'modification-spec.md' | Out-Null
+    New-Item -ItemType SymbolicLink -Path $tasksLink -Target 'modification-spec.md' | Out-Null
+} catch {
+    Copy-Item $modSpecFile $planLink -Force
+    Copy-Item $modSpecFile $tasksLink -Force
+}
+
+# NOTE:
+# The impact scanner is currently implemented as a bash script
+# located at `.specify/extensions/workflows/modify/scan-impact.sh`.
+# This PowerShell workflow will invoke it via `bash` when available.
+# If bash is not installed or the script is missing, this script will
+# still succeed but will note in the impact file that manual analysis
+# is required.
+
 $impactFile = Join-Path $modDir 'impact-analysis.md'
 $impactScanner = Join-Path $repoRoot '.specify/extensions/workflows/modify/scan-impact.sh'
 

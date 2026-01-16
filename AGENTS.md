@@ -535,13 +535,20 @@ Before submitting a PR to add a new agent:
 
 ## Architecture Notes
 
-### How specify-extend Works
+### How spec-kit-extensions Works
 
+**spec-kit (`specify init`)**:
+1. Creates `.specify/scripts/bash/` (or `/powershell/` with `--script ps`)
+2. Installs core spec-kit scripts and templates
+3. Creates agent-specific command directories (e.g., `.claude/commands/`)
+
+**specify-extend**:
 1. **Detection**: Examines project structure to identify configured agent
-2. **Download**: Fetches latest release from GitHub
-3. **Installation**: Copies command templates to agent-specific directories
-4. **Configuration**: Updates constitution with quality gates
-5. **Patching**: Patches spec-kit's `common.sh` to recognize extension branches
+2. **Download**: Fetches latest spec-kit-extensions release from GitHub
+3. **Installation**: Copies extension command templates to agent-specific directories
+4. **Installation**: Copies extension scripts to `.specify/scripts/bash/` or `/powershell/`
+5. **Configuration**: Updates constitution with quality gates
+6. **Patching**: Patches spec-kit's `common.sh` to recognize extension branch patterns
 
 ### Key Files
 

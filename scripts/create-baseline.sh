@@ -6,7 +6,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if we're in spec-kit repo (scripts/bash/common.sh) or extensions (need to go up to spec-kit)
-if [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
+if [ -f "$SCRIPT_DIR/common.sh" ]; then
+    # Running from same directory (most common case)
+    source "$SCRIPT_DIR/common.sh"
+elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     # Running from spec-kit integrated location: .specify/scripts/bash/
     source "$SCRIPT_DIR/../bash/common.sh"
 elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
@@ -35,14 +38,19 @@ else
     fi
 fi
 
+# Source branch utilities if present (kept for consistency across workflows)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 JSON_MODE=false
 for arg in "$@"; do
     case "$arg" in
         --json) JSON_MODE=true ;;
-        --help|-h) 
+        --help|-h)
             echo "Usage: $0 [--json]"
             echo "Creates baseline documentation for the project state"
-            exit 0 
+            exit 0
             ;;
         *)
             echo "Unknown argument: $arg" >&2
@@ -72,19 +80,19 @@ if [ "$HAS_GIT" = true ]; then
     if [ -d "$SPECS_DIR" ]; then
         # Find first commit that created or modified anything in specs/
         FIRST_SPECKIT_COMMIT=$(git log --reverse --format="%H" -- "$SPECS_DIR" 2>/dev/null | head -1 || echo "")
-        
+
         if [ -n "$FIRST_SPECKIT_COMMIT" ]; then
             HAS_EXISTING_SPECS=true
             # Get the commit before the first spec-kit commit
             BASELINE_COMMIT=$(git rev-parse "${FIRST_SPECKIT_COMMIT}^" 2>/dev/null || echo "")
-            
+
             # If we can't get parent (first commit in repo), use the first commit itself
             if [ -z "$BASELINE_COMMIT" ]; then
                 BASELINE_COMMIT="$FIRST_SPECKIT_COMMIT"
             fi
         fi
     fi
-    
+
     # If no baseline found yet, use current HEAD
     if [ -z "$BASELINE_COMMIT" ]; then
         BASELINE_COMMIT=$(git rev-parse HEAD)
@@ -291,6 +299,11 @@ This document tracks all changes to the project, organized by specification and 
 *Current state document maintained by `/speckit.baseline` workflow*
 EOF
 fi
+
+# Create symlinks for standard spec-kit artifact names
+ln -sf "baseline-spec.md" "$HISTORY_DIR/spec.md"
+ln -sf "current-state.md" "$HISTORY_DIR/plan.md"
+ln -sf "current-state.md" "$HISTORY_DIR/tasks.md"
 
 BASELINE_ID="baseline-$(date +%Y%m%d)"
 

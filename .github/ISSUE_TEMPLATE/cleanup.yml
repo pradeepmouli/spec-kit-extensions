@@ -1,0 +1,133 @@
+name: 🧹 Cleanup Request
+description: Request code cleanup using spec-kit cleanup workflow
+title: "[Cleanup]: "
+labels: ["cleanup", "tech-debt", "spec-kit:cleanup"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Cleanup Request
+
+        This template helps you create a well-structured cleanup request using the spec-kit cleanup workflow.
+        After this issue is created, you can start the cleanup with:
+
+        ```bash
+        /speckit.cleanup "cleanup description"
+        # ... implement ...
+        /speckit.review
+        ```
+
+  - type: input
+    id: area_to_cleanup
+    attributes:
+      label: Area to Clean Up
+      description: Which code/area needs cleanup?
+      placeholder: e.g., "Test utilities", "Deprecated API endpoints"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Cleanup Description
+      description: What cleanup work is needed?
+      placeholder: Describe the cleanup work in detail...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: cleanup_type
+    attributes:
+      label: Cleanup Type
+      description: What kind of cleanup is this?
+      options:
+        - label: Remove dead code
+        - label: Remove deprecated features
+        - label: Clean up unused dependencies
+        - label: Remove temporary/debug code
+        - label: Clean up comments/documentation
+        - label: Consolidate duplicate code
+        - label: Remove obsolete tests
+        - label: Other (specify in description)
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current State
+      description: What is the current messy/problematic state?
+      placeholder: Describe what currently exists that needs cleanup...
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired_state
+    attributes:
+      label: Desired State
+      description: What should the clean state look like?
+      placeholder: Describe the expected state after cleanup...
+    validations:
+      required: true
+
+  - type: textarea
+    id: files_affected
+    attributes:
+      label: Files/Modules Affected
+      description: Which files or modules will be affected?
+      placeholder: |
+        - src/utils/deprecated.ts
+        - tests/old-tests/
+        - package.json
+    validations:
+      required: false
+
+  - type: textarea
+    id: safety_checks
+    attributes:
+      label: Safety Checks
+      description: How will you ensure safe cleanup?
+      placeholder: |
+        - [ ] Verify code is truly unused
+        - [ ] Check for hidden dependencies
+        - [ ] Run full test suite
+        - [ ] Review git blame for context
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk_level
+    attributes:
+      label: Risk Level
+      description: What is the risk of this cleanup?
+      options:
+        - Low - Safe to remove
+        - Medium - Some risk
+        - High - Needs careful review
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: Cleanup Requirements
+      description: Requirements for safe cleanup
+      options:
+        - label: No functional changes (behavior stays the same)
+          required: true
+        - label: All tests still pass
+          required: true
+        - label: No breaking changes
+          required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have verified this code/feature is truly unused
+          required: true
+        - label: I have checked for dependencies
+          required: true
+        - label: I am willing to help with this cleanup
+          required: false

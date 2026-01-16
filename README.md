@@ -12,11 +12,15 @@
 
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
+- **`/speckit.enhance`** - Make minor enhancements with streamlined single-doc workflow
 - **`/speckit.modify`** - Modify existing features with automatic impact analysis
 - **`/speckit.refactor`** - Improve code quality with metrics tracking
 - **`/speckit.hotfix`** - Handle production emergencies with expedited process
 - **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
 - **`/speckit.cleanup`** - Clean up codebase with automated scripts
+
+### Command Extensions (provide commands without workflow structure)
+
 - **`/speckit.review`** - Review completed work with structured feedback
 - **`/speckit.story-to-issue`** - Create GitHub issue per story with tasks as checkboxes
 ## Why Use These Extensions?
@@ -32,6 +36,7 @@ With vanilla spec-kit, you get structure for ~25% of your work (new features), b
 - **Feature removal**: No plan → angry users
 - **Codebase Cleanup**: No automation → manual effort
 - **Work Review**: No structure → inconsistent feedback
+- **Document Integration**: Manual copy-paste → context lost, inconsistent
 
 ### The Solution
 
@@ -42,6 +47,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | **New Feature** | ✅ `/speckit.specify` workflow | ✅ Same |
 | **Project Baseline** | ❌ Ad-hoc | ✅ `/speckit.baseline` with comprehensive docs |
 | **Bug Fix** | ❌ Ad-hoc | ✅ `/speckit.bugfix` with regression tests |
+| **Minor Enhancement** | ❌ Ad-hoc | ✅ `/speckit.enhance` with streamlined planning |
 | **Modify Feature** | ❌ Ad-hoc | ✅ `/speckit.modify` with impact analysis |
 | **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
 | **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
@@ -72,7 +78,44 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Installation
 
-**Recommended: Use specify-extend (Automatic)**
+spec-kit-extensions works with any AI agent that supports spec-kit. Installation is a two-step process:
+
+**Step 1: Initialize spec-kit** (creates `.specify/` structure):
+```bash
+specify init --here --ai claude
+# or for PowerShell: specify init --here --ai claude --script ps
+```
+
+**Step 2: Install extensions**:
+```bash
+specify-extend --all
+```
+
+This will:
+- Detect your configured AI agent
+- Install all 8 workflow extensions and 1 command extension into `.specify/`
+- Set up quality gates
+- Configure branch naming patterns
+
+**Optional: Install GitHub integration**:
+```bash
+specify-extend --all --github-integration
+```
+
+The `--github-integration` flag will interactively prompt you to select GitHub features:
+- **Review enforcement workflows** - Automatically require reviews before merge
+- **Review reminder workflow** - Auto-comment on PRs with instructions
+- **PR template** - Structured PR template with review checklist
+- **Issue templates** - 9 templates for all workflow types
+- **GitHub Copilot config** - PR review configuration
+- **CODEOWNERS template** - Automatic reviewer assignment
+- **Documentation** - Complete guide for all features
+
+You can select individual features or install all with `all`. Non-interactive: `specify-extend --all --github-integration --no-interactive`
+
+For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
+
+**Alternative: Install the CLI tool manually**
 ```bash
 # 1. Initialize spec-kit in your project
 cd your-project
@@ -94,6 +137,17 @@ specify-extend --all --script ps  # Optional: install PowerShell workflows
 # Or install specific extensions
 specify-extend bugfix modify refactor
 ```
+
+**Optional: Fetch upstream spec-kit for reference**
+
+If you want the upstream spec-kit documentation and scripts on hand (purely for reference—our tools do not read from it), fetch a shallow checkout into `spec-kit/`:
+
+```bash
+scripts/fetch-spec-kit.sh            # defaults to main
+scripts/fetch-spec-kit.sh v0.12.0    # or any tag/branch
+```
+
+The fetched `spec-kit/` directory is .gitignored to keep your working tree clean.
 
 The `specify-extend` tool automatically:
 - ✅ Downloads latest extensions from GitHub
@@ -118,7 +172,7 @@ This creates a one-time prompt that uses your AI agent to intelligently merge qu
 
 See [specify-extend documentation](docs/specify-extend.md) for details.
 
-**Alternative: Manual Installation**
+**Manual install (copy files)**
 
 If you prefer manual installation or need more control:
 
@@ -132,6 +186,7 @@ cd your-project
 cp -r /tmp/extensions/extensions/* .specify/extensions/
 cp -r /tmp/extensions/scripts/* .specify/scripts/bash/
 # Optional (PowerShell): copy only if you want PowerShell workflows
+mkdir -p .specify/scripts/powershell/
 cp -r /tmp/extensions/scripts/powershell/* .specify/scripts/powershell/
 cp -r /tmp/extensions/commands/* .claude/commands/
 
@@ -173,7 +228,10 @@ Starting with spec-kit?
 └─ Use `/speckit.baseline` to establish project context
 
 Building something new?
-└─ Use `/speckit.specify "description"`
+├─ Major feature (multi-phase, complex)?
+│  └─ Use `/speckit.specify "description"`
+└─ Minor enhancement (simple, quick)?
+   └─ Use `/speckit.enhance "description"`
 
 Fixing broken behavior?
 ├─ Production emergency?
@@ -274,6 +332,7 @@ Creating GitHub issues?
 | **Feature** | `/speckit.specify "..."` | Full spec + design | TDD (test before code) |
 | **Baseline** | `/speckit.baseline` | Context tracking | No tests (doc only) |
 | **Bugfix** | `/speckit.bugfix "..."` | Regression test | Test before fix |
+| **Enhance** | `/speckit.enhance "..."` | Single-doc workflow | Tests for new behavior |
 | **Modify** | `/speckit.modify 014 "..."` | Impact analysis | Update affected tests |
 | **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
 | **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
@@ -294,15 +353,26 @@ Creating GitHub issues?
 
 ### AI Agents
 
-These extensions work with any AI agent that supports spec-kit:
+These extensions work with any AI agent that supports spec-kit. Command files are installed per agent:
 
-- ✅ **Claude Code** (fully tested, native commands)
-- ✅ **GitHub Copilot** (via `.github/copilot-instructions.md`)
-- ✅ **Cursor** (via `.cursorrules`)
-- ✅ **Windsurf** (via project rules)
-- ✅ **Gemini CLI** (via specify CLI)
-- ✅ **Other CLI tools** (Qwen, opencode, Codex)
-- ✅ **Any AI agent** (universal fallback via bash scripts; PowerShell optional with --script ps)
+| Agent | Command directory | Format |
+|-------|-------------------|--------|
+| Claude Code | `.claude/commands` | Markdown |
+| GitHub Copilot | `.github/agents` | Markdown |
+| Cursor | `.cursor/commands` | Markdown |
+| Windsurf | `.windsurf/workflows` | Markdown |
+| Gemini CLI | `.gemini/commands` | TOML |
+| Qwen Code | `.qwen/commands` | TOML |
+| opencode | `.opencode/commands` | Markdown |
+| Codex CLI | `.codex/commands` | Markdown |
+| Amazon Q Developer CLI | `.q/commands` | Markdown |
+| Manual/Generic | None (use scripts directly) | N/A |
+
+Detection also recognizes:
+- Copilot: `.github/copilot-instructions.md`
+- Cursor: `.cursorrules`
+
+If no agent is detected, you can pass `--agent` explicitly or use the scripts directly.
 
 **See [AI-AGENTS.md](AI-AGENTS.md) for detailed setup guides for each agent.**
 
@@ -318,13 +388,172 @@ These extensions work with any AI agent that supports spec-kit:
 
 This project has two independently versioned components:
 
-- **Extension Templates** (v2.1.1) - Workflow templates, commands, and scripts
+- **Extension Templates** (v2.5.1) - Workflow templates, commands, and scripts
   - See [CHANGELOG.md](CHANGELOG.md) for template version history
-- **CLI Tool** (v1.0.1) - `specify-extend` installation tool
+- **CLI Tool** (v1.5.2) - `specify-extend` installation tool
   - Check version with `specify-extend --version`
   - See [CHANGELOG.md](CHANGELOG.md) for CLI version history
 
 Both components are released together but versioned separately to allow independent updates.
+
+## Optional GitHub Integration
+
+**New in vX.Y.Z**: spec-kit-extensions now includes optional GitHub workflows, issue templates, and AI agent configuration to enhance your development workflow.
+
+### Features
+
+- **🔒 Review Enforcement** - Automatically require code reviews before merging spec-kit branches
+- **💬 Review Reminders** - Auto-comment on PRs with helpful review instructions
+- **📝 PR Template** - Structured PR template with review checklist
+- **👥 CODEOWNERS** - Automatic reviewer assignment based on workflow type
+- **🤖 Copilot for PRs** - GitHub Copilot integration for AI-assisted code review
+- **📋 Issue Templates** - Structured templates for all 9 workflow types
+- **✅ Review Helper** - Tools to check review status and validate branches
+
+### What's Included
+
+1. **GitHub Actions Workflows** (3 workflows)
+   - `spec-kit-review-required.yml` - Enforces review completion before merge
+   - `spec-kit-review-helper.yml` - Manual tools for checking review status
+   - `spec-kit-review-reminder.yml` - Auto-comments on PRs with review instructions
+
+2. **GitHub Code Review Integration**
+   - `pull_request_template.md` - Structured PR template with review checklist
+   - `CODEOWNERS.example` - Automatic reviewer assignment configuration
+   - `copilot.yml` - GitHub Copilot for PRs configuration with spec-kit awareness
+
+3. **Issue Templates** (9 templates)
+   - Feature Request, Bug Report, Enhancement Request
+   - Modification Request, Refactoring Request, Hotfix Request
+   - Deprecation Request, Cleanup Request, Baseline/Documentation Request
+
+4. **AI Agent Configuration**
+   - `copilot-instructions.md` - GitHub Copilot workflow guidance
+   - Includes review requirements and best practices
+
+### Installation (Optional)
+
+**Option 1: Automated Installation (Recommended)**
+
+Use the `--github-integration` flag during installation:
+
+```bash
+specify-extend --all --github-integration
+```
+
+This will:
+- Interactively prompt you to select which GitHub features to install
+- Download and install selected features from the latest release
+- Set up the `.github/` directory automatically
+
+Available features to select:
+- `review-enforcement` - Review requirement enforcement workflow
+- `review-reminder` - PR review reminder workflow
+- `review-helper` - Manual review checking tools
+- `pr-template` - Pull request template
+- `issue-templates` - 9 issue templates for all workflows
+- `copilot-config` - GitHub Copilot configuration
+- `codeowners` - CODEOWNERS template
+- `documentation` - Complete docs
+- `all` - Install everything
+
+Non-interactive mode (installs all features):
+```bash
+specify-extend --all --github-integration --no-interactive
+```
+
+**Option 2: Manual Installation**
+
+If you prefer manual control, first obtain the spec-kit-extensions files:
+
+```bash
+# Clone the spec-kit-extensions repository
+git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+
+# Or download a specific release
+# wget https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/vX.Y.Z.tar.gz
+# tar -xzf vX.Y.Z.tar.gz
+```
+
+Then copy the desired files to your project:
+
+```bash
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Copy workflows (recommended for review enforcement)
+cp /tmp/spec-kit-extensions/.github/workflows/spec-kit-review-*.yml .github/workflows/
+
+# Copy PR template (recommended for structured PRs)
+cp /tmp/spec-kit-extensions/.github/pull_request_template.md .github/
+
+# Copy issue templates (optional)
+cp -r /tmp/spec-kit-extensions/.github/ISSUE_TEMPLATE .github/
+
+# Copy GitHub Copilot configuration (optional, for Copilot users)
+cp /tmp/spec-kit-extensions/.github/copilot-instructions.md .github/
+cp /tmp/spec-kit-extensions/.github/copilot.yml.example .github/
+# NOTE: copilot.yml.example is instructional. Configure it for your GitHub Copilot
+# setup according to the actual Copilot configuration schema, then rename to
+# copilot.yml to activate (if applicable to your Copilot version).
+
+# Copy CODEOWNERS template (optional, for teams)
+cp /tmp/spec-kit-extensions/.github/CODEOWNERS.example .github/CODEOWNERS
+# IMPORTANT: Edit .github/CODEOWNERS to replace placeholder values
+
+# Commit the files
+git add .github/
+git commit -m "Add spec-kit GitHub workflows and code review integration"
+git push
+```
+
+### Usage
+
+**Complete Review Workflow**:
+1. Implement your work using spec-kit workflows
+2. Run `/speckit.review` before creating a PR (REQUIRED)
+3. Commit the review file to your branch
+4. Create PR - fill out the PR template checklist
+5. GitHub Actions automatically:
+   - Post reminder comment with review instructions
+   - Validate review file exists and is approved
+   - Add appropriate labels
+   - Request reviewers (via CODEOWNERS)
+   - Block merge if review missing or not approved
+6. GitHub Copilot assists with PR review (if configured)
+7. Human reviewers perform additional review
+8. Merge when both AI review + human review approved
+
+**Issue Templates**:
+1. Click "New Issue" → Select appropriate template
+2. Fill out structured form
+3. Use suggested workflow commands to start implementation
+
+**Review Helper**:
+- Go to Actions → Spec-Kit Review Helper → Run workflow
+- Check status, list pending reviews, or validate branches
+
+**GitHub Copilot for PRs** (if configured):
+- Ask Copilot to "Review this PR for spec-kit workflow compliance"
+- Copilot checks review completion, specification alignment, and code quality
+- Works alongside `/speckit.review` for comprehensive coverage
+
+### Documentation
+
+See [.github/README.md](.github/README.md) for complete documentation including:
+- Detailed workflow descriptions
+- Configuration options
+- Troubleshooting guide
+- Examples and best practices
+
+### Benefits
+
+- **Consistent Quality** - All code reviewed before merge
+- **Automated Enforcement** - No manual checking needed
+- **Better Documentation** - Reviews committed with code
+- **Structured Issues** - Complete information from the start
+
+**Note**: These are entirely optional. Use what helps your workflow!
 
 ## Project Structure
 
@@ -340,24 +569,27 @@ your-project/
 │   │   └── workflows/
 │   │       ├── baseline/
 │   │       ├── bugfix/
+│   │       ├── enhance/
 │   │       ├── modify/
 │   │       ├── refactor/
 │   │       ├── hotfix/
 │   │       ├── deprecate/
 │   │       ├── cleanup/
 │   │       └── review/
-│   ├── scripts/bash/
-│   │   ├── create-baseline.sh    # Extension scripts
+│   ├── scripts/bash/            # Bash scripts (Linux/Mac/Git Bash)
+│   │   ├── create-baseline.sh
 │   │   ├── create-bugfix.sh
+│   │   ├── create-enhance.sh
 │   │   ├── create-modification.sh
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
 │   │   ├── create-deprecate.sh
 │   │   ├── create-cleanup.sh
 │   │   └── mark-task-status.sh
-│   ├── scripts/powershell/      # Optional: installed with --script ps
-│   │   ├── create-baseline.ps1   # Extension scripts (PowerShell)
+│   ├── scripts/powershell/      # PowerShell scripts (Windows)
+│   │   ├── create-baseline.ps1
 │   │   ├── create-bugfix.ps1
+│   │   ├── create-enhance.ps1
 │   │   ├── create-modification.ps1
 │   │   ├── create-refactor.ps1
 │   │   ├── create-hotfix.ps1
@@ -365,24 +597,28 @@ your-project/
 │   │   └── create-cleanup.ps1
 │   └── memory/
 │       └── constitution.md      # Updated with workflow quality gates
-└── .claude/commands/            # If using Claude Code
-    ├── baseline.md
-    ├── bugfix.md
-    ├── modify.md
-    ├── refactor.md
-    ├── hotfix.md
-    ├── deprecate.md
-    └── review.md
+└── .claude/commands/            # Example: Claude Code command files
+    ├── speckit.baseline.md
+    ├── speckit.bugfix.md
+    ├── speckit.enhance.md
+    ├── speckit.modify.md
+    ├── speckit.refactor.md
+    ├── speckit.hotfix.md
+    ├── speckit.deprecate.md
+    ├── speckit.cleanup.md
+    └── speckit.review.md
 ```
+
+**Note**: `specify-extend` installs **either** bash or PowerShell scripts based on `--script` (default: bash). Bash scripts work on Linux, macOS, and Windows (via Git Bash or WSL).
 
 ## FAQ
 
-### Do I need to use all 7 workflows?
+### Do I need to use all 9 workflows?
 
 No! Enable only what you need via `.specify/extensions/enabled.conf`. Common combinations:
 - **Minimal**: Just `/bugfix` (most teams need this)
-- **Standard**: `/bugfix` + `/modify` (covers most scenarios)
-- **Complete**: All 6 workflows (full lifecycle coverage + maintenance)
+- **Standard**: `/bugfix` + `/enhance` + `/modify` (covers most scenarios)
+- **Complete**: All 9 workflows (full lifecycle coverage + maintenance)
 
 ### Can I customize the workflows?
 

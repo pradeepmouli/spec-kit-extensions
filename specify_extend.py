@@ -18,10 +18,12 @@ Usage:
     python specify_extend.py bugfix modify refactor
     python specify_extend.py --agent claude --all
     python specify_extend.py --dry-run --all
+    python specify_extend.py --all --github-integration
 
 Or install globally:
     uv tool install --from specify_extend.py specify-extend
     specify-extend --all
+    specify-extend --all --github-integration
 """
 
 import os
@@ -43,7 +45,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.4.4"
+__version__ = "1.5.8"
 
 # Initialize Rich console
 console = Console()
@@ -60,7 +62,14 @@ GITHUB_REPO_NAME = "spec-kit-extensions"
 GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
-AVAILABLE_EXTENSIONS = ["baseline", "bugfix", "modify", "refactor", "hotfix", "deprecate", "cleanup", "review", "story-to-issue"]
+# Workflow extensions: Create workflow directories with specs, plans, and tasks
+WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "story-to-issue"]
+
+# Command extensions: Provide commands without creating workflow directories
+COMMAND_EXTENSIONS = ["review", "incorporate"]
+
+# All available extensions for validation and documentation
+AVAILABLE_EXTENSIONS = WORKFLOW_EXTENSIONS + COMMAND_EXTENSIONS
 
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
@@ -240,6 +249,20 @@ def get_powershell_script_name(extension: str) -> str:
     if extension == "modify":
         return "create-modification.ps1"
     return f"create-{extension}.ps1"
+
+
+def is_workflow_extension(extension: str) -> bool:
+    """Check if an extension is a workflow extension.
+
+    Workflow extensions create workflow directories with specs, plans, and tasks.
+    Command extensions provide commands without creating workflow structures.
+    """
+    return extension in WORKFLOW_EXTENSIONS
+
+
+def is_command_extension(extension: str) -> bool:
+    """Check if an extension is a command-only extension (not a workflow)."""
+    return extension in COMMAND_EXTENSIONS
 
 
 def roman_to_int(roman: str) -> int:
@@ -529,7 +552,22 @@ def get_repo_root() -> Path:
             text=True,
             check=True,
         )
-        return Path(result.stdout.strip())
+        path_str = result.stdout.strip()
+
+        # On Windows with Git Bash, git returns Unix-style paths like /c/Users/...
+        # Convert these to Windows format (C:/Users/...) for Python's Path
+        if sys.platform == "win32":
+            # Normalize backslashes to forward slashes first
+            path_str = path_str.replace('\\', '/')
+
+            # Match /c, /d, /c/... or /d/... etc. (Git Bash format)
+            match = re.match(r'^/([a-zA-Z])(/.*)?$', path_str)
+            if match:
+                drive = match.group(1).upper()
+                rest = match.group(2) or "/"
+                path_str = f"{drive}:{rest}"
+
+        return Path(path_str)
     except subprocess.CalledProcessError:
         return Path.cwd()
 
@@ -559,12 +597,16 @@ def validate_speckit_installation(repo_root: Path) -> bool:
 
 
 def download_latest_release(temp_dir: Path, github_token: str = None) -> Optional[Path]:
-    """Download the latest release from GitHub"""
+    """Download the latest template release from GitHub
+
+    Fetches the latest templates-v* tag from the repository, as templates
+    are now versioned separately from the CLI tool.
+    """
 
     with console.status("[bold blue]Downloading latest extensions...") as status:
         try:
-            # Get latest release info
-            url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/releases/latest"
+            # Get all tags to find latest templates-v* tag
+            url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/tags"
             response = client.get(
                 url,
                 timeout=30,
@@ -577,14 +619,22 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
                 return None
 
             try:
-                release_data = response.json()
+                tags_data = response.json()
             except ValueError as je:
-                console.print(f"[red]Failed to parse release JSON:[/red] {je}")
+                console.print(f"[red]Failed to parse tags JSON:[/red] {je}")
                 return None
 
-            tag_name = release_data["tag_name"]
+            # Find latest templates-v* tag
+            template_tags = [tag for tag in tags_data if tag["name"].startswith("templates-v")]
 
-            console.print(f"[blue]ℹ[/blue] Latest version: {tag_name}")
+            if not template_tags:
+                console.print("[red]No template tags found (looking for templates-v* pattern)[/red]")
+                return None
+
+            # Get the first one (GitHub returns tags in reverse chronological order)
+            tag_name = template_tags[0]["name"]
+
+            console.print(f"[blue]ℹ[/blue] Latest template version: {tag_name}")
 
             # Download zipball
             zipball_url = f"https://github.com/{GITHUB_REPO}/archive/refs/tags/{tag_name}.zip"
@@ -837,37 +887,45 @@ def install_extension_files(
         workflows_dir.mkdir(exist_ok=True)
 
     for ext in extensions:
+        # Only workflow extensions have workflow directories
+        if not is_workflow_extension(ext):
+            continue
+
         source_workflow = source_extensions / "workflows" / ext
         if source_workflow.exists():
             if not dry_run:
                 dest_workflow = workflows_dir / ext
                 if dest_workflow.exists():
-                    shutil.rmtree(dest_workflow)
+                    if dest_workflow.is_symlink():
+                        dest_workflow.unlink()
+                    else:
+                        shutil.rmtree(dest_workflow)
                 shutil.copytree(source_workflow, dest_workflow)
             console.print(f"[green]✓[/green] Copied {ext} workflow templates")
         else:
             console.print(f"[yellow]⚠[/yellow] Workflow directory for {ext} not found")
 
-    # Copy bash scripts
-    source_scripts = source_dir / "scripts"
-    if source_scripts.exists():
-        for ext in extensions:
-            script_name = get_script_name(ext)
-            source_script = source_scripts / script_name
-
-            if source_script.exists():
-                if not dry_run:
-                    dest_script = scripts_dir / script_name
-                    shutil.copy(source_script, dest_script)
-                    dest_script.chmod(0o755)  # Make executable
-                console.print(f"[green]✓[/green] Copied {script_name} script")
-            else:
-                console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
-
+    # Copy scripts based on selected script type (consistent with spec-kit behavior)
     if install_powershell:
+        # Install PowerShell scripts only
         source_powershell_scripts = source_dir / "scripts" / "powershell"
         if source_powershell_scripts.exists():
+            # Always copy shared helpers (e.g., BranchUtils.ps1)
+            ps_helpers = ["BranchUtils.ps1"]
+            for helper in ps_helpers:
+                helper_path = source_powershell_scripts / helper
+                if helper_path.exists():
+                    if not dry_run:
+                        dest_helper = powershell_scripts_dir / helper
+                        shutil.copy(helper_path, dest_helper)
+                        dest_helper.chmod(0o755)
+                    console.print(f"[green]✓[/green] Copied {helper} helper")
+
             for ext in extensions:
+                # Only workflow extensions have create scripts
+                if not is_workflow_extension(ext):
+                    continue
+
                 script_name = get_powershell_script_name(ext)
                 source_script = source_powershell_scripts / script_name
 
@@ -875,6 +933,37 @@ def install_extension_files(
                     if not dry_run:
                         dest_script = powershell_scripts_dir / script_name
                         shutil.copy(source_script, dest_script)
+                    console.print(f"[green]✓[/green] Copied {script_name} script")
+                else:
+                    console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
+    else:
+        # Install bash scripts only
+        source_scripts = source_dir / "scripts"
+        if source_scripts.exists():
+            # Always copy shared helpers (e.g., branch-utils.sh)
+            shared_helpers = ["branch-utils.sh"]
+            for helper in shared_helpers:
+                helper_path = source_scripts / helper
+                if helper_path.exists():
+                    if not dry_run:
+                        dest_helper = scripts_dir / helper
+                        shutil.copy(helper_path, dest_helper)
+                        dest_helper.chmod(0o755)
+                    console.print(f"[green]✓[/green] Copied {helper} helper")
+
+            for ext in extensions:
+                # Only workflow extensions have create scripts
+                if not is_workflow_extension(ext):
+                    continue
+
+                script_name = get_script_name(ext)
+                source_script = source_scripts / script_name
+
+                if source_script.exists():
+                    if not dry_run:
+                        dest_script = scripts_dir / script_name
+                        shutil.copy(source_script, dest_script)
+                        dest_script.chmod(0o755)  # Make executable
                     console.print(f"[green]✓[/green] Copied {script_name} script")
                 else:
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
@@ -1466,9 +1555,17 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
    - Avoid duplicating content that already exists
    - Ensure smooth integration without jarring transitions
 
-4. **Self-destruct**: After updating the constitution, DELETE both files
-   - Prompt: `.github/prompts/speckit.enhance-constitution.prompt.md`
-   - Agent: `.github/agents/speckit.enhance-constitution.md`
+4. **Self-destruct**: After updating the constitution, DELETE all enhance-constitution files
+   - Delete `.github/prompts/speckit.enhance-constitution.prompt.md` (if exists)
+   - Delete `.github/agents/speckit.enhance-constitution.md` (if exists)
+   - Delete any `speckit.enhance-constitution.*` files in agent command directories:
+     * `.claude/commands/speckit.enhance-constitution.md`
+     * `.cursor/commands/speckit.enhance-constitution.md`
+     * `.windsurf/workflows/speckit.enhance-constitution.md`
+     * `.opencode/prompts/speckit.enhance-constitution.md`
+     * `.amazon-q/commands/speckit.enhance-constitution.md`
+     * `.codex/commands/speckit.enhance-constitution.md`
+     * Or any other agent directories in use
    - This prevents accidental re-use
 
 ## Template Content to Integrate
@@ -1484,10 +1581,13 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 - **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
 - **No duplication**: If workflow guidance already exists, enhance rather than duplicate
 - **One-time only**: This prompt deletes itself after use to prevent confusion
+- **Multi-agent setups**: If you have multiple agents configured, delete enhance-constitution files from all agent directories
 
 ---
 
-**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+**After completion**:
+1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
+2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
     else:
         # For other agents (Claude, Cursor, etc.), use command format with frontmatter
@@ -1515,8 +1615,17 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
    - Avoid duplicating content that already exists
    - Ensure smooth integration without jarring transitions
 
-4. **Self-destruct**: After updating the constitution, DELETE this command file
-   - Location: `{file_location}`
+4. **Self-destruct**: After updating the constitution, DELETE this command file and any duplicates
+   - Delete this file: `{file_location}`
+   - Also check and delete any other enhance-constitution files in other agent directories:
+     * `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.md`
+     * `.claude/commands/speckit.enhance-constitution.md`
+     * `.cursor/commands/speckit.enhance-constitution.md`
+     * `.windsurf/workflows/speckit.enhance-constitution.md`
+     * `.opencode/prompts/speckit.enhance-constitution.md`
+     * `.amazon-q/commands/speckit.enhance-constitution.md`
+     * `.codex/commands/speckit.enhance-constitution.md`
+     * Or any other agent command directories in your project
    - This prevents accidental re-use
 
 ## Template Content to Integrate
@@ -1529,7 +1638,7 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 
 1. First, run `/specify.constitution` with instructions to merge the above template content intelligently
 2. Review the updated constitution to ensure quality
-3. Then delete this command file: `{file_location}`
+3. Then delete ALL enhance-constitution files from all agent directories (see self-destruct instructions above)
 
 ## Important Notes
 
@@ -1538,10 +1647,13 @@ You are enhancing the project's constitution file (`.specify/memory/constitution
 - **Section numbering**: Continue existing numbering scheme (Roman numerals, numeric, or none)
 - **No duplication**: If workflow guidance already exists, enhance rather than duplicate
 - **One-time only**: This command deletes itself after use to prevent confusion
+- **Multi-agent setups**: If you have multiple agents configured, delete enhance-constitution files from all agent directories
 
 ---
 
-**After completion**: Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated.
+**After completion**:
+1. Verify that `.specify/memory/constitution.md` contains both the original content and the new workflow quality gates, properly integrated
+2. Delete ALL enhance-constitution files from all agent/prompt directories
 """
 
     if not dry_run:
@@ -1696,10 +1808,28 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
     if not dry_run:
         content = common_sh.read_text()
 
-        # Check if already patched
+        # Check if already patched AND up-to-date
         if "check_feature_branch_old()" in content:
-            console.print("[blue]ℹ[/blue] common.sh already patched for extensions")
-            return
+            # Check if patch includes all workflow patterns (enhance, cleanup, baseline) AND agent prefixes
+            if ('"^enhance/[0-9]{3}-"' in content and '"^cleanup/[0-9]{3}-"' in content and
+                '"^baseline/[0-9]{3}-"' in content and '"claude/"' in content):
+                console.print("[blue]ℹ[/blue] common.sh already patched with latest patterns")
+                return
+            else:
+                console.print("[yellow]⚠[/yellow] common.sh has outdated patch, updating...")
+                # Restore from backup or remove old patched function
+                if (common_sh.parent / "common.sh.backup").exists():
+                    backup_file = common_sh.parent / "common.sh.backup"
+                    content = backup_file.read_text()
+                    console.print(f"  [dim]Restored from backup: {backup_file}[/dim]")
+                else:
+                    # Remove the old patched function by restoring check_feature_branch_old
+                    content = content.replace("check_feature_branch_old()", "check_feature_branch()", 1)
+                    # Find and remove the extended check_feature_branch function
+                    import re
+                    pattern = r'\n# Extended branch validation supporting spec-kit-extensions\ncheck_feature_branch\(\) \{.*?\n\}'
+                    content = re.sub(pattern, '', content, flags=re.DOTALL)
+                    console.print("  [dim]Removed old patched function[/dim]")
 
         # New function to append at the end
         # Supports both parameterized and non-parameterized signatures
@@ -1726,13 +1856,35 @@ check_feature_branch() {
         return 0
     fi
 
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    local agent_prefixes=(
+        "claude/"
+        "copilot/"
+        "cursor/"
+        "vscode/"
+        "windsurf/"
+        "gemini/"
+        "qwen/"
+    )
+
+    # Check if branch starts with any agent prefix
+    for prefix in "${agent_prefixes[@]}"; do
+        if [[ "$branch" == "$prefix"* ]]; then
+            return 0
+        fi
+    done
+
     # Extension branch patterns (spec-kit-extensions)
     local extension_patterns=(
+        "^baseline/[0-9]{3}-"
         "^bugfix/[0-9]{3}-"
+        "^enhance/[0-9]{3}-"
         "^modify/[0-9]{3}\\^[0-9]{3}-"
         "^refactor/[0-9]{3}-"
         "^hotfix/[0-9]{3}-"
         "^deprecate/[0-9]{3}-"
+        "^cleanup/[0-9]{3}-"
     )
 
     # Check extension patterns first
@@ -1751,11 +1903,15 @@ check_feature_branch() {
     echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
     echo "Feature branches must follow one of these patterns:" >&2
     echo "  Standard:    ###-description (e.g., 001-add-user-authentication)" >&2
+    echo "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)" >&2
+    echo "  Baseline:    baseline/###-description" >&2
     echo "  Bugfix:      bugfix/###-description" >&2
+    echo "  Enhance:     enhance/###-description" >&2
     echo "  Modify:      modify/###^###-description" >&2
     echo "  Refactor:    refactor/###-description" >&2
     echo "  Hotfix:      hotfix/###-description" >&2
     echo "  Deprecate:   deprecate/###-description" >&2
+    echo "  Cleanup:     cleanup/###-description" >&2
     return 1
 }'''
 
@@ -1786,6 +1942,183 @@ check_feature_branch() {
     else:
         console.print("  [dim]Would patch common.sh for extension branch support[/dim]")
 
+
+def patch_common_ps1(repo_root: Path, dry_run: bool = False) -> None:
+    """Patch spec-kit's common.ps1 to support extension branch patterns.
+
+    Attempts to locate the branch validation function and wrap it with an
+    extended version that recognizes spec-kit-extensions branch patterns.
+
+    Strategy mirrors patch_common_sh():
+    - Detect and backup original file
+    - Rename original function to <Name>_Old
+    - Append new function with extended patterns and helpful errors
+    """
+    console.print("[blue]ℹ[/blue] Patching common.ps1 for extension branch support...")
+
+    common_ps1 = repo_root / ".specify" / "scripts" / "powershell" / "common.ps1"
+
+    if not common_ps1.exists():
+        console.print("[yellow]⚠[/yellow] common.ps1 not found, skipping patch")
+        return
+
+    content = common_ps1.read_text() if not dry_run else ""
+
+    # Detect if already patched with our marker
+    if not dry_run and "# Extended branch validation supporting spec-kit-extensions (PowerShell)" in content:
+        # Check if latest patterns included (including agent prefixes)
+        latest_required = [
+            r"^baseline/[0-9]{3}-",
+            r"^enhance/[0-9]{3}-",
+            r"^cleanup/[0-9]{3}-",
+            "'claude/'",
+        ]
+        if all(p in content for p in latest_required):
+            console.print("[blue]ℹ[/blue] common.ps1 already patched with latest patterns")
+            return
+        else:
+            console.print("[yellow]⚠[/yellow] common.ps1 has outdated patch, updating...")
+            # Try to restore from backup if available; otherwise proceed and replace later
+            backup_file = common_ps1.with_suffix('.ps1.backup')
+            if backup_file.exists():
+                content = backup_file.read_text()
+                console.print(f"  [dim]Restored from backup: {backup_file}[/dim]")
+
+    # Candidate function names to patch (best-effort)
+    candidate_names = [
+        "Check-FeatureBranch",
+        "Test-FeatureBranch",
+        "Validate-FeatureBranch",
+        "Assert-FeatureBranch",
+    ]
+
+    import re
+
+    def find_function(name: str) -> bool:
+        pattern = re.compile(rf"\bfunction\s+{re.escape(name)}\s*\(")
+        # Support both styles: function Name {  OR  function Name()
+        pattern_alt = re.compile(rf"\bfunction\s+{re.escape(name)}\s*\{{", re.MULTILINE)
+        return bool(pattern.search(content) or pattern_alt.search(content))
+
+    func_name = None
+    if not dry_run:
+        for n in candidate_names:
+            if find_function(n):
+                func_name = n
+                break
+
+    if not dry_run and not func_name:
+        console.print("[yellow]⚠[/yellow] Branch validation function not found in common.ps1; skipping patch")
+        return
+
+    # Build new function text
+    new_function = f'''
+# Extended branch validation supporting spec-kit-extensions (PowerShell)
+function {func_name} {{
+    param(
+        [string]$Branch,
+        [bool]$HasGitRepo = $false
+    )
+
+    if (-not $Branch) {{
+        try {{
+            $null = git rev-parse --git-dir 2>$null
+            if ($LASTEXITCODE -eq 0) {{
+                $Branch = (git branch --show-current).Trim()
+                $HasGitRepo = $true
+            }} else {{
+                return $true
+            }}
+        }} catch {{
+            return $true
+        }}
+    }}
+
+    if (-not $HasGitRepo -and $HasGitRepo -ne $true) {{
+        Write-Warning "[specify] Warning: Git repository not detected; skipped branch validation"
+        return $true
+    }}
+
+    # AI agent branch patterns - allow any branch created by AI agents
+    # These branches bypass validation as agents manage their own branch naming
+    $agentPrefixes = @(
+        'claude/',
+        'copilot/',
+        'cursor/',
+        'vscode/',
+        'windsurf/',
+        'gemini/',
+        'qwen/'
+    )
+
+    foreach ($prefix in $agentPrefixes) {{
+        if ($Branch.StartsWith($prefix)) {{ return $true }}
+    }}
+
+    $extensionPatterns = @(
+        '^baseline/[0-9]{3}-',
+        '^bugfix/[0-9]{3}-',
+        '^enhance/[0-9]{3}-',
+        '^modify/[0-9]{3}\^[0-9]{3}-',
+        '^refactor/[0-9]{3}-',
+        '^hotfix/[0-9]{3}-',
+        '^deprecate/[0-9]{3}-',
+        '^cleanup/[0-9]{3}-'
+    )
+
+    foreach ($p in $extensionPatterns) {{
+        if ($Branch -match $p) {{ return $true }}
+    }}
+
+    if ($Branch -match '^[0-9]{3}-') {{ return $true }}
+
+    Write-Error "ERROR: Not on a feature branch. Current branch: $Branch"
+    Write-Output "Feature branches must follow one of these patterns:"
+    Write-Output "  Standard:    ###-description (e.g., 001-add-user-authentication)"
+    Write-Output "  Agent:       agent/description (e.g., claude/add-feature, copilot/fix-bug)"
+    Write-Output "  Baseline:    baseline/###-description"
+    Write-Output "  Bugfix:      bugfix/###-description"
+    Write-Output "  Enhance:     enhance/###-description"
+    Write-Output "  Modify:      modify/###^###-description"
+    Write-Output "  Refactor:    refactor/###-description"
+    Write-Output "  Hotfix:      hotfix/###-description"
+    Write-Output "  Deprecate:   deprecate/###-description"
+    Write-Output "  Cleanup:     cleanup/###-description"
+    return $false
+}}
+'''
+
+    if not dry_run:
+        # Backup
+        backup_file = common_ps1.with_suffix('.ps1.backup')
+        backup_file.write_text(content)
+
+        # Rename original function to <Name>_Old (first occurrence)
+        # Support both styles
+        content_renamed = re.sub(
+            rf"\bfunction\s+{re.escape(func_name)}\s*\(",
+            f"function {func_name}_Old(",
+            content,
+            count=1,
+            flags=re.MULTILINE,
+        )
+        if content_renamed == content:
+            content_renamed = re.sub(
+                rf"\bfunction\s+{re.escape(func_name)}\s*\{{",
+                f"function {func_name}_Old {{",
+                content,
+                count=1,
+                flags=re.MULTILINE,
+            )
+
+        patched = content_renamed + "\n" + new_function
+        common_ps1.write_text(patched)
+        console.print("[green]✓[/green] common.ps1 patched to support extension branch patterns")
+        console.print(f"  [dim]Original function renamed to {func_name}_Old()[/dim]")
+        console.print("  [dim]New function appended at end[/dim]")
+        console.print(f"  [dim]Backup saved to: {backup_file}[/dim]")
+    else:
+        console.print("  [dim]Would patch common.ps1 for extension branch support[/dim]")
 
 def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> None:
     """Patch spec-kit's update-agent-context.sh to prefer AGENTS.md via a compatibility shim.
@@ -1835,7 +2168,184 @@ def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> Non
         console.print("  [dim]Would patch update-agent-context.sh COPILOT_FILE path[/dim]")
 
 
-@app.command()
+def install_github_integration(
+    repo_root: Path,
+    source_dir: Path,
+    dry_run: bool = False,
+    non_interactive: bool = False,
+) -> None:
+    """Install optional GitHub workflows, PR template, issue templates, and code review integration"""
+
+    # Source .github directory from downloaded release
+    source_github = source_dir / ".github"
+
+    if not source_github.exists():
+        console.print("[yellow]⚠[/yellow] .github directory not found in release")
+        return
+
+    # Define available features with descriptions
+    github_features = {
+        "review-enforcement": {
+            "name": "Review Enforcement Workflow",
+            "description": "Automatically requires code reviews before merging spec-kit branches",
+            "files": {
+                "workflows": ["spec-kit-review-required.yml"],
+            },
+        },
+        "review-reminder": {
+            "name": "Review Reminder Workflow",
+            "description": "Auto-comments on PRs with review instructions",
+            "files": {
+                "workflows": ["spec-kit-review-reminder.yml"],
+            },
+        },
+        "review-helper": {
+            "name": "Review Helper Workflow",
+            "description": "Manual tools to check review status and validate branches",
+            "files": {
+                "workflows": ["spec-kit-review-helper.yml"],
+            },
+        },
+        "pr-template": {
+            "name": "Pull Request Template",
+            "description": "Structured PR template with review checklist",
+            "files": {
+                "root": ["pull_request_template.md"],
+            },
+        },
+        "issue-templates": {
+            "name": "Issue Templates",
+            "description": "9 structured issue templates for all workflow types",
+            "files": {
+                "directories": ["ISSUE_TEMPLATE"],
+            },
+        },
+        "copilot-config": {
+            "name": "GitHub Copilot Configuration",
+            "description": "Copilot instructions and PR review configuration example",
+            "files": {
+                "root": ["copilot-instructions.md", "copilot.yml.example"],
+            },
+        },
+        "codeowners": {
+            "name": "CODEOWNERS Template",
+            "description": "Example configuration for automatic reviewer assignment",
+            "files": {
+                "root": ["CODEOWNERS.example"],
+            },
+        },
+        "documentation": {
+            "name": "Documentation",
+            "description": "Complete documentation for GitHub integration",
+            "files": {
+                "root": ["README.md"],
+            },
+        },
+    }
+
+    # Prompt user to select features (unless non-interactive)
+    if non_interactive:
+        # Install all features
+        features_to_install = list(github_features.keys())
+    else:
+        console.print("\n[bold]GitHub Integration Features:[/bold]\n")
+
+        for key, feature in github_features.items():
+            console.print(f"  [cyan]{key:20}[/cyan] - {feature['description']}")
+
+        console.print("\n[dim]Enter feature keys to install (comma-separated) or 'all' for everything:[/dim]")
+        console.print("[dim]Example: review-enforcement,pr-template,issue-templates[/dim]")
+
+        user_input = input("\nFeatures to install [all]: ").strip()
+
+        if not user_input or user_input.lower() == "all":
+            features_to_install = list(github_features.keys())
+        else:
+            features_to_install = [f.strip() for f in user_input.split(",")]
+            # Validate feature keys
+            invalid = [f for f in features_to_install if f not in github_features]
+            if invalid:
+                console.print(f"[red]✗[/red] Invalid feature(s): {', '.join(invalid)}")
+                console.print(f"[dim]Available: {', '.join(github_features.keys())}[/dim]")
+                return
+
+    if not features_to_install:
+        console.print("[yellow]⚠[/yellow] No features selected. Skipping GitHub integration.")
+        return
+
+    console.print(f"\n[blue]ℹ[/blue] Installing GitHub integration features: {', '.join(features_to_install)}\n")
+
+    github_dir = repo_root / ".github"
+
+    if not dry_run:
+        github_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect all files to install from selected features
+    files_by_type = {"workflows": [], "root": [], "directories": []}
+
+    for feature_key in features_to_install:
+        feature = github_features[feature_key]
+        for file_type, files in feature["files"].items():
+            files_by_type[file_type].extend(files)
+
+    # Remove duplicates
+    for file_type in files_by_type:
+        files_by_type[file_type] = list(set(files_by_type[file_type]))
+
+    # Install workflow files
+    if files_by_type["workflows"]:
+        workflows_dir = github_dir / "workflows"
+        if not dry_run:
+            workflows_dir.mkdir(parents=True, exist_ok=True)
+
+        for workflow in files_by_type["workflows"]:
+            source_file = source_github / "workflows" / workflow
+            if source_file.exists():
+                if not dry_run:
+                    shutil.copy(source_file, workflows_dir / workflow)
+                console.print(f"[green]✓[/green] Installed workflow: {workflow}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] Workflow {workflow} not found")
+
+    # Install root .github files
+    if files_by_type["root"]:
+        for file in files_by_type["root"]:
+            source_file = source_github / file
+            if source_file.exists():
+                if not dry_run:
+                    shutil.copy(source_file, github_dir / file)
+                console.print(f"[green]✓[/green] Installed: {file}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] File {file} not found")
+
+    # Install directories
+    if files_by_type["directories"]:
+        for directory in files_by_type["directories"]:
+            source_directory = source_github / directory
+            if source_directory.exists():
+                dest_directory = github_dir / directory
+                if not dry_run:
+                    if dest_directory.exists():
+                        shutil.rmtree(dest_directory)
+                    shutil.copytree(source_directory, dest_directory)
+                console.print(f"[green]✓[/green] Installed directory: {directory}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] Directory {directory} not found")
+
+    console.print("\n[bold green]✓ GitHub integration installed![/bold green]")
+    console.print("\n[dim]Installed features:[/dim]")
+    for feature_key in features_to_install:
+        console.print(f"  [dim]✓ {github_features[feature_key]['name']}[/dim]")
+
+    console.print("\n[bold cyan]Next steps:[/bold cyan]")
+    console.print("  1. Review .github/README.md for complete documentation")
+    if "codeowners" in features_to_install:
+        console.print("  2. Customize .github/CODEOWNERS.example and rename to CODEOWNERS")
+    console.print("  3. Commit and push the .github/ directory")
+    console.print("\n  [dim]See .github/README.md for detailed usage instructions[/dim]")
+
+
+@app.callback(invoke_without_command=True)
 def main(
     extensions: List[str] = typer.Argument(
         None,
@@ -1907,6 +2417,11 @@ def main(
         None,
         "--script",
         help="Script type to install: sh (bash) or ps (PowerShell)",
+    ),
+    github_integration: bool = typer.Option(
+        False,
+        "--github-integration",
+        help="Install optional GitHub workflows, PR template, issue templates, and code review integration",
     ),
 ) -> None:
     """
@@ -2008,6 +2523,8 @@ def main(
         console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
         console.print(f"  Link mode: {'symlink' if link else 'copy'}")
+        if github_integration:
+            console.print(f"  GitHub integration: yes (interactive)" if interactive else "  GitHub integration: yes (all features)")
         raise typer.Exit(0)
 
     # Handle workflow enabling
@@ -2049,10 +2566,13 @@ def main(
         console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
         console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
+        # Default the script type only once we reach installation. At this point,
+        # agent resolution and related checks have already completed, so it's safe
+        # to fall back to "sh" if the user did not explicitly pass --script.
         selected_script = script_type or "sh"
         if selected_script not in {"sh", "ps"}:
             console.print(
-                f"[red]Error:[/red] Invalid script type '{selected_script}'. Choose from: sh, ps"
+                f"[red]Error:[/red] Invalid --script option '{selected_script}'. Must be 'sh' or 'ps'."
             )
             raise typer.Exit(1)
 
@@ -2077,7 +2597,17 @@ def main(
         # Constitution update is repo-level; use the first agent for formatting conventions
         update_constitution(repo_root, source_dir, resolved_agents[0], dry_run, llm_enhance)
         patch_common_sh(repo_root, dry_run)
+        patch_common_ps1(repo_root, dry_run)
         patch_update_agent_context_sh(repo_root, dry_run)
+
+        # Install GitHub integration if requested
+        if github_integration:
+            install_github_integration(
+                repo_root,
+                source_dir,
+                dry_run=dry_run,
+                non_interactive=(not interactive),
+            )
 
     # Update enabled.conf with selected workflows
     if workflows_to_enable and not dry_run:

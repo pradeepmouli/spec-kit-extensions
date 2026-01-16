@@ -86,48 +86,187 @@ Given the version number (e.g., "1.4.2" for CLI or "2.3.1" for templates), do th
 
 4. Provide a summary of changes added to CHANGELOG for user review.
 
-## Step 3: Execute Version Bump Script
+## Step 3: Execute Version Bump and Tag Creation
 
 After CHANGELOG is updated and user confirms:
 
 ### If CLI version has changed:
 
-1. Run the version bump script:
+1. Update version files manually (bump-version.sh is interactive):
    ```bash
-   ./scripts/bump-version.sh <version>
+   # Update pyproject.toml
+   sed -i.bak 's/^version = ".*"/version = "<version>"/' pyproject.toml && rm pyproject.toml.bak
+
+   # Update specify_extend.py
+   sed -i.bak 's/^__version__ = ".*"/__version__ = "<version>"/' specify_extend.py && rm specify_extend.py.bak
    ```
 
-2. The script will:
-   - Update version in `pyproject.toml` and `specify_extend.py`
-   - Show diff of changes
-   - Prompt for confirmation
-   - Commit changes with message "Bump version to X.Y.Z"
-   - Create git tag (`cli-vX.Y.Z`)
+2. Commit CHANGELOG and version changes together:
+   ```bash
+   git add CHANGELOG.md pyproject.toml specify_extend.py
+   git commit -m "Bump CLI version to <version>
+
+   - Update version in pyproject.toml and specify_extend.py
+   - Update CHANGELOG.md with release notes"
+   ```
+
+3. Create git tag:
+   ```bash
+   git tag -a cli-v<version> -m "Release CLI v<version>
+
+   [Summary of key changes from CHANGELOG]"
+   ```
+
+4. Push changes and tag to remote:
+   ```bash
+   git push origin main --tags
+   ```
+
+5. **Monitor the release workflow:**
+   ```bash
+   # Get the latest workflow run for the release
+   gh run list --workflow=release.yml --limit 1
+
+   # Watch the workflow run in real-time
+   gh run watch
+   ```
+
+   Or open in browser:
+   ```
+   https://github.com/pradeepmouli/spec-kit-extensions/actions/workflows/release.yml
+   ```
+
+   **Expected workflow steps:**
+   - ✅ Version validation (pyproject.toml, specify_extend.py, CHANGELOG.md match)
+   - ✅ Build Python package
+   - ✅ Create GitHub release with notes
+   - ✅ Publish to PyPI
+
+   **If workflow fails:**
+   - Check the failed step in GitHub Actions
+   - Common issues:
+     - Version mismatch → Verify CHANGELOG.md has correct version
+     - Build failure → Check pyproject.toml dependencies
+     - PyPI publish failure → Verify API token is configured
+   - Fix the issue, delete the tag, and recreate:
+     ```bash
+     git tag -d cli-v<version>
+     git push --delete origin cli-v<version>
+     # Fix the issue, commit, then recreate tag
+     git tag -a cli-v<version> -m "..."
+     git push origin cli-v<version>
+     ```
+
+### If Template version has changed:
+
+1. Commit CHANGELOG changes:
+   ```bash
+   git add CHANGELOG.md
+   git commit -m "Update CHANGELOG for templates v<version>
+
+   [Summary of key changes]"
+   ```
+
+2. Create git tag:
+   ```bash
+   git tag -a templates-v<version> -m "Release Extension Templates v<version>
+
+   [Summary of key changes from CHANGELOG]"
+   ```
 
 3. Push changes and tag to remote:
    ```bash
    git push origin main --tags
    ```
 
-### If Template version has changed:
+4. **Monitor the release creation:**
+   ```bash
+   # Check that GitHub created the release
+   gh release view templates-v<version>
+   ```
 
-1. Create git tag:
-   ```bash
-   git tag -a templates-v<version> -m "Release Extension Templates v<version>"
+   Or verify in browser:
    ```
-2. Push tag to remote:
-   ```bash
-   git push origin templates-v<version>
+   https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/templates-v<version>
    ```
+
+   **Expected outcome:**
+   - ✅ Release appears on GitHub Releases page
+   - ✅ Release notes from tag message are displayed
+   - ✅ Source code archives are available
+
+   **If release not created:**
+   - Verify tag was pushed: `git ls-remote --tags origin | grep templates-v<version>`
+   - Check tag annotation: `git show templates-v<version>`
+   - Manually create release if needed via GitHub UI
 
 ## Quality Gates
 
+- ✅ CHANGELOG.md is updated BEFORE creating tags
+- ✅ CHANGELOG.md is committed WITH version file changes (for CLI) or separately (for templates)
 - ✅ All changes since last release are documented in CHANGELOG
 - ✅ Change categories are appropriate (Added/Changed/Fixed/etc.)
 - ✅ Version numbers follow semantic versioning (MAJOR.MINOR.PATCH)
 - ✅ Component versions are updated consistently
 - ✅ Git tag prefix matches release type (cli-v or templates-v)
-- ✅ User reviews CHANGELOG before executing bump script
+- ✅ User reviews CHANGELOG before executing commands
+- ✅ CHANGELOG commit is included before the tag is created
+- ✅ **Release workflow completes successfully (CLI releases only)**
+- ✅ **GitHub release is created and visible (all releases)**
+
+## Post-Release Verification
+
+After pushing tags, always verify:
+
+### For CLI Releases
+
+1. **Workflow Status**
+   ```bash
+   gh run list --workflow=release.yml --limit 1 --json conclusion,status,name
+   ```
+   Expected: `"conclusion": "success"`
+
+2. **PyPI Package**
+   ```bash
+   pip index versions specify-extend | grep <version>
+   ```
+   Or visit: https://pypi.org/project/specify-extend/<version>/
+
+3. **GitHub Release**
+   ```bash
+   gh release view cli-v<version>
+   ```
+   Or visit: https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/cli-v<version>
+
+### For Template Releases
+
+1. **GitHub Release**
+   ```bash
+   gh release view templates-v<version>
+   ```
+   Or visit: https://github.com/pradeepmouli/spec-kit-extensions/releases/tag/templates-v<version>
+
+2. **Verify Download URL**
+   ```bash
+   curl -I https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/templates-v<version>.zip
+   ```
+   Expected: HTTP 200 or 302
+
+### If Verification Fails
+
+1. **Check workflow logs** (CLI only):
+   ```bash
+   gh run view --log
+   ```
+
+2. **Verify versions match**:
+   ```bash
+   git show cli-v<version>:pyproject.toml | grep '^version'
+   git show cli-v<version>:specify_extend.py | grep '^__version__'
+   git show cli-v<version>:CHANGELOG.md | sed -n '/## CLI Tool/,/^## /p' | grep '^### \['
+   ```
+
+3. **If needed, delete and recreate tag** (see troubleshooting steps above)
 
 ## Notes
 

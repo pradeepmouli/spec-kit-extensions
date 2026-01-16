@@ -6,14 +6,271 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.1
-- **CLI Tool** (`specify-extend`) - Currently at v1.4.4
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.6
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.8
+
+---
+
+## CLI Tool (`specify-extend`)
+
+### [1.5.8] - 2026-01-02
+
+#### 🚀 Added
+
+- **AI Agent Branch Support** - Relaxed feature branch check for agent-generated branches
+  - Branches starting with `claude/`, `copilot/`, `cursor/`, `vscode/`, `windsurf/`, `gemini/`, `qwen/` now bypass validation
+  - Allows AI agents to use their own branch naming conventions
+  - Affects: `patch_common_sh()` and `patch_common_ps1()` in specify_extend.py
+  - Updated error messages to include agent branch pattern examples
+  - Patch detection logic updated to recognize agent prefix support
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.8
+- **Compatible Extension Templates**: v2.5.5+
 
 ---
 
 ## Extension Templates
 
-### [Unreleased]
+### [2.5.6] - 2026-01-07
+
+#### 🔧 Changed/Improved
+
+- **Standard Artifact Symlinks** - All workflows now create `spec.md`, `plan.md`, and `tasks.md` symlinks
+  - Enables consistent tooling compatibility across all workflow types
+  - Each workflow-specific file (e.g., `bug-report.md`, `enhancement.md`) symlinks to standard names
+  - Supports both bash and PowerShell with graceful fallback
+  - Affects: 
+    - Bash: `create-bugfix.sh`, `create-enhance.sh`, `create-hotfix.sh`, `create-refactor.sh`, `create-modification.sh`, `create-deprecate.sh`, `create-baseline.sh`
+    - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`, `create-modification.ps1`, `create-deprecate.ps1`, `create-baseline.ps1`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.6
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.8+
+    - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`, `create-modification.ps1`, `create-deprecate.ps1`, `create-baseline.ps1`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.6
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.7+
+
+---
+
+### [2.5.5] - 2025-12-29
+
+#### 🚀 Added
+
+- **Branch Utilities Helper** - Ship `branch-utils.sh` (bash) and `BranchUtils.ps1` (PowerShell) providing branch name generation
+  - Decouples workflows from spec-kit's `common.sh` availability
+  - Graceful fallback when older installations lack `generate_branch_name`
+  - Affects: scripts/branch-utils.sh (new)
+
+#### 🔧 Changed/Improved
+
+- **Workflow Scripts** - Source branch utilities across bash and PowerShell workflows
+  - Bash: `create-bugfix.sh`, `create-enhance.sh`, `create-modification.sh`, `create-hotfix.sh`, `create-refactor.sh`
+  - Also bash: `create-deprecate.sh` and `create-baseline.sh` for consistency
+  - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-modification.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`
+  - Also PowerShell: `create-deprecate.ps1` and `create-baseline.ps1` for consistency
+  - Refactor script retains internal fallback for extra resilience
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.7+
+
+### [2.5.4] - 2025-12-27
+
+#### 🔧 Changed/Improved
+
+- **Incorporate Command** - Enhanced handoff prompts and documentation clarity
+  - Added detailed, context-rich prompts for all 11 handoff definitions
+  - Improved guidance for workflow-specific incorporation strategies
+  - Enhanced stage advancement handoffs with clearer instructions
+  - Better integration with native spec-kit commands
+  - More explicit about when to use /speckit.analyze for content merging
+  - Affects: commands/speckit.incorporate.md (131 lines changed)
+
+- **Documentation** - Improved constitution template clarity
+  - Better formatting and organization of quality gates
+  - Enhanced workflow descriptions
+  - Clearer guidance for AI agents
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.4
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.5+
+
+---
+
+### [2.5.3] - 2025-12-26
+
+#### 🚀 Added
+
+- **Incorporate Command Extension** - New `/speckit.incorporate` command for intelligent document integration
+  - Automatically detects document type (spec, plan, tasks, research, checklist, post-mortem)
+  - Intelligently incorporates documents into existing workflows
+  - Advances workflow stages automatically based on document type
+  - Initiates new workflows from documents when not in a workflow
+  - Leverages native `/speckit.analyze` for smart content merging
+  - Complete handoff definitions for all 8 workflows + stage advancement
+  - Affects: commands/speckit.incorporate.md (376 lines)
+
+#### 🔧 Changed/Improved
+
+- **Code Architecture** - Distinguished between workflow and command extensions
+  - Added `WORKFLOW_EXTENSIONS` and `COMMAND_EXTENSIONS` constants
+  - Created `is_workflow_extension()` and `is_command_extension()` helpers
+  - Clearer separation of concerns in installation logic
+  - Self-documenting code structure
+
+- **Documentation** - Enhanced clarity about extension types
+  - Explicitly lists "8 workflow extensions + 2 command extensions"
+  - Separate sections for workflows vs commands in README
+  - Updated activity tables with document integration use case
+
+#### 🐛 Fixed
+
+- **Review Extension Installation** - Fixed warning about missing create-review.sh
+  - Review is a command extension, not a workflow extension
+  - Skip review when copying scripts and workflow directories
+  - Eliminates spurious installation warnings
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.4+
+
+---
+
+### [2.5.2] - 2025-12-26
+
+#### 🔧 Changed/Improved
+
+- **Windows Path Handling** - Improved path compatibility across different shell environments
+  - Added backslash normalization in get_repo_root function
+  - Better Git Bash compatibility for Windows users
+  - Improved test coverage for Windows path scenarios
+  - Affects: All scripts that use path resolution
+
+- **Documentation and Testing** - Enhanced test coverage and documentation clarity
+  - Added test cases for Windows paths with backslashes
+  - Fixed find command option order for better compatibility
+  - Improved copilot configuration documentation
+  - Updated README with agent support details
+
+#### 🐛 Fixed
+
+- **Workflow Logic** - Fixed conditional logic in spec-kit-review workflows
+  - Corrected workflow decision logic
+  - Improved review reminder notifications
+  - Better handling of review status checks
+  - Affects: spec-kit-review-required.yml, spec-kit-review-reminder.yml
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.2
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.3+
+
+---
+
+### [2.5.1] - 2025-12-25
+
+#### 🐛 Fixed
+
+- **Script Path Resolution** - Fixed common.sh sourcing in all extension scripts
+  - Scripts now check same directory first for common.sh
+  - Resolves "generate_branch_name is not available" error
+  - Fixes installation path compatibility with .specify/scripts/bash/
+  - Affects: All create-*.sh scripts
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.2+
+
+### [2.5.0] - 2025-12-25
+
+#### ✨ New Features
+
+- **Automatic Baseline Metrics** - Refactor workflow now automatically captures baseline metrics
+  - Baseline metrics are captured immediately after spec creation
+  - Eliminates manual step of running measure-metrics.sh --before
+  - PowerShell version supports bash script execution
+  - Affects: scripts/create-refactor.sh, scripts/powershell/create-refactor.ps1
+
+#### 📚 Documentation
+
+- Updated documentation to reflect automatic baseline capture
+- Added fallback instructions if automatic capture fails
+- Updated refactor command, README, and QUICKSTART guides
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.0
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.2+
+
+### [2.4.1] - 2025-12-24
+
+#### 🐛 Fixed
+
+- **Documentation Accuracy** - Corrected workflow count from 8 to 9 in all README sections
+  - Updated references to reflect the addition of the enhance workflow
+  - Ensures documentation accurately represents all available workflows
+  - Affects: README.md
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.4.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.1+
+
+---
+
+### [2.4.0] - 2025-12-24
+
+#### 🚀 Added
+
+- **Enhance Workflow** - New `/speckit.enhance` workflow for minor improvements and enhancements
+  - Quick-turnaround improvements that don't require full feature specs
+  - Creates enhancement-spec.md with problem statement, proposed changes, and verification steps
+  - Lighter-weight alternative to full feature development
+  - Templates include: enhancement-template.md
+  - Script: `create-enhance.sh` with JSON output support
+  - PowerShell support: `create-enhance.ps1`
+
+#### 🔧 Changed/Improved
+
+- **PowerShell Script Support** - Complete PowerShell implementation for all workflows
+  - All 8 extension workflows now have PowerShell equivalents (.ps1)
+  - Bash scripts remain at `.specify/scripts/bash/`, PowerShell at `.specify/scripts/powershell/`
+  - Agent commands automatically reference correct script type based on `--script` flag
+  - Consistent behavior with spec-kit's `--script ps` option
+  - Affects: All workflow scripts (baseline, bugfix, cleanup, deprecate, enhance, hotfix, modify, refactor)
+
+- **Documentation Improvements** - Enhanced setup and development documentation
+  - Clarified that `specify init` (not `specify-extend`) creates `.specify/` directory structure
+  - Added development symlink setup instructions in CONTRIBUTING.md
+  - Updated README.md with two-step installation process
+  - Added `.specify/` and `specs/` to .gitignore for development environments
+  - Documented bash vs PowerShell handling
+
+#### 🐛 Fixed
+
+- **Script Type Consistency** - Fixed specify-extend to match spec-kit's either/or behavior
+  - Changed from "always install bash + optionally PowerShell" to "install EITHER bash OR PowerShell"
+  - Now consistent with `specify init --script sh` (bash only) and `--script ps` (PowerShell only)
+  - Prevents mixed script installations that could cause confusion
 
 _(No template changes yet)_
 
@@ -113,6 +370,246 @@ _(No template changes yet)_
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.7] - 2025-12-29
+
+#### 🚀 Added
+
+- **Helper Installation** - Installer now copies shared helpers
+  - Copies `branch-utils.sh` to `.specify/scripts/bash/`
+  - Ensures create-* workflows have `generate_branch_name` without relying on spec-kit updates
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.7
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.5
+
+### [1.5.6] - 2025-12-27
+
+#### 🔧 Changed/Improved
+
+- **Multi-Agent Self-Destruct** - Enhanced enhance-constitution self-destruct instructions
+  - Updated to list ALL agent directory patterns where files may exist
+  - Covers copilot, claude, cursor, windsurf, opencode, amazon-q, codex
+  - Handles multi-agent setups (e.g., `--agents claude,copilot,cursor-agent`)
+  - Prevents leftover enhance-constitution files in any agent directory
+  - Clearer bullet-point list of locations to check
+  - Affects: specify_extend.py enhance-constitution generation
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.6
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.4
+
+---
+
+### [1.5.5] - 2025-12-27
+
+#### 🐛 Fixed
+
+- **Branch Validation** - Fixed missing workflow patterns in branch validation
+  - Added support for `enhance/###-`, `cleanup/###-`, and `baseline/###-` patterns
+  - Previously only recognized bugfix, modify, refactor, hotfix, deprecate patterns
+  - Fixes "Not on a feature branch" error when using enhance, cleanup, or baseline workflows
+  - Updated error message to show all 8 valid workflow branch patterns
+  - Affects: specify_extend.py patch_common_sh() function
+
+- **Patch Versioning** - Auto-update outdated common.sh patches
+  - Detects if existing patched common.sh is missing new workflow patterns
+  - Automatically restores from backup or removes old patched function
+  - Re-applies updated patch with complete pattern support
+  - Allows `specify-extend --all` to update existing installations seamlessly
+  - No manual intervention needed to get latest patch improvements
+  - Affects: specify_extend.py patch_common_sh() detection logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.4
+
+---
+### [1.5.5] - 2025-12-27
+
+#### 🐛 Fixed
+
+- **Branch Validation** - Fixed missing workflow patterns in branch validation
+  - Added support for `enhance/###-`, `cleanup/###-`, and `baseline/###-` patterns
+  - Previously only recognized bugfix, modify, refactor, hotfix, deprecate patterns
+  - Fixes "Not on a feature branch" error when using enhance, cleanup, or baseline workflows
+  - Updated error message to show all 8 valid workflow branch patterns
+  - Affects: specify_extend.py patch_common_sh() function
+
+- **Patch Versioning** - Auto-update outdated common.sh patches
+  - Detects if existing patched common.sh is missing new workflow patterns
+  - Automatically restores from backup or removes old patched function
+  - Re-applies updated patch with complete pattern support
+  - Allows `specify-extend --all` to update existing installations seamlessly
+  - No manual intervention needed to get latest patch improvements
+  - Affects: specify_extend.py patch_common_sh() detection logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.3
+
+---
+
+### [1.5.4] - 2025-12-26
+
+#### 🚀 Added
+
+- **Incorporate Command Support** - Added support for new incorporate command extension
+  - Added "incorporate" to `COMMAND_EXTENSIONS` list
+  - Installs incorporate command for all supported agents
+  - Automatic detection and installation alongside review command
+
+#### 🔧 Changed/Improved
+
+- **Extension Type System** - Improved code organization with explicit extension types
+  - Split `AVAILABLE_EXTENSIONS` into `WORKFLOW_EXTENSIONS` and `COMMAND_EXTENSIONS`
+  - Added `is_workflow_extension()` and `is_command_extension()` helper functions
+  - Replaced magic string checks with semantic function calls
+  - Better maintainability and extensibility for future extensions
+
+- **Installation Logic** - Streamlined script and workflow directory installation
+  - Use extension type helpers instead of hardcoded checks
+  - Skip command extensions when installing scripts/workflows
+  - Clearer intent and reduced code duplication
+
+#### 🐛 Fixed
+
+- **Review Command Installation** - Fixed spurious warning during installation
+  - Review command is command-only, doesn't have create-review.sh script
+  - Installation now correctly skips script/workflow copy for command extensions
+  - Eliminates "Script create-review.sh not found" warning
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.4
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.3
+
+---
+
+### [1.5.3] - 2025-12-26
+
+#### 🚀 Added
+
+- **GitHub Integration Features** - New `--github-integration` flag for enhanced GitHub workflow support
+  - Enables GitHub code review integration for spec-kit projects
+  - Automatic GitHub workflow installation (review-required and review-reminder)
+  - Optional workflows can be enabled during setup
+  - Improves CI/CD integration and code review processes
+
+#### 🔧 Changed/Improved
+
+- **Typer CLI Framework** - Fixed entry point configuration
+  - Added @app.command() decorator to main function
+  - Proper Typer integration for CLI command execution
+  - Improved command routing and argument handling
+
+- **Path Handling** - Enhanced cross-platform compatibility
+  - Improved Windows path handling in get_repo_root function
+  - Added backslash normalization for Git Bash compatibility
+  - Better path resolution across different shell environments
+
+- **Documentation** - Improved setup and configuration documentation
+  - Clarified GitHub integration requirements
+  - Added examples for --github-integration flag
+  - Updated README with agent support and setup instructions
+  - Enhanced troubleshooting documentation
+
+#### 🧪 Testing
+
+- **Comprehensive Test Coverage** - Added extensive tests for core functionality
+  - Tests for get_repo_root function across different path scenarios
+  - Windows path handling test cases (backslashes, drive letters)
+  - Unit tests for template download and version detection
+  - Test coverage for path normalization logic
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.2
+
+---
+
+### [1.5.2] - 2025-12-25
+
+#### 🐛 Fixed
+
+- **Template Download** - Fixed template download to use templates-v* tags
+  - Changed from fetching `/releases/latest` to `/tags` endpoint
+  - Filters for tags starting with `templates-v` prefix
+  - Downloads latest template release (templates-v2.5.1)
+  - Displays template version in UI during download
+
+#### 🧪 Testing
+
+- **Added Unit Tests** - Created comprehensive test suite for download functionality
+  - Tests template tag filtering and selection
+  - Mocks GitHub API responses
+  - Verifies correct tag is downloaded
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.2
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.1
+
+---
+
+### [1.5.1] - 2025-12-24
+
+#### 🔧 Improved
+
+- **Version Alignment** - Patch release to align CLI version with template v2.4.1
+  - No functional changes to CLI code
+  - Ensures version consistency across components
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.1
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.4.1
+
+---
+
+### [1.5.0] - 2025-12-24
+
+#### 🚀 Added
+
+- **PowerShell Script Support** - Added `--script` option to choose between bash and PowerShell
+  - `--script sh` (default): Installs bash scripts to `.specify/scripts/bash/`
+  - `--script ps`: Installs PowerShell scripts to `.specify/scripts/powershell/`
+  - Agent commands automatically updated to reference correct script paths
+  - Consistent with spec-kit's `specify init --script` behavior
+
+- **Enhance Workflow Integration** - Added support for new enhance workflow
+  - Installs enhance command templates for all supported agents
+  - Copies create-enhance.sh and create-enhance.ps1 scripts
+  - Updates enabled.conf with enhance workflow option
+
+#### 🔧 Changed/Improved
+
+- **Script Installation Logic** - Changed to either/or behavior (breaking change)
+  - Previously: Always installed bash, optionally added PowerShell
+  - Now: Installs ONLY the selected script type via `--script` flag
+  - Matches spec-kit's behavior where `--script ps` excludes bash entirely
+  - More consistent and prevents confusion from mixed installations
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.0
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.4.0
+
+---
 
 ### [1.4.4] - 2025-12-23
 

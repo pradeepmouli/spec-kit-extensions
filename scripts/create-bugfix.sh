@@ -6,7 +6,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Check if we're in spec-kit repo (scripts/bash/common.sh) or extensions (need to go up to spec-kit)
-if [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
+if [ -f "$SCRIPT_DIR/common.sh" ]; then
+    # Running from same directory (most common case)
+    source "$SCRIPT_DIR/common.sh"
+elif [ -f "$SCRIPT_DIR/../bash/common.sh" ]; then
     # Running from spec-kit integrated location: .specify/scripts/bash/
     source "$SCRIPT_DIR/../bash/common.sh"
 elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
@@ -33,6 +36,11 @@ else
         echo "Error: Could not find common.sh. Please ensure spec-kit is properly installed." >&2
         exit 1
     fi
+fi
+
+# Source branch utilities if present (provides generate_branch_name)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
 fi
 
 # Verify generate_branch_name function is available
@@ -112,6 +120,10 @@ fi
 
 # Create symlink from spec.md to bug-report.md
 ln -sf "bug-report.md" "$BUG_DIR/spec.md"
+
+# Create plan.md and tasks.md as standard symlinks
+ln -sf "bug-report.md" "$BUG_DIR/plan.md"
+ln -sf "bug-report.md" "$BUG_DIR/tasks.md"
 
 # Set environment variable for current session
 export SPECIFY_BUGFIX="$BUG_ID"

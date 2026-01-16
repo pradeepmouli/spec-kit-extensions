@@ -21,7 +21,7 @@ The text the user typed after `/speckit.refactor` in the triggering message **is
 
 Given that refactoring description, do this:
 
-1. Run the script `.specify/scripts/bash/create-refactor.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for REFACTOR_ID, BRANCH_NAME, REFACTOR_SPEC_FILE, METRICS_BEFORE, BEHAVIORAL_SNAPSHOT. All file paths must be absolute.
+1. Run the script `.specify/scripts/bash/create-refactor.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for REFACTOR_ID, BRANCH_NAME, REFACTOR_SPEC_FILE, TESTING_GAPS, METRICS_BEFORE, BEHAVIORAL_SNAPSHOT. All file paths must be absolute.
   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/refactor/refactor-template.md` to understand required sections.
@@ -30,16 +30,23 @@ Given that refactoring description, do this:
    - Fill "Motivation" section with code smells and justification from description
    - Fill "Proposed Improvement" with refactoring approach
    - Identify files that will be affected
-   - Leave metrics sections empty (will be filled by measure-metrics.sh)
+   - Fill "Phase 0: Testing Gap Assessment" with initial assessment
+   - Leave baseline metrics sections empty (will be filled by measure-metrics.sh)
    - Document behavior preservation requirements
    - Assess risk level (High/Medium/Low)
 
-4. Update BEHAVIORAL_SNAPSHOT file with key behaviors to preserve:
+4. Update TESTING_GAPS file with initial testing gap assessment:
+   - Identify code areas that will be modified during refactoring
+   - List files/functions/classes to be refactored
+   - Flag this as critical first step before baseline
+   - Provide guidance on assessing test coverage
+
+5. Update BEHAVIORAL_SNAPSHOT file with key behaviors to preserve:
    - Extract observable behaviors from description
    - Document inputs and expected outputs
    - Create verification checklist
 
-5. Report completion with Next Steps:
+6. Report completion with Next Steps:
 
 ```
 ✅ Refactor workflow initialized
@@ -47,17 +54,22 @@ Given that refactoring description, do this:
 **Refactor ID**: [REFACTOR_ID]
 **Branch**: [BRANCH_NAME]
 **Refactor Spec**: [REFACTOR_SPEC_FILE]
+**Testing Gaps**: [TESTING_GAPS]
 **Behavioral Snapshot**: [BEHAVIORAL_SNAPSHOT]
 
 📋 **Next Steps:**
-1. Review refactoring goals and behaviors to preserve
-2. Capture baseline metrics:
-   .specify/extensions/workflows/refactor/measure-metrics.sh --before
-3. Run `/speckit.plan` to create refactoring plan
-4. Run `/speckit.tasks` to break down into tasks
-5. Run `/speckit.implement` to execute refactoring
+1. 🔴 **CRITICAL FIRST STEP**: Complete testing gap assessment in [TESTING_GAPS]
+   - Identify all code that will be modified
+   - Assess test coverage for affected areas
+   - Add tests for critical gaps BEFORE capturing baseline
+2. Review refactoring goals and behaviors to preserve
+3. Once testing gaps are addressed, baseline metrics have been automatically captured
+4. Run `/speckit.plan` to create refactoring plan
+5. Run `/speckit.tasks` to break down into tasks
+6. Run `/speckit.implement` to execute refactoring
 
 💡 **Reminder**: Behavior must not change - all tests must still pass
+⚠️ **NEW**: Testing gap assessment ensures adequate coverage exists to validate behavior preservation
 ```
 
-Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after.
+Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after. **NEW**: Testing gaps must be assessed and critical gaps filled BEFORE baseline capture. Baseline metrics are automatically captured during workflow creation but should only be trusted after testing gaps are addressed.

@@ -29,10 +29,25 @@ All existing tests should pass before, during, and after the refactor. If tests 
 
 ## Process
 
+### 0. Testing Gap Assessment (Pre-Baseline)
+**CRITICAL FIRST STEP**: Assess test coverage BEFORE capturing baseline
+
+- **Purpose**: Ensure adequate test coverage exists to validate behavior preservation
+- **Document**: Complete `testing-gaps.md` to identify coverage gaps
+- **Assess**: Review all code that will be modified during refactoring
+- **Identify**: Document critical testing gaps (untested functionality)
+- **Add Tests**: Write tests for all critical gaps BEFORE proceeding
+- **Validate**: Ensure all new tests pass
+
+**Why this matters**: Refactoring requires verifying behavior is preserved. Without adequate test coverage, we cannot validate that the refactor didn't break anything.
+
+**Checkpoint**: Only proceed to baseline capture when critical testing gaps are addressed.
+
 ### 1. Baseline Capture
-- Run `measure-metrics.sh before` to capture current state
+- Baseline metrics are **automatically captured** when you run `/speckit.refactor`
+- To manually re-capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
 - Document current metrics (LOC, complexity, performance, bundle size)
-- Run all tests and record pass rate
+- Run all tests and record pass rate (including newly added tests from Phase 0)
 - Create behavioral snapshot
 - Commit baseline
 
@@ -54,7 +69,7 @@ All existing tests should pass before, during, and after the refactor. If tests 
 This ensures you always have a working state to return to.
 
 ### 4. Post-Refactor Verification
-- Run `measure-metrics.sh after` to capture new state
+- Run `measure-metrics.sh --after` to capture new state
 - Compare metrics to baseline
 - Verify improvement goals met
 - Ensure no performance regressions
@@ -69,9 +84,11 @@ This ensures you always have a working state to return to.
 
 ## Quality Gates
 
-- ✅ Baseline metrics MUST be captured before any changes
+- ✅ **Testing gaps MUST be assessed and addressed before baseline** (NEW)
+- ✅ Critical test coverage gaps MUST be filled before proceeding
+- ✅ Baseline metrics MUST be captured before any refactoring changes
 - ✅ Tests MUST pass after EVERY incremental change
-- ✅ Behavior preservation MUST be guaranteed (tests unchanged)
+- ✅ Behavior preservation MUST be guaranteed (tests unchanged or only added)
 - ✅ Target metrics MUST show measurable improvement
 - ✅ No performance regressions allowed
 
@@ -82,6 +99,7 @@ specs/
 └── refactor/
     └── 001-extract-tweet-service/
     ├── refactor-spec.md          # Refactoring goals (created by /speckit.refactor)
+    ├── testing-gaps.md           # Testing gap assessment (NEW - created by /speckit.refactor)
     ├── behavioral-snapshot.md    # Behavior documentation (created by /speckit.refactor)
     ├── metrics-before.md         # Baseline metrics (created by /speckit.refactor)
     ├── metrics-after.md          # Post-refactor metrics (placeholder)
@@ -103,13 +121,18 @@ This will:
 5. Show "Next Steps" for checkpoint-based workflow
 
 **Next steps after running the command:**
-1. Capture baseline metrics: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
-2. Document behaviors to preserve in `behavioral-snapshot.md`
-3. Run `/speckit.plan` to create incremental refactoring plan
-4. Review the plan - are changes small enough? Tests after each?
-5. Run `/speckit.tasks` to break down into incremental tasks
-6. Review the tasks - tests must pass after EVERY task
-7. Run `/speckit.implement` to execute refactoring incrementally
+1. **FIRST**: Complete testing gap assessment in `testing-gaps.md`
+   - Identify all code that will be modified
+   - Assess test coverage for each area
+   - Document critical gaps
+   - Add tests for critical gaps BEFORE proceeding
+2. Capture baseline metrics: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
+3. Document behaviors to preserve in `behavioral-snapshot.md`
+4. Run `/speckit.plan` to create incremental refactoring plan
+5. Review the plan - are changes small enough? Tests after each?
+6. Run `/speckit.tasks` to break down into incremental tasks
+7. Review the tasks - tests must pass after EVERY task
+8. Run `/speckit.implement` to execute refactoring incrementally
 
 ## Example Refactor Document
 
@@ -234,10 +257,15 @@ The `measure-metrics.sh` script captures:
 
 The refactor workflow uses checkpoints with metrics to ensure code quality improves without breaking behavior:
 
-### Phase 1: Baseline Capture
+### Phase 0: Testing Gap Assessment (NEW)
 - **Command**: `/speckit.refactor "description"`
-- **Creates**: `refactor-spec.md`, `behavioral-snapshot.md`, `metrics-before.md`
-- **Checkpoint**: Capture baseline metrics before ANY changes. Document behaviors to preserve.
+- **Creates**: `refactor-spec.md`, `testing-gaps.md`, `behavioral-snapshot.md`, `metrics-before.md`
+- **Checkpoint**: Complete testing gap assessment FIRST. Identify untested code that will be refactored. Add tests for critical gaps BEFORE capturing baseline.
+
+### Phase 1: Baseline Capture
+- **Command**: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
+- **Updates**: `metrics-before.md` with actual metrics
+- **Checkpoint**: Capture baseline metrics AFTER testing gaps are addressed. Document behaviors to preserve.
 
 ### Phase 2: Refactoring Planning
 - **Command**: `/speckit.plan`
@@ -254,7 +282,7 @@ The refactor workflow uses checkpoints with metrics to ensure code quality impro
 - **Executes**: Tasks one at a time, running tests after each
 - **Result**: Refactored code with all tests passing, metrics improved
 
-**Why checkpoints matter**: Refactoring without baseline metrics or incremental testing leads to broken code. Checkpoints ensure you can always roll back to a working state.
+**Why checkpoints matter**: Refactoring without testing gap assessment, baseline metrics, or incremental testing leads to broken code. Checkpoints ensure you can always roll back to a working state.
 
 ## Tips
 
