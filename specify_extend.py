@@ -1337,8 +1337,10 @@ def install_agent_commands(
                 content = source_file.read_text()
 
                 # For Claude Code and Codex: Create subagent/skill files from handoffs
-                # This enables true delegation instead of just textual guidance
-                _create_subagents_from_handoffs(content, agent, repo_root, dry_run)
+                # This enables true delegation instead of just textual guidance.
+                # Note: This block only runs when not dry_run (see outer if), so we
+                # explicitly pass dry_run=False here to make that intent clear.
+                _create_subagents_from_handoffs(content, agent, repo_root, dry_run=False)
 
                 # Apply agent-specific content transformations
                 # 1. Convert handoffs to agent-specific format
