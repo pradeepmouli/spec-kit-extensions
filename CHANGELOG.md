@@ -23,21 +23,32 @@ _(No template changes yet)_
 
 ### [Unreleased]
 
+#### ✨ Added
+
+- **Handoff Conversion System** - Automatically converts workflow delegation to agent-specific formats
+  - Agents that support `handoffs:` frontmatter (Copilot, OpenCode, Windsurf) preserve it unchanged
+  - **Claude Code**: Converts to "Recommended Next Steps" section with `/command` suggestions and prompts
+  - **Codex**: Converts to "Next Steps" section with action items
+  - **Cursor/Qwen/Amazon Q**: Converts to "Workflow Continuation" section with command hints
+  - Added `_extract_handoffs_from_frontmatter()` to parse YAML handoffs data
+  - Added `_convert_handoffs_to_next_steps()` for agent-specific text generation
+  - Added `_convert_handoffs_for_agent()` as main conversion orchestrator
+  - Added `pyyaml` dependency to `pyproject.toml` for YAML parsing
+
 #### 🔧 Changed
 
-- **Agent-Specific Frontmatter Handling** - Installation now automatically adapts command files for each agent
-  - Strips `handoffs:` frontmatter for agents that don't support it (Claude Code, Codex, Cursor, Qwen, Amazon Q)
-  - Preserves `handoffs:` frontmatter for agents that do support it (GitHub Copilot, OpenCode, Windsurf)
-  - Prevents confusion from unsupported frontmatter fields appearing in installed command files
-  - Added `_strip_handoffs_from_frontmatter()` helper function in `specify_extend.py`
+- **Improved Agent Support** - Each agent now gets appropriate workflow continuation guidance
+  - Previously: Handoffs were simply stripped for unsupported agents
+  - Now: Handoffs are intelligently converted to textual guidance matching agent conventions
+  - Benefits agents without frontmatter support (Claude Code, Codex, Cursor, Qwen, Amazon Q)
 
 #### 📚 Documentation
 
-- **AGENTS.md** - Added comprehensive handoffs support documentation
-  - Documents which agents support handoffs/delegation (Copilot, OpenCode, Windsurf)
-  - Documents which agents don't support handoffs (Claude Code, Codex, Cursor, Qwen, Amazon Q)
-  - Explains automatic frontmatter adaptation during installation
-  - Added new "Agent-Specific Adaptations" section explaining automatic transformations
+- **AGENTS.md** - Comprehensive handoffs conversion documentation
+  - Documents which agents support handoffs frontmatter (Copilot, OpenCode, Windsurf)
+  - Documents conversion format for each agent type
+  - Added conversion examples showing YAML → Markdown transformation
+  - Updated "Agent-Specific Adaptations" section with conversion details
 
 ---
 

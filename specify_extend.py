@@ -880,42 +880,128 @@ def install_extension_files(
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
 
 
-def _strip_handoffs_from_frontmatter(content: str) -> str:
+def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
     """
-    Remove handoffs section from YAML frontmatter for agents that don't support it.
+    Extract and remove handoffs section from YAML frontmatter.
 
-    Agents like Claude Code, Codex, Cursor, Qwen, and Amazon Q don't support
-    handoffs in frontmatter, so we strip them to avoid confusion.
+    Returns (cleaned_content, handoffs_list) where handoffs_list is a list of dicts
+    containing the handoff information.
     """
     import re
+    import yaml
 
     # Match YAML frontmatter block
     frontmatter_pattern = r'^---\n(.*?)\n---\n(.*)$'
     match = re.match(frontmatter_pattern, content, re.DOTALL)
 
     if not match:
-        # No frontmatter found, return as-is
-        return content
+        # No frontmatter found, return as-is with empty handoffs
+        return content, []
 
-    frontmatter = match.group(1)
+    frontmatter_text = match.group(1)
     body = match.group(2)
 
-    # Remove handoffs section (handles nested YAML properly)
-    # Match: 'handoffs:' followed by any number of indented lines (2+ spaces)
-    # until we hit a non-indented line (next top-level key) or end of frontmatter
+    # Parse YAML to extract handoffs
+    try:
+        frontmatter_data = yaml.safe_load(frontmatter_text)
+        handoffs = frontmatter_data.get('handoffs', []) if frontmatter_data else []
+    except Exception:
+        # If YAML parsing fails, fall back to no handoffs
+        handoffs = []
+
+    # Remove handoffs section from frontmatter
     frontmatter_cleaned = re.sub(
         r'handoffs:.*?(?=\n\S|\Z)',
         '',
-        frontmatter,
+        frontmatter_text,
         flags=re.DOTALL
     )
 
-    # Clean up any extra blank lines that might result
+    # Clean up any extra blank lines
     frontmatter_cleaned = re.sub(r'\n\n+', '\n', frontmatter_cleaned)
     frontmatter_cleaned = frontmatter_cleaned.strip()
 
-    # Reconstruct the file
-    return f"---\n{frontmatter_cleaned}\n---\n{body}"
+    # Reconstruct the file without handoffs
+    cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+
+    return cleaned_content, handoffs
+
+
+def _convert_handoffs_to_next_steps(handoffs: list, agent: str) -> str:
+    """
+    Convert handoffs list to agent-specific "next steps" text.
+
+    Different agents have different delegation mechanisms:
+    - Claude Code: Suggest using /command or Skill tool
+    - Codex/Cursor/Qwen/Q: Provide textual guidance
+    """
+    if not handoffs:
+        return ""
+
+    if agent == "claude":
+        # Claude Code - suggest slash commands and Skill tool
+        next_steps = "\n\n---\n\n## Recommended Next Steps\n\n"
+        next_steps += "After completing this workflow, consider these next steps:\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            agent_cmd = handoff.get('agent', '')
+            prompt = handoff.get('prompt', '')
+            next_steps += f"{i}. **{label}**: Run `/{agent_cmd}`"
+            if prompt:
+                next_steps += f"\n   - Suggested prompt: {prompt}"
+            next_steps += "\n"
+        return next_steps
+
+    elif agent == "codex":
+        # Codex - simple textual guidance
+        next_steps = "\n\n---\n\n## Next Steps\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            next_steps += f"{i}. {label}\n"
+        return next_steps
+
+    elif agent in ["cursor-agent", "qwen", "q"]:
+        # Cursor/Qwen/Amazon Q - textual guidance with command hints
+        next_steps = "\n\n---\n\n## Workflow Continuation\n\n"
+        next_steps += "To continue this workflow:\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            agent_cmd = handoff.get('agent', '')
+            next_steps += f"{i}. **{label}**"
+            if agent_cmd:
+                next_steps += f" (use `/{agent_cmd}` if available)"
+            next_steps += "\n"
+        return next_steps
+
+    else:
+        # Default fallback
+        return ""
+
+
+def _convert_handoffs_for_agent(content: str, agent: str) -> str:
+    """
+    Convert handoffs from frontmatter to agent-specific format.
+
+    For agents that support handoffs in frontmatter (Copilot, OpenCode, Windsurf),
+    returns content unchanged.
+
+    For agents that don't support handoffs, extracts them and converts to
+    appropriate format (subagents, textual guidance, etc.).
+    """
+    supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+
+    if supports_handoffs:
+        # Keep handoffs as-is
+        return content
+
+    # Extract and remove handoffs from frontmatter
+    cleaned_content, handoffs = _extract_handoffs_from_frontmatter(content)
+
+    # Convert handoffs to agent-specific next steps
+    next_steps = _convert_handoffs_to_next_steps(handoffs, agent)
+
+    # Append next steps to the body
+    return cleaned_content + next_steps
 
 
 def install_agent_commands(
@@ -1002,22 +1088,24 @@ def install_agent_commands(
                 content = source_file.read_text()
 
                 # Apply agent-specific content transformations
-                # Agents that support handoffs: copilot, opencode, windsurf
-                # Agents that don't: claude, codex, cursor-agent, qwen, q
-                supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+                # 1. Convert handoffs to agent-specific format
+                #    - Copilot/OpenCode/Windsurf: Keep handoffs in frontmatter
+                #    - Claude Code: Convert to "Recommended Next Steps" section
+                #    - Codex/Cursor/Qwen/Q: Convert to textual guidance
+                content = _convert_handoffs_for_agent(content, agent)
 
-                if not supports_handoffs:
-                    # Strip handoffs frontmatter for agents that don't support it
-                    content = _strip_handoffs_from_frontmatter(content)
-
+                # 2. Replace bash scripts with PowerShell if requested
                 if install_powershell:
-                    # Replace bash scripts with PowerShell equivalents
                     content = content.replace(
                         ".specify/scripts/bash/", ".specify/scripts/powershell/"
                     ).replace(".sh", ".ps1")
 
+                # Determine if we can use symlinks (no content transformations needed)
+                supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+                can_symlink = link and not install_powershell and supports_handoffs
+
                 # Write the processed content
-                if link and not install_powershell and supports_handoffs:
+                if can_symlink:
                     # Only symlink if no content transformations needed
                     install_file(source_file, dest_file)
                 else:

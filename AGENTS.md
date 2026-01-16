@@ -10,15 +10,18 @@ spec-kit-extensions supports multiple AI coding agents by:
 1. Detecting agent configuration in user projects
 2. Installing extension commands in agent-specific formats
 3. Configuring agent-specific directory structures
-4. **Automatically adapting frontmatter** - Strips unsupported features (like `handoffs:`) for agents that don't support them
+4. **Automatically adapting handoffs** - Converts workflow delegation to agent-specific formats
 
 The integration is handled primarily through the `specify-extend` CLI tool (`specify_extend.py`).
 
 ### Agent-Specific Adaptations
 
 When installing commands, `specify-extend` automatically:
-- **Removes `handoffs:` frontmatter** for agents that don't support it (Claude Code, Codex, Cursor, Qwen, Amazon Q)
-- **Preserves `handoffs:` frontmatter** for agents that do support it (GitHub Copilot, OpenCode, Windsurf)
+- **Preserves `handoffs:` frontmatter** for agents that support it (GitHub Copilot, OpenCode, Windsurf)
+- **Converts `handoffs:` to textual guidance** for agents that don't support frontmatter delegation:
+  - **Claude Code**: "Recommended Next Steps" section with `/command` suggestions
+  - **Codex**: "Next Steps" section with action items
+  - **Cursor/Qwen/Amazon Q**: "Workflow Continuation" section with command hints
 - **Converts script paths** when PowerShell mode is selected (bash → PowerShell)
 - **Creates prompt files** for GitHub Copilot (`.prompt.md` files pointing to `.agent.md` files)
 
@@ -362,17 +365,37 @@ Command content with $ARGUMENTS placeholder.
 
 **Handoffs support (workflow delegation):**
 
-Agents that support `handoffs:` in frontmatter:
+Agents that support `handoffs:` in frontmatter (preserved as-is):
 - ✅ **GitHub Copilot** - VS Code integration supports handoff UI
 - ✅ **OpenCode** - Has `agent` and `subtask` fields for delegation
 - ✅ **Windsurf** - Cascade delegation system
 
-Agents that don't support handoffs (spec-kit-extensions automatically strips them):
-- ❌ **Claude Code** - Only 8 specific frontmatter fields supported
-- ❌ **Codex** - Only name/description/allowed-tools supported
-- ❌ **Cursor** - Only description/globs/alwaysApply supported
-- ❌ **Amazon Q** - Uses JSON config instead of YAML
-- ❌ **Qwen** - TOML format, no handoffs
+Agents that don't support handoffs frontmatter (automatically converted to textual guidance):
+- 🔄 **Claude Code** - Converts to "Recommended Next Steps" section with slash command suggestions
+- 🔄 **Codex** - Converts to "Next Steps" section
+- 🔄 **Cursor** - Converts to "Workflow Continuation" section with command hints
+- 🔄 **Qwen** - Converts to "Workflow Continuation" section
+- 🔄 **Amazon Q** - Converts to "Workflow Continuation" section
+
+**Conversion Examples:**
+
+For Claude Code, handoffs like:
+```yaml
+handoffs:
+  - label: Create Implementation Plan
+    agent: speckit.plan
+    prompt: Create a plan...
+```
+
+Are converted to:
+```markdown
+## Recommended Next Steps
+
+After completing this workflow, consider these next steps:
+
+1. **Create Implementation Plan**: Run `/speckit.plan`
+   - Suggested prompt: Create a plan...
+```
 
 ### TOML Format
 
