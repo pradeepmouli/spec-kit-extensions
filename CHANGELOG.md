@@ -27,13 +27,22 @@ _(No template changes yet)_
 
 - **Handoff Conversion System** - Automatically converts workflow delegation to agent-specific formats
   - Agents that support `handoffs:` frontmatter (Copilot, OpenCode, Windsurf) preserve it unchanged
-  - **Claude Code**: Converts to "Recommended Next Steps" section with `/command` suggestions and prompts
-  - **Codex**: Converts to "Next Steps" section with action items
+  - **Claude Code**: Creates `.claude/agents/*.md` subagent files + "Recommended Next Steps" section
+  - **Codex**: Creates `.codex/skills/*.md` skill files + "Next Steps" section
   - **Cursor/Qwen/Amazon Q**: Converts to "Workflow Continuation" section with command hints
   - Added `_extract_handoffs_from_frontmatter()` to parse YAML handoffs data
   - Added `_convert_handoffs_to_next_steps()` for agent-specific text generation
   - Added `_convert_handoffs_for_agent()` as main conversion orchestrator
+  - Added `_create_claude_subagent_from_handoff()` to create Claude Code subagent files
+  - Added `_create_codex_skill_from_handoff()` to create Codex skill files
+  - Added `_create_subagents_from_handoffs()` to orchestrate subagent/skill creation
   - Added `pyyaml` dependency to `pyproject.toml` for YAML parsing
+
+- **True Workflow Delegation** - Claude Code and Codex now support actual delegatable agents/skills
+  - Subagents can be invoked directly: "Use the speckit.plan subagent to create a plan"
+  - Skills are automatically discovered and invoked by Codex
+  - Provides same workflow orchestration as GitHub Copilot handoffs, but agent-native
+  - Subagent files are idempotent (won't overwrite existing custom subagents)
 
 #### 🔧 Changed
 

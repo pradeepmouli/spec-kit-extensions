@@ -370,24 +370,40 @@ Agents that support `handoffs:` in frontmatter (preserved as-is):
 - ✅ **OpenCode** - Has `agent` and `subtask` fields for delegation
 - ✅ **Windsurf** - Cascade delegation system
 
-Agents that don't support handoffs frontmatter (automatically converted to textual guidance):
-- 🔄 **Claude Code** - Converts to "Recommended Next Steps" section with slash command suggestions
-- 🔄 **Codex** - Converts to "Next Steps" section
+Agents with native delegation support (creates subagent/skill files):
+- 🚀 **Claude Code** - Creates `.claude/agents/*.md` subagent files + adds "Recommended Next Steps" section
+- 🚀 **Codex** - Creates `.codex/skills/*.md` skill files + adds "Next Steps" section
+
+Agents with textual guidance only:
 - 🔄 **Cursor** - Converts to "Workflow Continuation" section with command hints
 - 🔄 **Qwen** - Converts to "Workflow Continuation" section
 - 🔄 **Amazon Q** - Converts to "Workflow Continuation" section
 
 **Conversion Examples:**
 
-For Claude Code, handoffs like:
-```yaml
-handoffs:
-  - label: Create Implementation Plan
-    agent: speckit.plan
-    prompt: Create a plan...
+**Claude Code** - Two-part conversion:
+
+1. **Creates subagent file** (`.claude/agents/speckit.plan.md`):
+```markdown
+---
+name: speckit.plan
+description: Create Implementation Plan. Handles plan workflow operations from spec-kit.
+tools: Read, Glob, Grep, Bash, Write
+model: haiku
+---
+
+# Create Implementation Plan
+
+You are a workflow automation specialist for the **plan** workflow in spec-kit projects.
+
+## Your Purpose
+
+Create a plan for the bugfix. I am fixing...
+
+[... full subagent instructions ...]
 ```
 
-Are converted to:
+2. **Adds textual guidance** to command file:
 ```markdown
 ## Recommended Next Steps
 
@@ -396,6 +412,8 @@ After completing this workflow, consider these next steps:
 1. **Create Implementation Plan**: Run `/speckit.plan`
    - Suggested prompt: Create a plan...
 ```
+
+**Codex** - Similar dual approach with `.codex/skills/speckit.plan.md` files
 
 ### TOML Format
 

@@ -978,6 +978,155 @@ def _convert_handoffs_to_next_steps(handoffs: list, agent: str) -> str:
         return ""
 
 
+def _create_claude_subagent_from_handoff(handoff: dict, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Create a Claude Code subagent file from a handoff definition.
+
+    Creates files in .claude/agents/ that can be invoked through delegation.
+    """
+    agent_name = handoff.get('agent', '').replace('speckit.', '')
+    if not agent_name:
+        return
+
+    label = handoff.get('label', 'Workflow step')
+    prompt = handoff.get('prompt', f'Execute {agent_name} workflow')
+
+    agents_dir = repo_root / ".claude" / "agents"
+    agent_file = agents_dir / f"{handoff.get('agent')}.md"
+
+    # Don't overwrite existing subagent files
+    if agent_file.exists():
+        return
+
+    # Create subagent content
+    subagent_content = f"""---
+name: {handoff.get('agent')}
+description: {label}. Handles {agent_name} workflow operations from spec-kit.
+tools: Read, Glob, Grep, Bash, Write
+model: haiku
+---
+
+# {label}
+
+You are a workflow automation specialist for the **{agent_name}** workflow in spec-kit projects.
+
+## Your Purpose
+
+{prompt}
+
+## Instructions
+
+This subagent is created to handle handoffs from spec-kit-extensions workflows.
+
+When invoked:
+1. Check if spec-kit's `/{handoff.get('agent')}` command exists
+2. If yes, invoke it with the user's context
+3. If no, provide guidance on what the {agent_name} workflow should accomplish
+
+## Workflow Context
+
+You have been delegated from another workflow step. The user's previous context
+and requirements should inform your actions.
+
+**Note**: This is a delegatable subagent created by spec-kit-extensions to provide
+true workflow orchestration for Claude Code users.
+"""
+
+    if not dry_run:
+        agents_dir.mkdir(parents=True, exist_ok=True)
+        agent_file.write_text(subagent_content)
+
+    if dry_run:
+        console.print(f"  [dim]Would create subagent: {handoff.get('agent')}[/dim]")
+    else:
+        console.print(f"  [green]✓[/green] Created subagent: {handoff.get('agent')}")
+
+
+def _create_codex_skill_from_handoff(handoff: dict, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Create a Codex SKILL.md file from a handoff definition.
+
+    Creates skill files that Codex can discover and invoke.
+    """
+    agent_name = handoff.get('agent', '').replace('speckit.', '')
+    if not agent_name:
+        return
+
+    label = handoff.get('label', 'Workflow step')
+    prompt = handoff.get('prompt', f'Execute {agent_name} workflow')
+
+    # Codex uses a different structure - skills are typically in project root or .codex/
+    skills_dir = repo_root / ".codex" / "skills"
+    skill_file = skills_dir / f"{handoff.get('agent')}.md"
+
+    # Don't overwrite existing skill files
+    if skill_file.exists():
+        return
+
+    # Create skill content (Codex format)
+    skill_content = f"""---
+name: {handoff.get('agent')}
+description: {label}. Handles {agent_name} workflow operations from spec-kit.
+allowed-tools: [read, glob, grep, bash, write]
+---
+
+# {label}
+
+This skill handles the **{agent_name}** workflow step in spec-kit projects.
+
+## Purpose
+
+{prompt}
+
+## Usage
+
+This skill is invoked as part of workflow orchestration. When called:
+
+1. Verify spec-kit's `/{handoff.get('agent')}` command exists
+2. Execute the command with appropriate context
+3. Return results to the calling workflow
+
+## Context
+
+This skill was created by spec-kit-extensions to enable workflow delegation
+in Codex, similar to how handoffs work in GitHub Copilot.
+"""
+
+    if not dry_run:
+        skills_dir.mkdir(parents=True, exist_ok=True)
+        skill_file.write_text(skill_content)
+
+    if dry_run:
+        console.print(f"  [dim]Would create skill: {handoff.get('agent')}[/dim]")
+    else:
+        console.print(f"  [green]✓[/green] Created skill: {handoff.get('agent')}")
+
+
+def _create_subagents_from_handoffs(content: str, agent: str, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Extract handoffs from command content and create subagent/skill files.
+
+    For Claude Code: Creates .claude/agents/*.md files
+    For Codex: Creates .codex/skills/*.md files
+    For other agents: No-op (they either support handoffs natively or use text guidance)
+    """
+    if agent not in ["claude", "codex"]:
+        return
+
+    # Extract handoffs
+    _, handoffs = _extract_handoffs_from_frontmatter(content)
+
+    if not handoffs:
+        return
+
+    # Create subagent/skill files based on agent type
+    for handoff in handoffs:
+        if agent == "claude":
+            _create_claude_subagent_from_handoff(handoff, repo_root, dry_run)
+        elif agent == "codex":
+            _create_codex_skill_from_handoff(handoff, repo_root, dry_run)
+
+
 def _convert_handoffs_for_agent(content: str, agent: str) -> str:
     """
     Convert handoffs from frontmatter to agent-specific format.
@@ -1087,11 +1236,16 @@ def install_agent_commands(
             if not dry_run:
                 content = source_file.read_text()
 
+                # For Claude Code and Codex: Create subagent/skill files from handoffs
+                # This enables true delegation instead of just textual guidance
+                _create_subagents_from_handoffs(content, agent, repo_root, dry_run)
+
                 # Apply agent-specific content transformations
                 # 1. Convert handoffs to agent-specific format
                 #    - Copilot/OpenCode/Windsurf: Keep handoffs in frontmatter
-                #    - Claude Code: Convert to "Recommended Next Steps" section
-                #    - Codex/Cursor/Qwen/Q: Convert to textual guidance
+                #    - Claude Code: Convert to "Recommended Next Steps" section + create subagents
+                #    - Codex: Convert to textual guidance + create skills
+                #    - Cursor/Qwen/Q: Convert to textual guidance
                 content = _convert_handoffs_for_agent(content, agent)
 
                 # 2. Replace bash scripts with PowerShell if requested
