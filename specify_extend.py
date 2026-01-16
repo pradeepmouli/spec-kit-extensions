@@ -147,6 +147,9 @@ AGENT_CONFIG = {
     },
 }
 
+# Agents that support handoffs in frontmatter
+AGENTS_WITH_HANDOFF_SUPPORT = ["copilot", "opencode", "windsurf"]
+
 
 def _github_token(cli_token: str | None = None) -> str | None:
     """Return GitHub token from CLI arg, GH_TOKEN, or GITHUB_TOKEN env vars."""
@@ -1320,7 +1323,7 @@ def _convert_handoffs_for_agent(content: str, agent: str) -> str:
     For Claude Code: Converts to hooks + textual guidance (hybrid approach)
     For other agents: Converts to textual guidance only
     """
-    supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+    supports_handoffs = agent in AGENTS_WITH_HANDOFF_SUPPORT
 
     if supports_handoffs:
         # Keep handoffs as-is
@@ -1448,7 +1451,7 @@ def install_agent_commands(
                     ).replace(".sh", ".ps1")
 
                 # Determine if we can use symlinks (no content transformations needed)
-                supports_handoffs = agent in ["copilot", "opencode", "windsurf"]
+                supports_handoffs = agent in AGENTS_WITH_HANDOFF_SUPPORT
                 can_symlink = link and not install_powershell and supports_handoffs
 
                 # Write the processed content
