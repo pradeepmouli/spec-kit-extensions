@@ -63,7 +63,7 @@ GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Workflow extensions: Create workflow directories with specs, plans, and tasks
-WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup"]
+WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "story-to-issue"]
 
 # Command extensions: Provide commands without creating workflow directories
 COMMAND_EXTENSIONS = ["review", "incorporate"]
@@ -146,6 +146,9 @@ AGENT_CONFIG = {
         "requires_cli": False,
     },
 }
+
+# Agents that support handoffs in frontmatter
+AGENTS_WITH_HANDOFF_SUPPORT = ["copilot", "opencode", "windsurf"]
 
 
 def _github_token(cli_token: str | None = None) -> str | None:
@@ -969,6 +972,375 @@ def install_extension_files(
                     console.print(f"[yellow]⚠[/yellow] Script {script_name} not found")
 
 
+def _convert_handoffs_to_hooks(handoffs: list) -> dict:
+    """
+    Convert handoffs list to Claude Code hooks format.
+
+    Creates a Stop hook with prompt-based suggestions for next workflow steps.
+    """
+    if not handoffs:
+        return {}
+
+    # Build the prompt text for Stop hook
+    prompt_lines = ["After completing this workflow, consider these next steps:\n"]
+
+    for i, handoff in enumerate(handoffs, 1):
+        label = handoff.get('label', 'Next step')
+        command = handoff.get('agent', '')
+        prompt = handoff.get('prompt', '')
+
+        prompt_lines.append(f"{i}. **{label}**")
+        if command:
+            prompt_lines.append(f"   - Run: `/{command}` or use the `{command}` subagent")
+        if prompt:
+            prompt_lines.append(f"   - Context: {prompt}")
+
+    prompt_text = "\n".join(prompt_lines)
+
+    # Create hooks structure
+    hooks = {
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "prompt",
+                        "prompt": prompt_text
+                    }
+                ]
+            }
+        ]
+    }
+
+    return hooks
+
+
+def _add_hooks_to_frontmatter(content: str, hooks: dict) -> str:
+    """
+    Add hooks section to YAML frontmatter.
+
+    Parses existing frontmatter, adds hooks, and reconstructs the content.
+    """
+    import yaml
+
+    if not hooks:
+        return content
+
+    # Match YAML frontmatter block
+    frontmatter_pattern = r'^---\n(.*?)\n---\n(.*)$'
+    match = re.match(frontmatter_pattern, content, re.DOTALL)
+
+    if not match:
+        # No frontmatter, add it
+        frontmatter_data = {"hooks": hooks}
+        yaml_str = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False)
+        return f"---\n{yaml_str}---\n{content}"
+
+    frontmatter_text = match.group(1)
+    body = match.group(2)
+
+    # Parse existing frontmatter
+    try:
+        frontmatter_data = yaml.safe_load(frontmatter_text) or {}
+    except Exception:
+        frontmatter_data = {}
+
+    # Add hooks (merge if existing)
+    if 'hooks' in frontmatter_data:
+        # Merge hooks - add Stop hooks if not present
+        existing_hooks = frontmatter_data['hooks']
+        if 'Stop' not in existing_hooks:
+            existing_hooks['Stop'] = hooks['Stop']
+    else:
+        frontmatter_data['hooks'] = hooks
+
+    # Reconstruct frontmatter
+    yaml_str = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False)
+
+    return f"---\n{yaml_str}---\n{body}"
+
+
+def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
+    """
+    Extract and remove handoffs section from YAML frontmatter.
+
+    Returns (cleaned_content, handoffs_list) where handoffs_list is a list of dicts
+    containing the handoff information.
+    """
+    import re
+    import yaml
+
+    # Match YAML frontmatter block
+    frontmatter_pattern = r'^---\n(.*?)\n---\n(.*)$'
+    match = re.match(frontmatter_pattern, content, re.DOTALL)
+
+    if not match:
+        # No frontmatter found, return as-is with empty handoffs
+        return content, []
+
+    frontmatter_text = match.group(1)
+    body = match.group(2)
+
+    # Parse YAML to extract handoffs
+    try:
+        frontmatter_data = yaml.safe_load(frontmatter_text)
+        handoffs = frontmatter_data.get('handoffs', []) if frontmatter_data else []
+    except Exception:
+        # If YAML parsing fails, fall back to no handoffs
+        handoffs = []
+
+    # Remove handoffs key from the parsed frontmatter dictionary
+    if frontmatter_data:
+        frontmatter_data.pop('handoffs', None)
+    
+    # Regenerate frontmatter YAML from the cleaned dictionary
+    if frontmatter_data:
+        frontmatter_cleaned = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False).strip()
+    else:
+        frontmatter_cleaned = ''
+
+    # If removing handoffs leaves no frontmatter content, drop frontmatter entirely
+    if not frontmatter_cleaned:
+        return body, handoffs
+    # Reconstruct the file without handoffs (frontmatter_cleaned is non-empty here)
+    cleaned_content = f"---\n{frontmatter_cleaned}\n---\n{body}"
+
+    return cleaned_content, handoffs
+
+
+def _convert_handoffs_to_next_steps(handoffs: list, agent: str) -> str:
+    """
+    Convert handoffs list to agent-specific "next steps" text.
+
+    Different agents have different delegation mechanisms:
+    - Claude Code: Suggest using /command or Skill tool
+    - Codex/Cursor/Qwen/Q: Provide textual guidance
+    """
+    if not handoffs:
+        return ""
+
+    if agent == "claude":
+        # Claude Code - suggest slash commands and Skill tool
+        next_steps = "\n\n---\n\n## Recommended Next Steps\n\n"
+        next_steps += "After completing this workflow, consider these next steps:\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            agent_cmd = handoff.get('agent', '')
+            prompt = handoff.get('prompt', '')
+            next_steps += f"{i}. **{label}**: Run `/{agent_cmd}`"
+            if prompt:
+                next_steps += f"\n   - Suggested prompt: {prompt}"
+            next_steps += "\n"
+        return next_steps
+
+    elif agent == "codex":
+        # Codex - simple textual guidance
+        next_steps = "\n\n---\n\n## Next Steps\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            next_steps += f"{i}. {label}\n"
+        return next_steps
+
+    elif agent in ["cursor-agent", "qwen", "q"]:
+        # Cursor/Qwen/Amazon Q - textual guidance with command hints
+        next_steps = "\n\n---\n\n## Workflow Continuation\n\n"
+        next_steps += "To continue this workflow:\n\n"
+        for i, handoff in enumerate(handoffs, 1):
+            label = handoff.get('label', 'Next step')
+            agent_cmd = handoff.get('agent', '')
+            next_steps += f"{i}. **{label}**"
+            if agent_cmd:
+                next_steps += f" (use `/{agent_cmd}` if available)"
+            next_steps += "\n"
+        return next_steps
+
+    else:
+        # Default fallback
+        return ""
+
+
+def _create_claude_subagent_from_handoff(handoff: dict, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Create a Claude Code subagent file from a handoff definition.
+
+    Creates files in .claude/agents/ that can be invoked through delegation.
+    """
+    agent_name = handoff.get('agent', '').replace('speckit.', '')
+    if not agent_name:
+        return
+
+    label = handoff.get('label', 'Workflow step')
+    prompt = handoff.get('prompt', f'Execute {agent_name} workflow')
+
+    agents_dir = repo_root / ".claude" / "agents"
+    agent_file = agents_dir / f"{handoff.get('agent')}.md"
+
+    # Don't overwrite existing subagent files
+    if agent_file.exists():
+        return
+
+    # Create subagent content
+    subagent_content = f"""---
+name: {handoff.get('agent')}
+description: {label}. Handles {agent_name} workflow operations from spec-kit.
+tools: Read, Glob, Grep, Bash, Write
+model: haiku
+---
+
+# {label}
+
+You are a workflow automation specialist for the **{agent_name}** workflow in spec-kit projects.
+
+## Your Purpose
+
+{prompt}
+
+## Instructions
+
+This subagent is created to handle handoffs from spec-kit-extensions workflows.
+
+When invoked:
+1. Check if spec-kit's `/{handoff.get('agent')}` command exists
+2. If yes, invoke it with the user's context
+3. If no, provide guidance on what the {agent_name} workflow should accomplish
+
+## Workflow Context
+
+You have been delegated from another workflow step. The user's previous context
+and requirements should inform your actions.
+
+**Note**: This is a delegatable subagent created by spec-kit-extensions to provide
+true workflow orchestration for Claude Code users.
+"""
+
+    if not dry_run:
+        agents_dir.mkdir(parents=True, exist_ok=True)
+        agent_file.write_text(subagent_content)
+
+    if dry_run:
+        console.print(f"  [dim]Would create subagent: {handoff.get('agent')}[/dim]")
+    else:
+        console.print(f"  [green]✓[/green] Created subagent: {handoff.get('agent')}")
+
+
+def _create_codex_skill_from_handoff(handoff: dict, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Create a Codex SKILL.md file from a handoff definition.
+
+    Creates skill files that Codex can discover and invoke.
+    """
+    agent_name = handoff.get('agent', '').replace('speckit.', '')
+    if not agent_name:
+        return
+
+    label = handoff.get('label', 'Workflow step')
+    prompt = handoff.get('prompt', f'Execute {agent_name} workflow')
+
+    # Codex uses a different structure - skills are typically in project root or .codex/
+    skills_dir = repo_root / ".codex" / "skills"
+    skill_file = skills_dir / f"{handoff.get('agent')}.md"
+
+    # Don't overwrite existing skill files
+    if skill_file.exists():
+        return
+
+    # Create skill content (Codex format)
+    skill_content = f"""---
+name: {handoff.get('agent')}
+description: {label}. Handles {agent_name} workflow operations from spec-kit.
+allowed-tools: [read, glob, grep, bash, write]
+---
+
+# {label}
+
+This skill handles the **{agent_name}** workflow step in spec-kit projects.
+
+## Purpose
+
+{prompt}
+
+## Usage
+
+This skill is invoked as part of workflow orchestration. When called:
+
+1. Verify spec-kit's `/{handoff.get('agent')}` command exists
+2. Execute the command with appropriate context
+3. Return results to the calling workflow
+
+## Context
+
+This skill was created by spec-kit-extensions to enable workflow delegation
+in Codex, similar to how handoffs work in GitHub Copilot.
+"""
+
+    if not dry_run:
+        skills_dir.mkdir(parents=True, exist_ok=True)
+        skill_file.write_text(skill_content)
+
+    if dry_run:
+        console.print(f"  [dim]Would create skill: {handoff.get('agent')}[/dim]")
+    else:
+        console.print(f"  [green]✓[/green] Created skill: {handoff.get('agent')}")
+
+
+def _create_subagents_from_handoffs(content: str, agent: str, repo_root: Path, dry_run: bool = False) -> None:
+    """
+    Extract handoffs from command content and create subagent/skill files.
+
+    For Claude Code: Creates .claude/agents/*.md files
+    For Codex: Creates .codex/skills/*.md files
+    For other agents: No-op (they either support handoffs natively or use text guidance)
+    """
+    if agent not in ["claude", "codex"]:
+        return
+
+    # Extract handoffs
+    _, handoffs = _extract_handoffs_from_frontmatter(content)
+
+    if not handoffs:
+        return
+
+    # Create subagent/skill files based on agent type
+    for handoff in handoffs:
+        if agent == "claude":
+            _create_claude_subagent_from_handoff(handoff, repo_root, dry_run)
+        elif agent == "codex":
+            _create_codex_skill_from_handoff(handoff, repo_root, dry_run)
+
+
+def _convert_handoffs_for_agent(content: str, agent: str) -> str:
+    """
+    Convert handoffs from frontmatter to agent-specific format.
+
+    For agents that support handoffs in frontmatter (Copilot, OpenCode, Windsurf),
+    returns content unchanged.
+
+    For Claude Code: Converts to hooks + textual guidance (hybrid approach)
+    For other agents: Converts to textual guidance only
+    """
+    supports_handoffs = agent in AGENTS_WITH_HANDOFF_SUPPORT
+
+    if supports_handoffs:
+        # Keep handoffs as-is
+        return content
+
+    # Extract and remove handoffs from frontmatter
+    cleaned_content, handoffs = _extract_handoffs_from_frontmatter(content)
+
+    # Special handling for Claude Code: Add hooks + textual guidance
+    if agent == "claude" and handoffs:
+        # Convert handoffs to hooks format
+        hooks = _convert_handoffs_to_hooks(handoffs)
+
+        # Add hooks to frontmatter
+        cleaned_content = _add_hooks_to_frontmatter(cleaned_content, hooks)
+
+    # Convert handoffs to agent-specific next steps text
+    next_steps = _convert_handoffs_to_next_steps(handoffs, agent)
+
+    # Append next steps to the body
+    return cleaned_content + next_steps
+
+
 def install_agent_commands(
     repo_root: Path,
     source_dir: Path,
@@ -1050,17 +1422,39 @@ def install_agent_commands(
 
         if source_file.exists():
             if not dry_run:
+                content = source_file.read_text()
+
+                # For Claude Code and Codex: Create subagent/skill files from handoffs
+                # This enables true delegation instead of just textual guidance.
+                # Note: This block only runs when not dry_run (see outer if), so we
+                # pass through the current dry_run value for clarity and maintainability.
+                _create_subagents_from_handoffs(content, agent, repo_root, dry_run=dry_run)
+
+                # Apply agent-specific content transformations
+                # 1. Convert handoffs to agent-specific format
+                #    - Copilot/OpenCode/Windsurf: Keep handoffs in frontmatter
+                #    - Claude Code: Convert to "Recommended Next Steps" section + create subagents
+                #    - Codex: Convert to textual guidance + create skills
+                #    - Cursor/Qwen/Q: Convert to textual guidance
+                content = _convert_handoffs_for_agent(content, agent)
+
+                # 2. Replace bash scripts with PowerShell if requested
                 if install_powershell:
-                    content = source_file.read_text()
-                    # Replace bash script paths with PowerShell paths
                     content = content.replace(
                         ".specify/scripts/bash/", ".specify/scripts/powershell/"
-                    )
-                    # Only replace `.sh` when it appears as a file extension (word boundary)
-                    content = re.sub(r"\.sh\b", ".ps1", content)
-                    dest_file.write_text(content)
-                else:
+                    ).replace(".sh", ".ps1")
+
+                # Determine if we can use symlinks (no content transformations needed)
+                supports_handoffs = agent in AGENTS_WITH_HANDOFF_SUPPORT
+                can_symlink = link and not install_powershell and supports_handoffs
+
+                # Write the processed content
+                if can_symlink:
+                    # Only symlink if no content transformations needed
                     install_file(source_file, dest_file)
+                else:
+                    # Write transformed content
+                    dest_file.write_text(content)
 
                 # For GitHub Copilot, also create a prompt file that points to the agent
                 if agent == "copilot":

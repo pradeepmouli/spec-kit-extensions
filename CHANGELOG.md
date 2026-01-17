@@ -272,11 +272,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now consistent with `specify init --script sh` (bash only) and `--script ps` (PowerShell only)
   - Prevents mixed script installations that could cause confusion
 
-#### 📦 Components
+_(No template changes yet)_
 
-- **Extension Templates Version**: v2.4.0
-- **Compatible Spec Kit Version**: v0.0.80+
-- **Compatible specify-extend**: v1.5.0+
+---
+
+## CLI Tool (`specify-extend`)
+
+### [Unreleased]
+
+#### ✨ Added
+
+- **Handoff Conversion System** - Automatically converts workflow delegation to agent-specific formats
+  - Agents that support `handoffs:` frontmatter (Copilot, OpenCode, Windsurf) preserve it unchanged
+  - **Claude Code**: Triple approach for maximum flexibility
+    * Creates `.claude/agents/*.md` subagent files for direct invocation
+    * Adds `hooks:` Stop hooks in frontmatter for programmatic suggestions
+    * Adds "Recommended Next Steps" text section for manual guidance
+  - **Codex**: Creates `.codex/skills/*.md` skill files + "Next Steps" section
+  - **Cursor/Qwen/Amazon Q**: Converts to "Workflow Continuation" section with command hints
+  - Added `_extract_handoffs_from_frontmatter()` to parse YAML handoffs data
+  - Added `_convert_handoffs_to_next_steps()` for agent-specific text generation
+  - Added `_convert_handoffs_to_hooks()` to convert handoffs to Claude Code hooks format
+  - Added `_add_hooks_to_frontmatter()` to inject hooks into YAML frontmatter
+  - Added `_convert_handoffs_for_agent()` as main conversion orchestrator
+  - Added `_create_claude_subagent_from_handoff()` to create Claude Code subagent files
+  - Added `_create_codex_skill_from_handoff()` to create Codex skill files
+  - Added `_create_subagents_from_handoffs()` to orchestrate subagent/skill creation
+  - Added `pyyaml` dependency to `pyproject.toml` for YAML parsing
+
+- **True Workflow Delegation** - Claude Code and Codex now support actual delegatable agents/skills
+  - **Claude Code**: Stop hooks programmatically suggest next steps after command completion
+  - Subagents can be invoked directly: "Use the speckit.plan subagent to create a plan"
+  - Claude sees hook suggestions and can automatically delegate to subagents
+  - Skills are automatically discovered and invoked by Codex
+  - Provides same workflow orchestration as GitHub Copilot handoffs, but agent-native
+  - Subagent files are idempotent (won't overwrite existing custom subagents)
+  - Hooks use `type: prompt` for LLM-based suggestions (no bash scripts required)
+
+#### 🔧 Changed
+
+- **Improved Agent Support** - Each agent now gets appropriate workflow continuation guidance
+  - Previously: Handoffs were simply stripped for unsupported agents
+  - Now: Handoffs are intelligently converted to textual guidance matching agent conventions
+  - Benefits agents without frontmatter support (Claude Code, Codex, Cursor, Qwen, Amazon Q)
+
+#### 📚 Documentation
+
+- **AGENTS.md** - Comprehensive handoffs conversion documentation
+  - Documents which agents support handoffs frontmatter (Copilot, OpenCode, Windsurf)
+  - Documents conversion format for each agent type
+  - Added conversion examples showing YAML → Markdown transformation
+  - Updated "Agent-Specific Adaptations" section with conversion details
 
 ---
 

@@ -10,8 +10,20 @@ spec-kit-extensions supports multiple AI coding agents by:
 1. Detecting agent configuration in user projects
 2. Installing extension commands in agent-specific formats
 3. Configuring agent-specific directory structures
+4. **Automatically adapting handoffs** - Converts workflow delegation to agent-specific formats
 
 The integration is handled primarily through the `specify-extend` CLI tool (`specify_extend.py`).
+
+### Agent-Specific Adaptations
+
+When installing commands, `specify-extend` automatically:
+- **Preserves `handoffs:` frontmatter** for agents that support it (GitHub Copilot, OpenCode, Windsurf)
+- **Converts `handoffs:` to textual guidance** for agents that don't support frontmatter delegation:
+  - **Claude Code**: "Recommended Next Steps" section with `/command` suggestions
+  - **Codex**: "Next Steps" section with action items
+  - **Cursor/Qwen/Amazon Q**: "Workflow Continuation" section with command hints
+- **Converts script paths** when PowerShell mode is selected (bash → PowerShell)
+- **Creates prompt files** for GitHub Copilot (`.prompt.md` files pointing to `.agent.md` files)
 
 ## Steps to Add a New Agent
 
@@ -350,6 +362,79 @@ mode: speckit.command-name
 
 Command content with $ARGUMENTS placeholder.
 ```
+
+**Handoffs support (workflow delegation):**
+
+Agents that support `handoffs:` in frontmatter (preserved as-is):
+- ✅ **GitHub Copilot** - VS Code integration supports handoff UI
+- ✅ **OpenCode** - Has `agent` and `subtask` fields for delegation
+- ✅ **Windsurf** - Cascade delegation system
+
+Agents with native delegation support (creates subagent/skill files + hooks):
+- 🚀 **Claude Code** - Triple approach:
+  1. Creates `.claude/agents/*.md` subagent files for direct invocation
+  2. Adds `hooks:` Stop hooks in frontmatter for programmatic suggestions
+  3. Adds "Recommended Next Steps" text section for manual guidance
+- 🚀 **Codex** - Creates `.codex/skills/*.md` skill files + adds "Next Steps" section
+
+Agents with textual guidance only:
+- 🔄 **Cursor** - Converts to "Workflow Continuation" section with command hints
+- 🔄 **Qwen** - Converts to "Workflow Continuation" section
+- 🔄 **Amazon Q** - Converts to "Workflow Continuation" section
+
+**Conversion Examples:**
+
+**Claude Code** - Triple approach combining hooks, subagents, and text:
+
+1. **Creates subagent file** (`.claude/agents/speckit.plan.md`):
+```markdown
+---
+name: speckit.plan
+description: Create Implementation Plan. Handles plan workflow operations from spec-kit.
+tools: Read, Glob, Grep, Bash, Write
+model: haiku
+---
+
+# Create Implementation Plan
+
+You are a workflow automation specialist for the **plan** workflow in spec-kit projects.
+
+[... full subagent instructions ...]
+```
+
+2. **Adds Stop hook** to command frontmatter (`.claude/commands/speckit.bugfix.md`):
+```yaml
+---
+description: Create a bug fix workflow
+hooks:
+  Stop:
+  - hooks:
+    - type: prompt
+      prompt: |
+        After completing this workflow, consider these next steps:
+
+        1. **Create Implementation Plan**
+           - Run: `/speckit.plan` or use the `speckit.plan` subagent
+           - Context: Create a plan for the bugfix...
+---
+```
+
+3. **Adds textual guidance** at end of command file:
+```markdown
+## Recommended Next Steps
+
+After completing this workflow, consider these next steps:
+
+1. **Create Implementation Plan**: Run `/speckit.plan`
+   - Suggested prompt: Create a plan...
+```
+
+This triple approach provides:
+- **Programmatic**: Stop hook suggests next steps after command completes
+- **Delegatable**: Subagent files Claude can invoke automatically
+- **Manual**: Text guidance users can read and follow
+
+**Codex** - Dual approach with `.codex/skills/speckit.plan.md` files + text guidance
 
 ### TOML Format
 
