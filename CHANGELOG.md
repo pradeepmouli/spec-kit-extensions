@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.6
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.7
 - **CLI Tool** (`specify-extend`) - Currently at v1.5.9
 
 ---
@@ -65,6 +65,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [2.5.7] - 2026-01-18
+
+#### 🚀 Added
+
+- **Story-to-Issue Workflow** - New workflow for creating GitHub issues from story-level specifications
+  - Added `extensions/workflows/story-to-issue/README.md`
+  - New workflow directory structure for story-level issue creation
+  - Supports converting story specs into properly formatted GitHub issues
+  - Affects: `extensions/workflows/story-to-issue/` (new directory)
+
+- **Story-to-Issue Command** - New command template for story-level issue creation
+  - Added `commands/speckit.story-to-issue.md`
+  - Provides AI agent guidance for story-to-issue workflow
+  - Integrates with GitHub issue creation process
+  - Affects: `commands/speckit.story-to-issue.md` (new file)
+
+#### 🔧 Changed/Improved
+
+- **Incorporate Command** - Enhanced incorporate command documentation
+  - Updated `commands/speckit.incorporate.md` with improved guidance
+  - Better integration instructions and examples
+  - Affects: `commands/speckit.incorporate.md`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.7
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.9+
+
+---
 
 ### [2.5.6] - 2026-01-07
 
