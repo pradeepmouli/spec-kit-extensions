@@ -6,21 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.7
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.9
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.8
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.10
 
 ---
 
 ## CLI Tool (`specify-extend`)
 
+### [1.5.10] - 2026-01-18
+
+#### 🔧 Changed/Improved
+
+- **Extension Rename: story-to-issue → phasestoissues** - Renamed for consistency with spec-kit naming conventions
+  - Updated `WORKFLOW_EXTENSIONS` list: `story-to-issue` → `phasestoissues`
+  - Matches spec-kit convention (e.g., `taskstoissues` without hyphens)
+  - Conceptual shift: One issue per development phase (vs. one per story)
+  - Affects: `specify_extend.py`
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.10
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.8
+
+---
+
 ### [1.5.9] - 2026-01-18
 
 #### 🚀 Added
 
-- **Story-to-Issue Workflow Integration** - New command for creating GitHub issues from story-level specifications
-  - Added `story-to-issue` to `WORKFLOW_EXTENSIONS` list
-  - New command file: `commands/speckit.story-to-issue.md`
-  - Supports story-level GitHub issue creation workflow
+- **PhasesToIssues Workflow Integration** - New command for creating GitHub issues from development phases
+  - Added `phasestoissues` to `WORKFLOW_EXTENSIONS` list
+  - New command file: `commands/speckit.phasestoissues.md`
+  - Supports phase-level GitHub issue creation workflow
   - Affects: `specify_extend.py` (AVAILABLE_EXTENSIONS, WORKFLOW_EXTENSIONS)
 
 - **Agent Handoffs Constant** - Centralized agent capability tracking
@@ -66,21 +84,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Extension Templates
 
+### [2.5.8] - 2026-01-18
+
+#### 🔧 Changed/Improved
+
+- **Extension Rename: story-to-issue → phasestoissues** - Renamed for consistency with spec-kit naming conventions
+  - Command renamed: `speckit.story-to-issue.md` → `speckit.phasestoissues.md`
+  - Workflow directory renamed: `story-to-issue/` → `phasestoissues/`
+  - Documentation renamed: `story-to-issue.md` → `phasestoissues.md`
+  - Matches spec-kit convention (e.g., `taskstoissues` without hyphens)
+  - Conceptual shift: One issue per development phase (vs. one per story)
+  - Enables better parallelization and phase-based delegation
+  - Affects: `commands/`, `extensions/workflows/`, `docs/`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.8
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
+
 ### [2.5.7] - 2026-01-18
 
 #### 🚀 Added
 
-- **Story-to-Issue Workflow** - New workflow for creating GitHub issues from story-level specifications
-  - Added `extensions/workflows/story-to-issue/README.md`
-  - New workflow directory structure for story-level issue creation
-  - Supports converting story specs into properly formatted GitHub issues
-  - Affects: `extensions/workflows/story-to-issue/` (new directory)
+- **PhasesToIssues Workflow** - New workflow for creating GitHub issues from development phases
+  - Added `extensions/workflows/phasestoissues/README.md`
+  - New workflow directory structure for phase-level issue creation
+  - Supports converting phase specs into properly formatted GitHub issues
+  - Affects: `extensions/workflows/phasestoissues/` (new directory)
 
-- **Story-to-Issue Command** - New command template for story-level issue creation
-  - Added `commands/speckit.story-to-issue.md`
-  - Provides AI agent guidance for story-to-issue workflow
+- **PhasesToIssues Command** - New command template for phase-level issue creation
+  - Added `commands/speckit.phasestoissues.md`
+  - Provides AI agent guidance for phasestoissues workflow
   - Integrates with GitHub issue creation process
-  - Affects: `commands/speckit.story-to-issue.md` (new file)
+  - Affects: `commands/speckit.phasestoissues.md` (new file)
 
 #### 🔧 Changed/Improved
 

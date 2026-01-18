@@ -22,7 +22,7 @@
 ### Command Extensions (provide commands without workflow structure)
 
 - **`/speckit.review`** - Review completed work with structured feedback
-- **`/speckit.story-to-issue`** - Create GitHub issue per story with tasks as checkboxes
+- **`/speckit.phasestoissues`** - Create individual GitHub issues for each development phase
 ## Why Use These Extensions?
 
 ### The Problem
@@ -54,7 +54,7 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
 | **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
 | **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
-| **GitHub Issues** | ❌ Manual or fragmented | ✅ `/speckit.story-to-issue` with story-level tracking |
+| **GitHub Issues** | ❌ Manual or fragmented | ✅ `/speckit.phasestoissues` with phase-level tracking |
 ### Benefits
 ## Real-World Validation
 
@@ -252,7 +252,7 @@ Reviewing completed work?
 └─ Use `/speckit.review [task-id]`
 
 Creating GitHub issues?
-└─ Use `/speckit.story-to-issue` (one issue per story with task checkboxes)
+└─ Use `/speckit.phasestoissues` (create issues for each development phase)
 ```
 
 ### Example: Fix a Bug
@@ -311,17 +311,17 @@ Creating GitHub issues?
 /speckit.plan      # Creates spec.md with story and acceptance criteria
 /speckit.tasks     # Creates tasks.md with task breakdown
 
-# Create a single GitHub issue with full context
-/speckit.story-to-issue
-# Creates: One GitHub issue with:
-#   - Story description
+# Create GitHub issues for each development phase
+/speckit.phasestoissues
+# Creates: Individual GitHub issues for each phase:
+#   - Phase description
 #   - Acceptance criteria
-#   - All tasks as checkboxes
-#   - Implementation plan summary
+#   - Related tasks
+#   - Implementation guidance
 #   - Workflow-aware labels
-# Output: Issue #123 created with URL
+# Output: Issues created for each phase with URLs
 
-# Track progress by checking off tasks in GitHub
+# Track progress across phases in GitHub
 # Use /speckit.review when ready for validation
 ```
 
@@ -339,7 +339,7 @@ Creating GitHub issues?
 | **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
 | **Review** | `/speckit.review [task-id]` | Structured feedback | Verify tests |
 | **Cleanup** | `/speckit.cleanup` | Automated scripts | Manual verification |
-| **Story→Issue** | `/speckit.story-to-issue` | GitHub integration | N/A (tracking only) |
+| **Phases→Issues** | `/speckit.phasestoissues` | GitHub integration | N/A (tracking only) |
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
 - **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents

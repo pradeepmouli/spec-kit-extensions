@@ -45,7 +45,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.5.9"
+__version__ = "1.5.10"
 
 # Initialize Rich console
 console = Console()
@@ -63,7 +63,7 @@ GITHUB_REPO = f"{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Workflow extensions: Create workflow directories with specs, plans, and tasks
-WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "story-to-issue"]
+WORKFLOW_EXTENSIONS = ["baseline", "bugfix", "enhance", "modify", "refactor", "hotfix", "deprecate", "cleanup", "phasestoissues"]
 
 # Command extensions: Provide commands without creating workflow directories
 COMMAND_EXTENSIONS = ["review", "incorporate"]

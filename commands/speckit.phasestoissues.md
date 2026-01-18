@@ -1,5 +1,5 @@
 ---
-description: Convert the current feature/story into a single GitHub issue with tasks as checkboxes, based on available design artifacts.
+description: Convert development phases into individual GitHub issues for better tracking and collaboration.
 handoffs:
   - label: Create Implementation Plan
     agent: speckit.plan
@@ -55,13 +55,13 @@ git config --get remote.origin.url
 - Remote URL cannot be determined
 - Repository does not match expected pattern
 
-### 3. Extract Story Information
+### 3. Extract Phase Information
 
 Load and parse the specification file (`$FEATURE_SPEC` / spec.md):
 
 **Extract:**
-- **Story Title**: First H1 heading or feature name from directory
-- **Story Description**: Content under "Story" or "Overview" section
+- **Phase Title**: First H1 heading or feature name from directory
+- **Phase Description**: Content under "Story" or "Overview" section
 - **Acceptance Criteria**: Content under "Acceptance Criteria" section
 - **Context/Background**: Any additional context sections
 
@@ -80,9 +80,9 @@ Load and parse the specification file (`$FEATURE_SPEC` / spec.md):
 Construct a comprehensive GitHub issue with this structure:
 
 ```markdown
-## Story
+## Description
 
-[Story description from spec.md]
+[Phase description from spec.md]
 
 ## Acceptance Criteria
 
@@ -146,7 +146,7 @@ Use the GitHub MCP server tool to create the issue:
 **Required:**
 - `owner`: Extract from Git remote URL
 - `repo`: Extract from Git remote URL
-- `title`: Story title from spec.md
+- `title`: Phase title from spec.md
 - `body`: Formatted issue body from step 4
 - `labels`: Labels from step 5
 
@@ -156,7 +156,7 @@ Use the GitHub MCP server tool to create the issue:
 **Example:**
 ```
 Repository: github.com/user/repo
-Title: Implement user authentication workflow
+Title: Phase 1: User Authentication
 Labels: feature, status: planning
 Body: [Full formatted content]
 ```
@@ -170,7 +170,7 @@ After creating the issue, provide instructions to link it:
 echo -e "\n## GitHub Issue\n\n#[issue-number]" >> "$FEATURE_SPEC"
 
 # Or add issue number to commit messages
-git commit --amend -m "feat: [story title] (#[issue-number])"
+git commit --amend -m "feat: [phase title] (#[issue-number])"
 ```
 
 ### 8. Output Summary
@@ -181,7 +181,7 @@ Display result to user:
 ✅ GitHub Issue Created
 
 Issue: #[number]
-Title: [story title]
+Title: [phase title]
 URL: https://github.com/[owner]/[repo]/issues/[number]
 
 Tasks Included: [N tasks]
@@ -197,7 +197,7 @@ Next Steps:
 
 ## Important Notes
 
-1. **One Issue Per Story**: Creates a single issue representing the entire feature/story
+1. **One Issue Per Phase**: Creates a single issue representing the development phase
 2. **Tasks as Checkboxes**: All tasks become checkboxes in the issue body
 3. **Comprehensive Context**: Issue includes spec, acceptance criteria, and plan
 4. **Safe by Default**: Validates GitHub remote before creating issues
@@ -212,7 +212,7 @@ Next Steps:
 - Recommend running `/speckit.tasks` first
 
 **No spec.md exists**:
-- Cannot create issue without story context
+- Cannot create issue without phase context
 - Recommend running `/speckit.plan` or creating spec first
 - Display error message with guidance
 
@@ -234,4 +234,4 @@ Next Steps:
 
 User input: $ARGUMENTS
 
-Create a comprehensive, well-structured GitHub issue that represents the entire story with tasks as actionable checkboxes.
+Create a comprehensive, well-structured GitHub issue that represents the development phase with tasks as actionable checkboxes.
