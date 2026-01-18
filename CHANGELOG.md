@@ -6,12 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.6
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.8
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.7
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.9
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.9] - 2026-01-18
+
+#### 🚀 Added
+
+- **Story-to-Issue Workflow Integration** - New command for creating GitHub issues from story-level specifications
+  - Added `story-to-issue` to `WORKFLOW_EXTENSIONS` list
+  - New command file: `commands/speckit.story-to-issue.md`
+  - Supports story-level GitHub issue creation workflow
+  - Affects: `specify_extend.py` (AVAILABLE_EXTENSIONS, WORKFLOW_EXTENSIONS)
+
+- **Agent Handoffs Constant** - Centralized agent capability tracking
+  - Added `AGENTS_WITH_HANDOFF_SUPPORT` module-level constant
+  - Defines agents supporting handoffs in frontmatter: Copilot, OpenCode, Windsurf
+  - Replaces duplicated inline lists across codebase
+  - Affects: `specify_extend.py` (agent detection logic)
+
+#### 🔧 Changed/Improved
+
+- **Agent-Specific Handoffs Frontmatter** - Enhanced support for agents using YAML frontmatter
+  - Improved handoffs processing for Copilot, OpenCode, and Windsurf agents
+  - Better YAML parsing for handoffs removal (replaces regex-based approach)
+  - Simplified handoffs removal using `pop()` method for cleaner code
+  - More robust handling of agent-specific configuration formats
+  - Affects: `specify_extend.py` (frontmatter processing functions)
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.9
+- **Compatible Extension Templates**: v2.5.5+
+- **Compatible Spec Kit Version**: v0.0.80+
+
+---
 
 ### [1.5.8] - 2026-01-02
 
@@ -32,6 +65,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [2.5.7] - 2026-01-18
+
+#### 🚀 Added
+
+- **Story-to-Issue Workflow** - New workflow for creating GitHub issues from story-level specifications
+  - Added `extensions/workflows/story-to-issue/README.md`
+  - New workflow directory structure for story-level issue creation
+  - Supports converting story specs into properly formatted GitHub issues
+  - Affects: `extensions/workflows/story-to-issue/` (new directory)
+
+- **Story-to-Issue Command** - New command template for story-level issue creation
+  - Added `commands/speckit.story-to-issue.md`
+  - Provides AI agent guidance for story-to-issue workflow
+  - Integrates with GitHub issue creation process
+  - Affects: `commands/speckit.story-to-issue.md` (new file)
+
+#### 🔧 Changed/Improved
+
+- **Incorporate Command** - Enhanced incorporate command documentation
+  - Updated `commands/speckit.incorporate.md` with improved guidance
+  - Better integration instructions and examples
+  - Affects: `commands/speckit.incorporate.md`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.7
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.9+
+
+---
 
 ### [2.5.6] - 2026-01-07
 
