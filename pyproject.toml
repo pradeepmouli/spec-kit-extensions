@@ -1,12 +1,13 @@
 [project]
 name = "specify-extend"
-version = "1.5.8"
+version = "1.5.9"
 description = "Installation tool for spec-kit-extensions that works alongside specify init"
 requires-python = ">=3.11"
 dependencies = [
     "typer",
     "rich",
     "httpx",
+    "pyyaml",
 ]
 readme = "README.md"
 license = {text = "MIT"}

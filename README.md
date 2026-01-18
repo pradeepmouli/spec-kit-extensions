@@ -2,15 +2,13 @@
 >
 > **Using other AI tools?** Continue with this repository - it's designed to work universally across AI coding assistants. Note that our development focus is shifting to SpecSwarm for Claude Code.
 
-**9 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
+**8 production-tested workflows that extend [spec-kit](https://github.com/github/spec-kit) to cover the complete software development lifecycle.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## What Is This?
 
-**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional **workflow extensions** and 1 **command extension** to cover the remaining ~75% of software development work:
-
-### Workflow Extensions (create specs, plans, and tasks)
+**spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional workflows for the remaining ~75% of software development work:
 
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
@@ -24,7 +22,7 @@
 ### Command Extensions (provide commands without workflow structure)
 
 - **`/speckit.review`** - Review completed work with structured feedback
-- **`/speckit.incorporate`** - Incorporate documents into workflows and advance stages
+- **`/speckit.story-to-issue`** - Create GitHub issue per story with tasks as checkboxes
 ## Why Use These Extensions?
 
 ### The Problem
@@ -56,7 +54,8 @@ These extensions bring spec-kit's structured approach to all development activit
 | **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
 | **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
 | **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
-| **Document Integration** | ❌ Manual copy-paste | ✅ `/speckit.incorporate` with smart stage advancement |
+| **GitHub Issues** | ❌ Manual or fragmented | ✅ `/speckit.story-to-issue` with story-level tracking |
+### Benefits
 ## Real-World Validation
 
 These workflows are **production-tested** on a React Router v7 Twitter clone ("Tweeter") with:
@@ -251,6 +250,9 @@ Removing a feature?
 
 Reviewing completed work?
 └─ Use `/speckit.review [task-id]`
+
+Creating GitHub issues?
+└─ Use `/speckit.story-to-issue` (one issue per story with task checkboxes)
 ```
 
 ### Example: Fix a Bug
@@ -302,6 +304,27 @@ Reviewing completed work?
 # Runs all tasks in correct order
 ```
 
+### Example: Create GitHub Issue from Story
+
+```bash
+# After planning your feature with spec-kit
+/speckit.plan      # Creates spec.md with story and acceptance criteria
+/speckit.tasks     # Creates tasks.md with task breakdown
+
+# Create a single GitHub issue with full context
+/speckit.story-to-issue
+# Creates: One GitHub issue with:
+#   - Story description
+#   - Acceptance criteria
+#   - All tasks as checkboxes
+#   - Implementation plan summary
+#   - Workflow-aware labels
+# Output: Issue #123 created with URL
+
+# Track progress by checking off tasks in GitHub
+# Use /speckit.review when ready for validation
+```
+
 ## Workflow Cheat Sheet
 
 | Workflow | Command | Key Feature | Test Strategy |
@@ -316,6 +339,7 @@ Reviewing completed work?
 | **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
 | **Review** | `/speckit.review [task-id]` | Structured feedback | Verify tests |
 | **Cleanup** | `/speckit.cleanup` | Automated scripts | Manual verification |
+| **Story→Issue** | `/speckit.story-to-issue` | GitHub integration | N/A (tracking only) |
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
 - **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents
