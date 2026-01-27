@@ -1,1 +1,1 @@
-../../.agent/skills/writing-plans.md
+../../.agents/skills/writing-plans.md

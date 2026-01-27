@@ -1,1 +1,1 @@
-../../.agent/skills/systematic-debugging.md
+../../.agents/skills/systematic-debugging.md

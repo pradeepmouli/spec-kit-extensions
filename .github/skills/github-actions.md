@@ -1,1 +1,1 @@
-../../.agent/skills/github-actions.md
+../../.agents/skills/github-actions.md

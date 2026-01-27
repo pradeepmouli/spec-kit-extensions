@@ -1,1 +1,1 @@
-../../.agent/skills/spec-kit.md
+../../.agents/skills/spec-kit.md

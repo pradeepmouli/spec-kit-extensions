@@ -62,6 +62,7 @@ The review follows these steps:
 - Validate tests and documentation
 - Run automated tests if available
 - Check code quality and best practices
+- Confirm the reviewed scope contains no placeholder/TODO/FIXME code
 
 ### 3. Provide Feedback
 
@@ -156,6 +157,7 @@ The Review workflow enforces these quality standards:
 - ✅ No obvious bugs or logic errors
 - ✅ Proper error handling
 - ✅ Clear and maintainable code
+- ✅ No placeholder/TODO/FIXME code in the reviewed scope unless justified and tracked
 
 ### Testing
 - ✅ Tests exist for new functionality

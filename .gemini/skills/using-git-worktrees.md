@@ -1,1 +1,1 @@
-../../.agent/skills/using-git-worktrees.md
+../../.agents/skills/using-git-worktrees.md

@@ -1,1 +1,1 @@
-../../.agent/skills/python-development.md
+../../.agents/skills/python-development.md

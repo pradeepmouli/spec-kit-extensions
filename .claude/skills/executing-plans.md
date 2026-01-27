@@ -1,1 +1,1 @@
-../../.agent/skills/executing-plans.md
+../../.agents/skills/executing-plans.md

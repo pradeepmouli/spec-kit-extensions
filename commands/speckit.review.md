@@ -78,6 +78,7 @@ git diff main..HEAD -- path/to/file
 - Check code clarity and maintainability
 - Verify proper testing coverage
 - Check documentation completeness
+- Flag placeholder/TODO/FIXME code within the implementation scope
 
 **D. Run Tests** (if available)
 ```bash
@@ -95,6 +96,7 @@ go test ./...         # Go projects
 - Edge cases handled
 - Documentation adequate
 - No obvious security issues
+- No placeholder/TODO/FIXME code left in reviewed scope unless justified and tracked
 
 ### 4. Determine Review Outcome
 
