@@ -6,12 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.8
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.10
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.9
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.11
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.11] - 2026-01-27
+
+#### 🔧 Changed/Improved
+
+- **Review Workflow Quality Gate: Placeholder/TODO Detection** - Enhanced review workflow to flag incomplete code
+  - Added placeholder/TODO/FIXME detection to review checklist
+  - New quality gate: No placeholder/TODO/FIXME code in reviewed scope unless justified and tracked
+  - Reviewers now explicitly confirm reviewed code contains no placeholder text
+  - Supports identification of incomplete implementations during code review
+  - Affects: `commands/speckit.review.md`
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.11
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.9
+
+---
 
 ### [1.5.10] - 2026-01-18
 
@@ -83,6 +102,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [2.5.9] - 2026-01-27
+
+#### 🔧 Changed/Improved
+
+- **Review Workflow Quality Gate: Placeholder/TODO Detection** - Enhanced review workflow to flag incomplete code
+  - Added placeholder/TODO/FIXME detection to review steps
+  - New quality gate: No placeholder/TODO/FIXME code in reviewed scope unless justified and tracked
+  - Updated review process documentation with explicit placeholder checking
+  - Reviewers confirm reviewed code contains no incomplete placeholders
+  - Affects: `extensions/workflows/review/README.md`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.9
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.11+
+
+---
 
 ### [2.5.8] - 2026-01-18
 
