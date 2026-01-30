@@ -2,14 +2,16 @@
 
 ## Overview
 
-The **phasestoissues** utility creates individual GitHub issues for each development phase, allowing parallel work and better tracking of complex features.
+The **phasestoissues** utility creates individual GitHub issues for each development phase with task sub-issues, allowing parallel work and better tracking of complex features.
 
 ## Purpose
 
-Convert your spec-kit feature specification into multiple GitHub issues, one per development phase:
+Convert your spec-kit feature specification into hierarchical GitHub issues:
+- **Parent issues**: One per development phase with phase-level context
+- **Sub-issues**: One per task within each phase for granular tracking
 - Phase description and goals
 - Acceptance criteria for each phase
-- Related tasks grouped by phase
+- Individual task tracking and assignment
 - Implementation guidance
 - Workflow-aware labels
 
@@ -38,9 +40,9 @@ Use this command when you want to:
 
 ## What It Creates
 
-Multiple GitHub issues, one for each phase:
+Hierarchical GitHub issues with parent phases and task sub-issues:
 
-**Phase 1: Design & Planning**
+**Phase 1: Design & Planning (Parent Issue #123)**
 ```markdown
 ## Description
 [Design phase goals from spec.md]
@@ -50,17 +52,20 @@ Multiple GitHub issues, one for each phase:
 - [ ] API contracts defined
 - [ ] Dependencies identified
 
-## Related Tasks
-- [ ] T001: Create architecture diagram
-- [ ] T002: Define API contracts
+## Tasks
+See sub-issues for individual task tracking.
 
 ## Context
 **Branch**: feature/001-user-auth
-**Phase**: Design & Planning
+**Phase**: 1/3
 **Feature Directory**: specs/001-user-auth/
 ```
 
-**Phase 2: Implementation**
+**Task Sub-Issues for Phase 1:**
+- **#124**: T001: Create architecture diagram
+- **#125**: T002: Define API contracts
+
+**Phase 2: Implementation (Parent Issue #126)**
 ```markdown
 ## Description
 [Implementation phase goals]
@@ -70,15 +75,18 @@ Multiple GitHub issues, one for each phase:
 - [ ] Unit tests passing
 - [ ] Code reviewed
 
-## Related Tasks
-- [ ] T003: Implement authentication service
-- [ ] T004: Add unit tests
+## Tasks
+See sub-issues for individual task tracking.
 
 ## Context
 **Branch**: feature/001-user-auth
-**Phase**: Implementation
+**Phase**: 2/3
 **Depends On**: Phase 1 (#123)
 ```
+
+**Task Sub-Issues for Phase 2:**
+- **#127**: T003: Implement authentication service
+- **#128**: T004: Add unit tests
 
 ## Labels
 

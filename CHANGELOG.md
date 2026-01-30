@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.9
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.10
 - **CLI Tool** (`specify-extend`) - Currently at v1.5.11
 
 ---
@@ -103,6 +103,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Extension Templates
 
+### [2.5.10] - 2026-01-29
+
+#### 🚀 Added
+
+- **PhasesToIssues Sub-Issues** - Enhanced phasestoissues workflow to create task sub-issues
+  - Each task now becomes its own GitHub issue linked as a sub-issue to the parent phase
+  - Uses GitHub's native sub-issues API (`mcp_github_github_sub_issue_write`)
+  - Task issues preserve spec-kit task IDs (e.g., "T001: Create architecture diagram")
+  - Enables individual task assignment and task-level discussions
+  - Parent phase issues auto-update status based on sub-issue completion
+  - Benefits: Better delegation, parallel work at task level, cleaner phase issue UI
+  - Affects: `commands/speckit.phasestoissues.md`, `docs/phasestoissues.md`, `extensions/workflows/phasestoissues/README.md`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.10
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.11+
+
+---
+
 ### [2.5.9] - 2026-01-27
 
 #### 🔧 Changed/Improved
@@ -181,7 +202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enables consistent tooling compatibility across all workflow types
   - Each workflow-specific file (e.g., `bug-report.md`, `enhancement.md`) symlinks to standard names
   - Supports both bash and PowerShell with graceful fallback
-  - Affects: 
+  - Affects:
     - Bash: `create-bugfix.sh`, `create-enhance.sh`, `create-hotfix.sh`, `create-refactor.sh`, `create-modification.sh`, `create-deprecate.sh`, `create-baseline.sh`
     - PowerShell: `create-bugfix.ps1`, `create-enhance.ps1`, `create-hotfix.ps1`, `create-refactor.ps1`, `create-modification.ps1`, `create-deprecate.ps1`, `create-baseline.ps1`
 

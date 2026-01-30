@@ -16,9 +16,9 @@ Development phases are logical stages in feature development:
 4. **Documentation** - User guides, API docs, examples
 5. **Deployment** - Release preparation, rollout
 
-### Why Phase-Based Issues?
+### Why Phase-Based Issues with Task Sub-Issues?
 
-**Creates**: One GitHub issue per phase with related tasks
+**Creates**: One parent issue per phase + individual sub-issues for each task
 
 ```
 spec.md (Feature: User Authentication)
@@ -29,28 +29,32 @@ spec.md (Feature: User Authentication)
 └── Phase 3: Testing
     └── Tasks: T006, T007
 
-Creates 3 GitHub issues:
+Creates 3 parent phase issues + 7 task sub-issues:
+
 #123 - Phase 1: Design & Planning
-  - [ ] T001: Create architecture diagram
-  - [ ] T002: Define API contracts
+  ├── #124 (sub): T001: Create architecture diagram
+  └── #125 (sub): T002: Define API contracts
 
-#124 - Phase 2: Implementation (depends on #123)
-  - [ ] T003: Implement auth service
-  - [ ] T004: Add session management
-  - [ ] T005: Create login UI
+#126 - Phase 2: Implementation (depends on #123)
+  ├── #127 (sub): T003: Implement auth service
+  ├── #128 (sub): T004: Add session management
+  └── #129 (sub): T005: Create login UI
 
-#125 - Phase 3: Testing (depends on #124)
-  - [ ] T006: Write unit tests
-  - [ ] T007: Integration testing
+#130 - Phase 3: Testing (depends on #126)
+  ├── #131 (sub): T006: Write unit tests
+  └── #132 (sub): T007: Integration testing
 ```
 
 **Benefits:**
-- **Parallel work**: Different team members work on different phases
-- **Clear dependencies**: Phases show what blocks what
-- **Better ownership**: Each phase can have its own assignee
-- **Granular tracking**: Track progress per phase
-- **Flexible pacing**: Phases can move at different speeds
+- **Parallel work**: Different team members work on different phases AND tasks
+- **Clear dependencies**: Phases show what blocks what, tasks show granular dependencies
+- **Better ownership**: Each phase AND each task can have its own assignee
+- **Granular tracking**: Track progress per phase AND per task
+- **Flexible pacing**: Phases and tasks can move at different speeds
 - **Natural milestones**: Each phase completion is a milestone
+- **Individual discussions**: Each task has its own comment thread
+- **Native GitHub integration**: Uses GitHub's sub-issues feature for proper hierarchy
+- **Status propagation**: Parent phase issue auto-updates based on sub-issue completion
 
 ## Comparison: Different Issue Strategies
 
@@ -132,18 +136,24 @@ Creates 1 issue with all tasks:
 
 **Challenges**: Can't parallelize, hard to assign different parts to different people
 
-### PhasesToIssues (One Issue Per Phase) ⭐
+### PhasesToIssues (Parent Phase + Task Sub-Issues) ⭐
 
 ```
-Creates 3 issues (one per phase):
+Creates 3 parent issues + N sub-issues (one per task):
 #123 - Phase 1: Design & Planning
-#124 - Phase 2: Implementation (depends on #123)
-#125 - Phase 3: Testing (depends on #124)
+  ├── #124 (sub): T001: Create architecture diagram
+  └── #125 (sub): T002: Define API contracts
+#126 - Phase 2: Implementation (depends on #123)
+  ├── #127 (sub): T003: Implement auth service
+  ├── #128 (sub): T004: Add session management
+  └── #129 (sub): T005: Create login UI
+#130 - Phase 3: Testing (depends on #126)
+  └── ...
 ```
 
-**Best for**: Complex features, team collaboration, parallel work
+**Best for**: Complex features, team collaboration, parallel work, task-level delegation
 
-**Benefits**: Clear dependencies, better delegation, granular progress
+**Benefits**: Clear hierarchy, phase AND task dependencies, individual task ownership, task-level discussions, native GitHub sub-issues
 
 ## When to Use PhasesToIssues
 
@@ -166,13 +176,16 @@ Use this command when:
 ```
 
 **Creates:**
-- Multiple GitHub issues (one per phase)
-- Each issue includes:
+- Parent GitHub issues (one per phase) with:
   - Phase description and goals
   - Acceptance criteria for that phase
-  - Related tasks grouped by phase
   - Dependencies on other phases
   - Implementation guidance
+- Task sub-issues (one per task) with:
+  - Task ID and description (e.g., "T001: Create architecture diagram")
+  - Link to parent phase issue
+  - Same labels as parent phase
+  - Individual assignment and tracking
 
 ## Example Output
 
@@ -180,23 +193,30 @@ Use this command when:
 ✅ GitHub Issues Created
 
 Phase 1: Design & Planning
-  Issue: #123
-  Tasks: T001, T002
+  Parent Issue: #123
+  Sub-Issues: 2 tasks
+    - #124: T001: Create architecture diagram
+    - #125: T002: Define API contracts
   Status: Ready to start
 
 Phase 2: Implementation
-  Issue: #124
-  Tasks: T003, T004, T005
+  Parent Issue: #126
+  Sub-Issues: 3 tasks
+    - #127: T003: Implement auth service
+    - #128: T004: Add session management
+    - #129: T005: Create login UI
   Depends on: #123
   Status: Blocked
 
 Phase 3: Testing & Validation
-  Issue: #125
-  Tasks: T006, T007
-  Depends on: #124
+  Parent Issue: #130
+  Sub-Issues: 2 tasks
+    - #131: T006: Write unit tests
+    - #132: T007: Integration testing
+  Depends on: #126
   Status: Blocked
 
-Total: 3 issues created
+Total: 3 phase issues, 7 task sub-issues
 Labels: feature, multi-phase
 
 Next Steps:

@@ -1091,7 +1091,7 @@ def _extract_handoffs_from_frontmatter(content: str) -> tuple[str, list]:
     # Remove handoffs key from the parsed frontmatter dictionary
     if frontmatter_data:
         frontmatter_data.pop('handoffs', None)
-    
+
     # Regenerate frontmatter YAML from the cleaned dictionary
     if frontmatter_data:
         frontmatter_cleaned = yaml.dump(frontmatter_data, default_flow_style=False, sort_keys=False).strip()

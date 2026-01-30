@@ -75,9 +75,9 @@ Load and parse the specification file (`$FEATURE_SPEC` / spec.md):
 - Note technical decisions
 - Identify dependencies
 
-### 4. Build Issue Body
+### 4. Build Phase Issue Body
 
-Construct a comprehensive GitHub issue with this structure:
+Construct a comprehensive GitHub issue for each phase with this structure:
 
 ```markdown
 ## Description
@@ -87,13 +87,6 @@ Construct a comprehensive GitHub issue with this structure:
 ## Acceptance Criteria
 
 [Acceptance criteria from spec.md]
-
-## Tasks
-
-- [ ] T001: Task description
-- [ ] T002: Task description
-- [ ] T003: Task description
-[... all tasks from tasks.md]
 
 ## Implementation Plan
 
@@ -107,15 +100,20 @@ Construct a comprehensive GitHub issue with this structure:
 - [Dependency 1]
 - [Dependency 2]
 
+## Tasks
+
+See sub-issues for individual task tracking.
+
 ## Context
 
 **Branch**: `[branch-name]`
 **Feature Directory**: `[feature-dir]`
+**Phase**: [phase-number]/[total-phases]
 **Created from spec-kit workflow**
 
 ---
 
-**Note**: Check off tasks as they are completed. Use `/speckit.review` to validate implementation against acceptance criteria.
+**Note**: Sub-issues will be created for each task. Use `/speckit.review` to validate implementation against acceptance criteria.
 ```
 
 ### 5. Determine Issue Labels
@@ -139,15 +137,55 @@ Automatically assign labels based on:
 - `status: planning` (if tasks exist but none completed)
 - `status: in-progress` (if some tasks completed)
 
-### 6. Create GitHub Issue
+### 6. Create Phase Issues
 
-Use the GitHub MCP server tool to create the issue:
+For each phase, use the GitHub MCP server tool to create the parent issue:
 
 **Required:**
 - `owner`: Extract from Git remote URL
 - `repo`: Extract from Git remote URL
-- `title`: Phase title from spec.md
+- `title`: "Phase N: [Phase title]" from spec.md
 - `body`: Formatted issue body from step 4
+- `labels`: Labels from step 5
+
+**Capture the issue number** for sub-issue creation.
+
+### 7. Create Sub-Issues for Tasks
+
+For each task within a phase:
+
+1. **Create task issue** using GitHub MCP:
+   - `title`: "T001: [Task description]" (preserve task ID)
+   - `body`: 
+     ```markdown
+     ## Task Details
+     
+     [Task description from tasks.md]
+     
+     ## Context
+     
+     **Parent Phase**: #[phase-issue-number]
+     **Branch**: [branch-name]
+     **Feature Directory**: [feature-dir]
+     
+     ---
+     
+     Part of larger feature spec-kit workflow.
+     ```
+   - `labels`: Same labels as parent phase issue
+
+2. **Link as sub-issue** using `mcp_github_github_sub_issue_write`:
+   - `method`: "add"
+   - `owner`: From Git remote URL
+   - `repo`: From Git remote URL
+   - `issue_number`: Parent phase issue number
+   - `sub_issue_id`: Task issue ID (not issue number - get from created issue)
+
+**Important**: GitHub sub-issues require issue IDs, not issue numbers. Extract the `id` field from the created task issue.
+
+### 8. Set Sub-Issue Priority
+
+If tasks have natural ordering, use `mcp_github_github_sub_issue_write` with method "reprioritize" to set task order within the phase
 - `labels`: Labels from step 5
 
 > [!CAUTION]
