@@ -163,10 +163,6 @@ fi
 # Create symlink from spec.md to refactor-spec.md
 ln -sf "refactor-spec.md" "$REFACTOR_DIR/spec.md"
 
-# Create plan.md and tasks.md as standard symlinks
-ln -sf "refactor-spec.md" "$REFACTOR_DIR/plan.md"
-ln -sf "refactor-spec.md" "$REFACTOR_DIR/tasks.md"
-
 # Create placeholder for metrics
 METRICS_BEFORE="$REFACTOR_DIR/metrics-before.md"
 METRICS_AFTER="$REFACTOR_DIR/metrics-after.md"

@@ -121,10 +121,6 @@ fi
 # Create symlink from spec.md to bug-report.md
 ln -sf "bug-report.md" "$BUG_DIR/spec.md"
 
-# Create plan.md and tasks.md as standard symlinks
-ln -sf "bug-report.md" "$BUG_DIR/plan.md"
-ln -sf "bug-report.md" "$BUG_DIR/tasks.md"
-
 # Set environment variable for current session
 export SPECIFY_BUGFIX="$BUG_ID"
 

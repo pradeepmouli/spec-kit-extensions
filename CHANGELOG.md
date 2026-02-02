@@ -6,12 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.10
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.11
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.12
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.5.12] - 2026-02-02
+
+#### 🔧 Changed/Improved
+
+- **Workflow Symlink Simplification** - Reduced symlinks for spec-first workflows
+  - Removed `plan.md` and `tasks.md` symlinks from bugfix, deprecate, modify, and refactor workflows
+  - These workflows now only symlink `spec.md` to their primary document
+  - Rationale: These are spec-first workflows where plan and tasks are created after the spec
+  - Affects: `scripts/create-bugfix.sh`, `scripts/create-deprecate.sh`, `scripts/create-modification.sh`, `scripts/create-refactor.sh`
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.5.12
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v2.5.11
+
+---
 
 ### [1.5.11] - 2026-01-27
 
@@ -102,6 +120,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [2.5.11] - 2026-02-02
+
+#### 🔧 Changed/Improved
+
+- **Workflow Symlink Simplification** - Reduced symlinks for spec-first workflows
+  - Removed `plan.md` and `tasks.md` symlinks from bugfix, deprecate, modify, and refactor workflows
+  - These workflows now only symlink `spec.md` to their primary document
+  - Rationale: These are spec-first workflows where plan and tasks are created after the spec
+  - Affects: `scripts/create-bugfix.sh`, `scripts/create-deprecate.sh`, `scripts/create-modification.sh`, `scripts/create-refactor.sh`
+
+#### 📦 Components
+
+- **Extension Templates Version**: v2.5.11
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Compatible specify-extend**: v1.5.12+
+
+---
 
 ### [2.5.10] - 2026-01-29
 
