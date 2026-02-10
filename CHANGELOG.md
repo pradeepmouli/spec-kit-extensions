@@ -6,12 +6,64 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.12
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.2.0 (native format)
+- **CLI Tool** (`specify-extend`) - Currently at v1.5.12 (legacy, deprecated in favor of native)
 
 ---
 
-## CLI Tool (`specify-extend`)
+## Extension Templates
+
+### [2.2.0] - 2026-02-10
+
+#### 🚀 Major Changes - Native Extension Format
+
+This is a **major architectural change** migrating from the custom `specify-extend` CLI to the native spec-kit v0.0.93+ extension system.
+
+#### ✨ Added
+
+- **`extension.yml`** - Native extension manifest declaring all commands and configuration
+- **`config-template.yml`** - YAML-based configuration (replaces `enabled.conf`)
+- **Branch validation hook** (`scripts/validate-branch.sh`) - Hook-based validation (replaces patching)
+- **Migration script** (`scripts/migrate-to-native.sh`) - Automated migration from legacy format
+- **Migration guide** (`MIGRATION.md`) - Complete guide for upgrading from legacy to native
+
+#### 🔧 Changed
+
+- **Directory structure** - Restructured for native extension format:
+  - `extensions/workflows/*` → `workflows/*` (moved up one level)
+  - `common.sh` → `scripts/common.sh` (moved into scripts/)
+- **Command file paths** - All commands now reference `.specify/extensions/spec-kit-workflows/`
+  - Script paths: `.specify/scripts/bash/` → `.specify/extensions/spec-kit-workflows/scripts/`
+  - Template paths: `.specify/extensions/workflows/` → `.specify/extensions/spec-kit-workflows/workflows/`
+- **Installation method** - Now uses `specify extension add spec-kit-workflows`
+- **Configuration format** - YAML instead of custom format
+- **Branch validation** - Hook-based instead of patching `common.sh`
+
+#### 📦 Breaking Changes
+
+⚠️ **This version requires spec-kit v0.0.93+**
+
+- Legacy `specify-extend` CLI is deprecated (still works for spec-kit < 0.0.93)
+- File paths have changed (see MIGRATION.md)
+- Configuration format changed from `enabled.conf` to `config.yml`
+- No more file patching - uses native hooks instead
+
+#### 🔄 Migration Path
+
+For existing users:
+1. See [MIGRATION.md](MIGRATION.md) for detailed upgrade guide
+2. Use `scripts/migrate-to-native.sh` for automated migration
+3. Legacy installations continue to work with spec-kit < 0.0.93
+
+#### 📋 Components
+
+- **Extension Templates Version**: v2.2.0 (native format)
+- **Required Spec Kit Version**: v0.0.93+
+- **Legacy CLI Tool**: v1.5.12 (still available for older spec-kit)
+
+---
+
+## CLI Tool (`specify-extend`) - DEPRECATED
 
 ### [1.5.12] - 2026-02-02
 

@@ -72,129 +72,99 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Prerequisites
 
-- **spec-kit** installed ([installation guide](https://github.com/github/spec-kit))
+- **spec-kit v0.0.93+** installed ([installation guide](https://github.com/github/spec-kit))
 - **AI coding agent** (Claude Code, GitHub Copilot, Gemini CLI, Cursor, etc.)
 - **Git** repository with `.specify/` directory
 
 ### Installation
 
-spec-kit-extensions works with any AI agent that supports spec-kit. Installation is a two-step process:
+#### Native Extension (Recommended - requires spec-kit v0.0.93+)
 
-**Step 1: Initialize spec-kit** (creates `.specify/` structure):
+**Step 1: Initialize spec-kit** (if not already done):
 ```bash
 specify init --here --ai claude
-# or for PowerShell: specify init --here --ai claude --script ps
+# or for other agents: --ai copilot, --ai gemini, etc.
 ```
 
 **Step 2: Install extensions**:
 ```bash
-specify-extend --all
+# From catalog (simplest)
+specify extension add spec-kit-workflows
+
+# Or directly from GitHub
+specify extension add --from https://github.com/pradeepmouli/spec-kit-extensions/releases/latest
+
+# Or for development/testing
+specify extension add --dev /path/to/spec-kit-extensions
 ```
 
-This will:
-- Detect your configured AI agent
-- Install all 8 workflow extensions and 1 command extension into `.specify/`
-- Set up quality gates
-- Configure branch naming patterns
-
-**Optional: Install GitHub integration**:
+**Step 3: Verify installation**:
 ```bash
+specify extension list
+# Should show: spec-kit-workflows (v2.2.0)
+
+# Test a workflow
+/speckit.bugfix --help
+```
+
+The native extension automatically:
+- ✅ Detects your AI agent and installs appropriate commands
+- ✅ Sets up all 8 workflows + 2 command extensions
+- ✅ Configures quality gates via hooks
+- ✅ Provides branch validation
+- ✅ No file patching required!
+
+#### Legacy Installation (for spec-kit < 0.0.93)
+
+If you're on an older spec-kit version, use the legacy `specify-extend` tool:
+
+```bash
+# Install the CLI tool
+pip install specify-extend
+
+# Install extensions (auto-detects your agent)
+specify-extend --all
+
+# Optional: PowerShell workflows
+specify-extend --all --script ps
+
+# Optional: GitHub integration features
 specify-extend --all --github-integration
 ```
 
-The `--github-integration` flag will interactively prompt you to select GitHub features:
-- **Review enforcement workflows** - Automatically require reviews before merge
-- **Review reminder workflow** - Auto-comment on PRs with instructions
-- **PR template** - Structured PR template with review checklist
-- **Issue templates** - 9 templates for all workflow types
-- **GitHub Copilot config** - PR review configuration
-- **CODEOWNERS template** - Automatic reviewer assignment
-- **Documentation** - Complete guide for all features
-
-You can select individual features or install all with `all`. Non-interactive: `specify-extend --all --github-integration --no-interactive`
+For legacy users upgrading to native: see [MIGRATION.md](MIGRATION.md)
 
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
-**Alternative: Install the CLI tool manually**
+#### Configuration
+
+After installation, customize the extension configuration:
+
 ```bash
-# 1. Initialize spec-kit in your project
-cd your-project
-specify init .
-
-# 2. Install specify-extend tool from PyPI
-pip install specify-extend
-
-# Or use with uvx (no installation needed)
-uvx specify-extend --all
-
-# Or run directly with Python
-python -m specify_extend --all
-
-# 3. Install extensions (auto-detects your agent)
-specify-extend --all
-specify-extend --all --script ps  # Optional: install PowerShell workflows
-
-# Or install specific extensions
-specify-extend bugfix modify refactor
+# Edit configuration
+vim .specify/extensions/spec-kit-workflows/config.yml
 ```
 
-**Optional: Fetch upstream spec-kit for reference**
+Example configuration:
+```yaml
+workflows:
+  # Enable/disable individual workflows
+  baseline: true
+  bugfix: true
+  enhance: true
+  modify: true
+  refactor: true
+  hotfix: true
+  deprecate: false  # disable if not needed
+  cleanup: false    # disable if not needed
 
-If you want the upstream spec-kit documentation and scripts on hand (purely for reference—our tools do not read from it), fetch a shallow checkout into `spec-kit/`:
+branch_validation:
+  enabled: true
+  extra_prefixes: []  # add custom branch prefixes
 
-```bash
-scripts/fetch-spec-kit.sh            # defaults to main
-scripts/fetch-spec-kit.sh v0.12.0    # or any tag/branch
-```
-
-The fetched `spec-kit/` directory is .gitignored to keep your working tree clean.
-
-The `specify-extend` tool automatically:
-- ✅ Downloads latest extensions from GitHub
-- ✅ Detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
-- ✅ Installs extensions matching your setup
-- ✅ Configures agent-specific commands
-- ✅ Updates constitution with quality gates
-- ✅ Patches spec-kit's `common.sh` to support extension branch patterns
-
-**Optional: LLM-Enhanced Constitution Updates**
-
-For intelligent merging of quality gates into your existing constitution (instead of simple appending):
-
-```bash
-specify-extend --all --llm-enhance
-```
-
-This creates a one-time prompt that uses your AI agent to intelligently merge quality gates while preserving your constitution's style and structure. The prompt/command includes instructions to delete itself after use.
-
-**GitHub Copilot**: Reference `.github/prompts/speckit.enhance-constitution.md` in Copilot Chat (also creates matching agent file)
-**Other agents**: Run `/speckit.enhance-constitution`
-
-See [specify-extend documentation](docs/specify-extend.md) for details.
-
-**Manual install (copy files)**
-
-If you prefer manual installation or need more control:
-
-**Option 1: Copy into Existing Project**
-```bash
-# Clone this repo
-git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/extensions
-
-# Copy files into your project
-cd your-project
-cp -r /tmp/extensions/extensions/* .specify/extensions/
-cp -r /tmp/extensions/scripts/* .specify/scripts/bash/
-# Optional (PowerShell): copy only if you want PowerShell workflows
-mkdir -p .specify/scripts/powershell/
-cp -r /tmp/extensions/scripts/powershell/* .specify/scripts/powershell/
-cp -r /tmp/extensions/commands/* .claude/commands/
-
-# Merge constitution sections
-cat /tmp/extensions/docs/constitution-template.md >> .specify/memory/constitution.md
-
-# Clean up
-rm -rf /tmp/extensions
+constitution:
+  auto_update: true
+  numbering_style: "auto"
 ```
 
 **Option 2: Git Submodule (Team Projects)**
