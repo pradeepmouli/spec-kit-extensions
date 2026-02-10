@@ -1,0 +1,25 @@
+# Spec-Kit Workflow Extensions Configuration
+# Copy to .specify/extensions/spec-kit-workflows/config.yml and customize
+
+workflows:
+  # Enable/disable individual workflows
+  baseline: true
+  bugfix: true
+  enhance: true
+  modify: true
+  refactor: true
+  hotfix: true
+  deprecate: true
+  cleanup: true
+
+branch_validation:
+  # Whether to validate branch names match workflow patterns
+  enabled: true
+  # Additional branch prefixes to allow (beyond standard workflow prefixes)
+  extra_prefixes: []
+
+constitution:
+  # Whether to suggest constitution updates when installing
+  auto_update: true
+  # Numbering style for constitution sections: "roman", "numeric", or "auto"
+  numbering_style: "auto"

@@ -23,10 +23,10 @@ The text the user typed after `/speckit.hotfix` in the triggering message **is**
 
 Given that incident description, do this:
 
-1. Run the script `.specify/scripts/bash/create-hotfix.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for HOTFIX_ID, BRANCH_NAME, HOTFIX_FILE, POSTMORTEM_FILE, and TIMESTAMP. All file paths must be absolute.
+1. Run the script `.specify/extensions/spec-kit-workflows/scripts/create-hotfix.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for HOTFIX_ID, BRANCH_NAME, HOTFIX_FILE, POSTMORTEM_FILE, and TIMESTAMP. All file paths must be absolute.
   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-2. Load `.specify/extensions/workflows/hotfix/hotfix-template.md` to understand required sections.
+2. Load `.specify/extensions/spec-kit-workflows/workflows/hotfix/hotfix-template.md` to understand required sections.
 
 3. Write the hotfix incident log to HOTFIX_FILE using the template structure:
    - Fill incident timeline with TIMESTAMP from script output

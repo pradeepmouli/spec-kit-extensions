@@ -117,7 +117,7 @@ First, get current workflow context:
 
 ```bash
 cd "$(git rev-parse --show-toplevel)" && \
-source .specify/scripts/bash/common.sh && \
+source .specify/extensions/spec-kit-workflows/scripts/common.sh && \
 CURRENT_BRANCH=$(get_current_branch) && \
 echo "Current branch: $CURRENT_BRANCH" && \
 get_feature_paths

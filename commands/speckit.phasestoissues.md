@@ -27,7 +27,7 @@ Run the prerequisite check script from repo root and parse the output:
 
 ```bash
 cd "$(git rev-parse --show-toplevel)" && \
-source .specify/scripts/bash/common.sh && \
+source .specify/extensions/spec-kit-workflows/scripts/common.sh && \
 get_feature_paths
 ```
 
