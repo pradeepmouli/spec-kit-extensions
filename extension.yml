@@ -3,7 +3,7 @@ schema: "1.0"
 id: spec-kit-workflows
 name: "Spec-Kit Workflow Extensions"
 version: "2.2.0"
-description: "7 production-tested workflows for the complete software development lifecycle"
+description: "Production-tested workflows for the complete software development lifecycle"
 author: "pradeepmouli"
 repository: "https://github.com/pradeepmouli/spec-kit-extensions"
 license: "MIT"
