@@ -50,7 +50,7 @@ schema: "1.0"
 
 id: spec-kit-workflows
 name: "Spec-Kit Workflow Extensions"
-version: "2.2.0"  # new major version for native format
+version: "2.2.0"  # v2 native-format release
 description: "7 production-tested workflows for the complete software development lifecycle"
 author: "pradeepmouli"
 repository: "https://github.com/pradeepmouli/spec-kit-extensions"
