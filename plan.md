@@ -35,7 +35,7 @@ spec-kit v0.0.93 introduced a modular extension system (`specify extension add/r
 
 ### Decision: Start with Option A (single extension), refactor to Option C later.
 
-Rationale: Get the migration working first as one cohesive package. The native extension system supports enable/disable per-extension, so users can still toggle workflows. Breaking into individual extensions is a follow-up once the catalog and dependency mechanisms mature.
+Rationale: Get the migration working first as one cohesive package. In this initial monolithic extension, enable/disable is at the extension level (all workflows together). Per-workflow toggling will be driven by a `workflows: { ... }` config and enforced in the native system via conditional command registration and/or runtime gating, and breaking this out into individual extensions (Option C) remains a follow-up once the catalog and dependency mechanisms mature.
 
 ---
 
