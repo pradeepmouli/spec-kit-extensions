@@ -9,7 +9,7 @@ spec-kit v0.0.93 introduced a modular extension system (`specify extension add/r
 | Aspect | Current (custom) | Target (native) |
 |--------|-------------------|------------------|
 | Installation | `specify-extend --all` (custom CLI) | `specify extension add spec-kit-extensions` |
-| Manifest | None (hardcoded in `specify_extend.py`) | `extension.yml` per spec |
+| Manifest | None (hardcoded in `specify_extend.py`) | `extension.yml` per extension |
 | Configuration | `enabled.conf` (custom format) | `config-template.yml` (YAML, layered) |
 | Agent commands | Custom per-agent transformation in Python | `CommandRegistrar` handles agent formats |
 | Branch validation | Monkey-patches `common.sh` | Hooks system (`after_tasks`, etc.) or upstream PR |
