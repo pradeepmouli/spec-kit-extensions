@@ -18,7 +18,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 ## Your Task
 
-1. Run the script `.specify/scripts/bash/create-baseline.sh --json` from repo root and parse its JSON output for BASELINE_SPEC, CURRENT_STATE, BASELINE_COMMIT, and HAS_EXISTING_SPECS. All file paths must be absolute.
+1. Run the script `.specify/extensions/spec-kit-workflows/scripts/create-baseline.sh --json` from repo root and parse its JSON output for BASELINE_SPEC, CURRENT_STATE, BASELINE_COMMIT, and HAS_EXISTING_SPECS. All file paths must be absolute.
    **Note:** The script only accepts the `--json` flag and ignores `$ARGUMENTS`.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
@@ -35,7 +35,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 3. **Generate baseline-spec.md**:
 
-   Load `.specify/extensions/workflows/baseline/baseline-spec-template.md` to understand the structure.
+   Load `.specify/extensions/spec-kit-workflows/workflows/baseline/baseline-spec-template.md` to understand the structure.
 
    Then comprehensively analyze the codebase (at the baseline commit if applicable) and fill in BASELINE_SPEC with:
 
@@ -62,7 +62,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 4. **Generate current-state.md**:
 
-   Load `.specify/extensions/workflows/baseline/current-state-template.md` for structure.
+   Load `.specify/extensions/spec-kit-workflows/workflows/baseline/current-state-template.md` for structure.
 
    Scan the specs directory and enumerate all changes by type:
 

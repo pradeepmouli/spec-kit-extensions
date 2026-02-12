@@ -29,17 +29,17 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
    **For validation only (dry-run):**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json --dry-run "$ARGUMENTS"
+   .specify/extensions/spec-kit-workflows/scripts/create-cleanup.sh --json --dry-run "$ARGUMENTS"
    ```
 
    **For validation with auto-fix:**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
+   .specify/extensions/spec-kit-workflows/scripts/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
    ```
 
    **For validation only:**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json "$ARGUMENTS"
+   .specify/extensions/spec-kit-workflows/scripts/create-cleanup.sh --json "$ARGUMENTS"
    ```
 
 3. **Parse the JSON output** which includes:

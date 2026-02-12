@@ -4,16 +4,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**spec-kit-extensions** extends GitHub's spec-kit with 7 additional production-tested workflows that cover the complete software development lifecycle beyond just feature development. This is a dual-component project:
+**spec-kit-extensions** extends GitHub's spec-kit with 7 additional production-tested workflows that cover the complete software development lifecycle beyond just feature development.
 
-1. **Extension Templates** (v2.1.1) - Workflow templates, commands, and bash scripts
-2. **CLI Tool** (`specify-extend`, v1.3.9) - Python-based installation tool
+**Architecture (v2.2.0+)**: Native spec-kit extension format
+- **Extension Manifest**: `extension.yml` declares all commands and configuration
+- **Workflow Templates**: Stored in `workflows/` directory
+- **Scripts**: Located in `scripts/` directory (including `common.sh`)
+- **Configuration**: YAML-based (`config-template.yml`)
+- **Installation**: Via `specify extension add spec-kit-workflows` (native) or legacy `specify-extend` CLI
 
 The project is designed to be **agent-agnostic**, working with Claude Code, GitHub Copilot, Cursor, and any AI coding assistant that supports spec-kit.
 
 ## Development Commands
 
-### Installation & Testing
+### Testing the Native Extension
+
+```bash
+# Test in a fresh spec-kit project
+cd /tmp
+mkdir test-project && cd test-project
+git init
+specify init .
+
+# Install extension in dev mode
+specify extension add --dev /path/to/spec-kit-extensions
+
+# Verify installation
+specify extension list
+# Should show: spec-kit-workflows (v2.2.0)
+
+# Test a workflow
+/speckit.bugfix "test bug"
+git branch  # Should show: bugfix/001-test-bug
+ls specs/bugfix/  # Should show: 001-test-bug/
+
+# Test JSON output
+.specify/extensions/spec-kit-workflows/scripts/create-bugfix.sh --json "test"
+```
+
+### Legacy CLI Testing (Deprecated)
+
+The `specify-extend` CLI tool is deprecated but still maintained for spec-kit < 0.0.93:
 
 ```bash
 # Install the CLI tool locally for development
@@ -24,9 +55,6 @@ python specify_extend.py --help
 python specify_extend.py --version
 python specify_extend.py --list
 
-# Build distribution packages
-python -m build
-
 # Test installation in a separate spec-kit project
 cd /path/to/test-project
 specify init .
@@ -36,16 +64,17 @@ specify-extend --all
 
 ### Version Management
 
-**IMPORTANT**: This project has TWO version numbers that must be kept in sync:
+**IMPORTANT**: This project now uses a single version number for the native extension format:
 
-1. **CLI version** in `pyproject.toml` (`version = "1.3.9"`)
-2. **CLI version** in `specify_extend.py` (`__version__ = "1.3.9"`)
-3. **Extension templates version** documented in `CHANGELOG.md`
+1. **Extension version** in `extension.yml` (`version: "2.2.0"`)
+2. **Extension templates version** documented in `CHANGELOG.md`
+3. **Legacy CLI version** (deprecated) in `pyproject.toml` and `specify_extend.py`
 
 When updating versions:
-- Always update BOTH version locations
-- Document changes in CHANGELOG.md
+- Update version in `extension.yml`
+- Document changes in CHANGELOG.md under "Extension Templates" section
 - Follow semantic versioning (MAJOR.MINOR.PATCH)
+- Legacy CLI versions are frozen at v1.5.12
 
 ### Git Workflow
 
@@ -63,33 +92,54 @@ git push origin v1.3.9
 
 ## Architecture
 
-### Core Components
+### Core Components (Native Format v2.2.0+)
 
-1. **`specify_extend.py`** - Main CLI tool (1600+ lines)
-   - Downloads latest release from GitHub
-   - Detects AI agent configuration
-   - Installs extensions to `.specify/extensions/`
-   - Patches spec-kit's `common.sh` for branch pattern compatibility
-   - Manages constitution updates (direct or LLM-enhanced)
-   - Handles enabled.conf workflow configuration
+1. **`extension.yml`** - Extension manifest
+   - Declares all 11 commands (8 workflows + 3 command extensions)
+   - Specifies requirements (spec-kit >= 0.0.93)
+   - Defines hooks (e.g., `after_tasks` → `speckit.review`)
+   - Sets default configuration
 
-2. **`common.sh`** - Shared bash utilities
+2. **`config-template.yml`** - Configuration template
+   - Enables/disables individual workflows
+   - Branch validation settings
+   - Constitution update preferences
+   - Copied to `.specify/extensions/spec-kit-workflows/config.yml` on install
+
+3. **`scripts/common.sh`** - Shared bash utilities
    - `generate_branch_name()` - Smart branch naming with stop words filtering
    - `get_repo_root()`, `get_current_branch()` - Git utilities
    - `find_feature_dir_by_prefix()` - Supports multiple branches per spec
 
-3. **`scripts/`** - Workflow creation scripts
+4. **`scripts/`** - Workflow creation scripts
    - `create-baseline.sh`, `create-bugfix.sh`, `create-modification.sh`, etc.
    - Each script creates branch, directory structure, and templates
    - All scripts support `--json` flag for programmatic output
 
-4. **`commands/`** - Agent command files
+5. **`commands/`** - Agent command files
    - `speckit.baseline.md`, `speckit.bugfix.md`, etc.
    - Used by Claude Code, Copilot, Cursor, etc.
+   - Native system handles agent-specific format conversion
 
-5. **`extensions/workflows/`** - Workflow templates
+6. **`workflows/`** - Workflow templates
    - Each workflow has: templates, README, and helper scripts
    - Templates use `{{PLACEHOLDER}}` syntax
+   - Installed to `.specify/extensions/spec-kit-workflows/workflows/`
+
+7. **`scripts/validate-branch.sh`** - Branch validation hook
+   - Validates branch names match workflow patterns
+   - Replaces common.sh patching from legacy system
+
+8. **`scripts/migrate-to-native.sh`** - Migration helper
+   - Migrates legacy installations to native format
+   - Removes old patches and files
+
+### Legacy Components (Deprecated)
+
+**`specify_extend.py`** - Legacy CLI tool (deprecated, frozen at v1.5.12)
+- Only needed for spec-kit < 0.0.93
+- Native extension system replaces all functionality
+- Maintained for backward compatibility
 
 ### Key Design Patterns
 
@@ -103,15 +153,21 @@ git push origin v1.3.9
 - Cleanup: `cleanup/001-description`
 - Baseline: `baseline/001-description`
 
+**Native Installation Flow**
+1. `specify extension add spec-kit-workflows`
+2. Native system reads `extension.yml`
+3. Copies all files to `.specify/extensions/spec-kit-workflows/`
+4. Registers commands via `CommandRegistrar`
+5. Configures hooks from manifest
+
 **Agent Detection & Support**
 
-For detailed information about agent support, detection logic, and adding new agents, see [AGENTS.md](AGENTS.md).
+The native system handles agent detection automatically via `CommandRegistrar`. For details on how agents are supported, see [AGENTS.md](AGENTS.md).
 
-**Patching Strategy** (specify_extend.py:1235-1344)
-- Creates backup: `common.sh.backup`
-- Renames original: `check_feature_branch()` → `check_feature_branch_old()`
-- Appends new function supporting extension branch patterns
-- Idempotent (checks if already patched)
+**Branch Validation** (Native)
+- Hook-based: `scripts/validate-branch.sh`
+- No file patching required
+- Registered in `extension.yml` hooks section
 
 ## Working with This Codebase
 

@@ -29,7 +29,7 @@ Run script to get feature paths and information:
 
 ```bash
 cd "$(git rev-parse --show-toplevel)" && \
-source .specify/scripts/bash/common.sh && \
+source .specify/extensions/spec-kit-workflows/scripts/common.sh && \
 get_feature_paths
 ```
 
@@ -135,11 +135,11 @@ For approved work (✅ or ⚠️), mark completed tasks as done:
 
 ```bash
 # Mark specific task as done
-.specify/scripts/bash/mark-task-status.sh --task-id T001 --status done
+.specify/extensions/spec-kit-workflows/scripts/mark-task-status.sh --task-id T001 --status done
 
 # Mark multiple tasks
-.specify/scripts/bash/mark-task-status.sh --task-id T002 --status done
-.specify/scripts/bash/mark-task-status.sh --task-id T003 --status done
+.specify/extensions/spec-kit-workflows/scripts/mark-task-status.sh --task-id T002 --status done
+.specify/extensions/spec-kit-workflows/scripts/mark-task-status.sh --task-id T003 --status done
 ```
 
 This updates tasks.md, changing:

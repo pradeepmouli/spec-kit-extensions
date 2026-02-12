@@ -30,7 +30,7 @@ Given that modification request, do this:
    - If no leading digits (e.g., "add compression"), treat as description-only (interactive mode)
 
 2. **If interactive mode** (no feature number provided):
-   a. Run `.specify/scripts/bash/create-modification.sh --list-features "<description>"` to get list of features
+   a. Run `.specify/extensions/spec-kit-workflows/scripts/create-modification.sh --list-features "<description>"` to get list of features
    b. Parse the JSON output which contains: `{"mode":"list","description":"...","features":[...]}`
    c. Present the features list to the user in a clear, numbered format:
       ```
@@ -48,14 +48,14 @@ Given that modification request, do this:
    f. Continue to step 3 with the selected feature number
 
 3. **Normal workflow** (feature number now available):
-   Run the script `.specify/scripts/bash/create-modification.sh --json <feature-number> "<description>"` from repo root and parse its JSON output for MOD_ID, BRANCH_NAME, MOD_SPEC_FILE, IMPACT_FILE, and FEATURE_NAME. All file paths must be absolute.
+   Run the script `.specify/extensions/spec-kit-workflows/scripts/create-modification.sh --json <feature-number> "<description>"` from repo root and parse its JSON output for MOD_ID, BRANCH_NAME, MOD_SPEC_FILE, IMPACT_FILE, and FEATURE_NAME. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once per feature selection. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 5. Read the impact analysis from IMPACT_FILE to understand what files and contracts are affected.
 
 6. Load the original feature spec from `specs/<FEATURE_NAME>/spec.md` to understand the baseline.
 
-7. Load `.specify/extensions/workflows/modify/modification-template.md` to understand required sections.
+7. Load `.specify/extensions/spec-kit-workflows/workflows/modify/modification-template.md` to understand required sections.
 
 8. Write the modification spec to MOD_SPEC_FILE using the template structure:
    - Fill "Why Modify?" with business justification from description
