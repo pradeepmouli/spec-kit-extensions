@@ -1,77 +1,59 @@
-schema: "1.0"
+schema_version: "1.0"
 
-id: spec-kit-workflows
-name: "Spec-Kit Workflow Extensions"
-version: "2.2.0"
-description: "Production-tested workflows for the complete software development lifecycle"
-author: "pradeepmouli"
-repository: "https://github.com/pradeepmouli/spec-kit-extensions"
-license: "MIT"
+extension:
+  id: "spec-kit-workflows"
+  name: "Spec-Kit Workflow Extensions"
+  version: "2.2.0"
+  description: "Production-tested workflows for bug fixes, refactoring, hotfixes, deprecation, and cleanup"
+  author: "pradeepmouli"
+  repository: "https://github.com/pradeepmouli/spec-kit-extensions"
+  license: "MIT"
+  homepage: "https://github.com/pradeepmouli/spec-kit-extensions"
 
-requirements:
-  speckit: ">=0.0.93"
+requires:
+  speckit_version: ">=0.0.93"
 
 provides:
   commands:
-    - name: speckit.bugfix
-      file: commands/speckit.bugfix.md
+    - name: "speckit.workflows.bugfix"
+      file: "commands/speckit.bugfix.md"
       description: "Create a bug fix workflow with regression test"
-    - name: speckit.baseline
-      file: commands/speckit.baseline.md
+    - name: "speckit.workflows.baseline"
+      file: "commands/speckit.baseline.md"
       description: "Create a baseline documentation workflow"
-    - name: speckit.enhance
-      file: commands/speckit.enhance.md
+    - name: "speckit.workflows.enhance"
+      file: "commands/speckit.enhance.md"
       description: "Create an enhancement workflow"
-    - name: speckit.modify
-      file: commands/speckit.modify.md
+    - name: "speckit.workflows.modify"
+      file: "commands/speckit.modify.md"
       description: "Create a modification workflow for existing features"
-    - name: speckit.refactor
-      file: commands/speckit.refactor.md
+    - name: "speckit.workflows.refactor"
+      file: "commands/speckit.refactor.md"
       description: "Create a refactoring workflow"
-    - name: speckit.hotfix
-      file: commands/speckit.hotfix.md
+    - name: "speckit.workflows.hotfix"
+      file: "commands/speckit.hotfix.md"
       description: "Create a hotfix workflow for critical production issues"
-    - name: speckit.deprecate
-      file: commands/speckit.deprecate.md
+    - name: "speckit.workflows.deprecate"
+      file: "commands/speckit.deprecate.md"
       description: "Create a deprecation workflow"
-    - name: speckit.cleanup
-      file: commands/speckit.cleanup.md
+    - name: "speckit.workflows.cleanup"
+      file: "commands/speckit.cleanup.md"
       description: "Create a cleanup workflow"
-    - name: speckit.review
-      file: commands/speckit.review.md
+    - name: "speckit.workflows.review"
+      file: "commands/speckit.review.md"
       description: "Code review with quality gates"
-    - name: speckit.phasestoissues
-      file: commands/speckit.phasestoissues.md
+    - name: "speckit.workflows.phasestoissues"
+      file: "commands/speckit.phasestoissues.md"
       description: "Convert spec phases to GitHub issues"
-    - name: speckit.incorporate
-      file: commands/speckit.incorporate.md
+    - name: "speckit.workflows.incorporate"
+      file: "commands/speckit.incorporate.md"
       description: "Document incorporation workflow"
-  configs:
-    - file: config-template.yml
-      description: "Workflow extension configuration"
-
-hooks:
-  - event: after_tasks
-    command: speckit.review
-    optional: true
-    prompt: "Run code review quality gates?"
-
-defaults:
-  enabled_workflows:
-    - baseline
-    - bugfix
-    - enhance
-    - modify
-    - refactor
-    - hotfix
-    - deprecate
-    - cleanup
-  branch_validation: true
-  constitution_updates: true
 
 tags:
-  - workflows
-  - bugfix
-  - refactor
-  - hotfix
-  - lifecycle
+  - "workflows"
+  - "bugfix"
+  - "refactor"
+  - "hotfix"
+  - "deprecate"
+  - "cleanup"
+  - "lifecycle"
