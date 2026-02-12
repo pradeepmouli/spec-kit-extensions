@@ -8,7 +8,7 @@ spec-kit v0.0.93 introduced a modular extension system (`specify extension add/r
 
 | Aspect | Current (custom) | Target (native) |
 |--------|-------------------|------------------|
-| Installation | `specify-extend --all` (custom CLI) | `specify extension add spec-kit-extensions` |
+| Installation | `specify-extend --all` (custom CLI) | `specify extension add spec-kit-workflows` |
 | Manifest | None (hardcoded in `specify_extend.py`) | `extension.yml` per extension |
 | Configuration | `enabled.conf` (custom format) | `config-template.yml` (YAML, layered) |
 | Agent commands | Custom per-agent transformation in Python | `CommandRegistrar` handles agent formats |
@@ -18,9 +18,10 @@ spec-kit v0.0.93 introduced a modular extension system (`specify extension add/r
 
 ## Architecture Decision: One Extension or Many?
 
-**Option A: Single monolithic extension** — One `spec-kit-extensions` extension containing all 9 workflows.
+**Option A: Single monolithic extension** — One `spec-kit-workflows` extension containing all 8 core workflows plus 3 utility commands (11 commands total).
 - Simpler catalog entry, single install command
 - All-or-nothing (users can't pick individual workflows)
+- Note: "Workflows" refers to the 8 lifecycle workflows (baseline, bugfix, enhance, modify, refactor, hotfix, deprecate, cleanup); "commands" includes workflows plus utilities (review, phasestoissues, incorporate)
 
 **Option B: Individual extensions per workflow** — `speckit-bugfix`, `speckit-hotfix`, etc.
 - Users install only what they need: `specify extension add speckit-bugfix`
@@ -51,7 +52,7 @@ schema: "1.0"
 id: spec-kit-workflows
 name: "Spec-Kit Workflow Extensions"
 version: "2.2.0"  # v2 native-format release
-description: "7 production-tested workflows for the complete software development lifecycle"
+description: "8 production-tested workflows for the complete software development lifecycle"
 author: "pradeepmouli"
 repository: "https://github.com/pradeepmouli/spec-kit-extensions"
 license: "MIT"
@@ -357,7 +358,7 @@ Fork spec-kit, add entry to `extensions/catalog.json`:
 {
   "spec-kit-workflows": {
     "name": "Spec-Kit Workflow Extensions",
-    "description": "7 production-tested workflows for the complete SDLC",
+    "description": "8 production-tested workflows for the complete SDLC",
     "author": "pradeepmouli",
     "repository": "https://github.com/pradeepmouli/spec-kit-extensions",
     "latest_version": "2.2.0",
