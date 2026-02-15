@@ -12,25 +12,25 @@ Spec-Kit is GitHub's Spec-Driven Development toolkit. Combined with spec-kit-ext
 
 ```
 Starting with spec-kit?
-└─ /speckit.baseline → establish project context
+└─ /speckit.workflows.baseline → establish project context
 
 Building something new?
 ├─ Major feature (multi-phase)?  → /speckit.specify "description"
-└─ Minor enhancement (quick)?    → /speckit.enhance "description"
+└─ Minor enhancement (quick)?    → /speckit.workflows.enhance "description"
 
 Fixing broken behavior?
-├─ Production emergency?         → /speckit.hotfix "incident"
-└─ Non-urgent bug?              → /speckit.bugfix "bug description"
+├─ Production emergency?         → /speckit.workflows.hotfix "incident"
+└─ Non-urgent bug?              → /speckit.workflows.bugfix "bug description"
 
 Changing existing feature?
-├─ Adding/modifying behavior?    → /speckit.modify 014 "change"
-└─ Improving code (no behavior change)? → /speckit.refactor "improvement"
+├─ Adding/modifying behavior?    → /speckit.workflows.modify 014 "change"
+└─ Improving code (no behavior change)? → /speckit.workflows.refactor "improvement"
 
 Removing a feature?
-└─ /speckit.deprecate 014 "reason"
+└─ /speckit.workflows.deprecate 014 "reason"
 
 Reviewing completed work?
-└─ /speckit.review [task-id]
+└─ /speckit.workflows.review [task-id]
 ```
 
 ## Installation
@@ -69,30 +69,30 @@ specify-extend --all --github-integration
 
 | Command | Description | Branch Pattern |
 |---------|-------------|----------------|
-| `/speckit.baseline` | Establish project baseline | `baseline/001-name` |
-| `/speckit.bugfix "desc"` | Bug fix (regression-test-first) | `bugfix/001-name` |
-| `/speckit.enhance "desc"` | Minor enhancement (streamlined) | `enhance/001-name` |
-| `/speckit.modify 014 "desc"` | Modify feature (impact analysis) | `modify/014^002-name` |
-| `/speckit.refactor "desc"` | Code quality (metrics tracked) | `refactor/001-name` |
-| `/speckit.hotfix "desc"` | Production emergency (post-mortem) | `hotfix/001-name` |
-| `/speckit.deprecate 014 "desc"` | Feature sunset (3-phase) | `deprecate/014-name` |
-| `/speckit.cleanup` | Codebase cleanup (automated) | `cleanup/001-name` |
-| `/speckit.review [id]` | Review completed work | N/A |
-| `/speckit.incorporate` | Integrate documents | N/A |
+| `/speckit.workflows.baseline` | Establish project baseline | `baseline/001-name` |
+| `/speckit.workflows.bugfix "desc"` | Bug fix (regression-test-first) | `bugfix/001-name` |
+| `/speckit.workflows.enhance "desc"` | Minor enhancement (streamlined) | `enhance/001-name` |
+| `/speckit.workflows.modify 014 "desc"` | Modify feature (impact analysis) | `modify/014^002-name` |
+| `/speckit.workflows.refactor "desc"` | Code quality (metrics tracked) | `refactor/001-name` |
+| `/speckit.workflows.hotfix "desc"` | Production emergency (post-mortem) | `hotfix/001-name` |
+| `/speckit.workflows.deprecate 014 "desc"` | Feature sunset (3-phase) | `deprecate/014-name` |
+| `/speckit.workflows.cleanup` | Codebase cleanup (automated) | `cleanup/001-name` |
+| `/speckit.workflows.review [id]` | Review completed work | N/A |
+| `/speckit.workflows.incorporate` | Integrate documents | N/A |
 
 ## Workflow Cheat Sheet
 
 | Workflow | Key Feature | Test Strategy |
 |----------|-------------|---------------|
 | `/speckit.specify` | Full spec + design | TDD |
-| `/speckit.baseline` | Context tracking | No tests |
-| `/speckit.bugfix` | Regression test | **Test before fix** |
-| `/speckit.enhance` | Single-doc workflow | Tests for new behavior |
-| `/speckit.modify 014` | Impact analysis | Update affected tests |
-| `/speckit.refactor` | Metrics tracking | Tests unchanged |
-| `/speckit.hotfix` | Post-mortem | Test after (exception) |
-| `/speckit.deprecate 014` | 3-phase sunset | Remove tests last |
-| `/speckit.review` | Structured feedback | Verify tests |
+| `/speckit.workflows.baseline` | Context tracking | No tests |
+| `/speckit.workflows.bugfix` | Regression test | **Test before fix** |
+| `/speckit.workflows.enhance` | Single-doc workflow | Tests for new behavior |
+| `/speckit.workflows.modify 014` | Impact analysis | Update affected tests |
+| `/speckit.workflows.refactor` | Metrics tracking | Tests unchanged |
+| `/speckit.workflows.hotfix` | Post-mortem | Test after (exception) |
+| `/speckit.workflows.deprecate 014` | 3-phase sunset | Remove tests last |
+| `/speckit.workflows.review` | Structured feedback | Verify tests |
 
 ## Standard Feature Workflow
 
@@ -121,7 +121,7 @@ drag-and-drop reordering, tile preview interface
 
 ```bash
 # 1. Create bug report
-/speckit.bugfix "profile form crashes when submitting without image"
+/speckit.workflows.bugfix "profile form crashes when submitting without image"
 # Creates: bug-report.md, branch: bugfix/001-profile-crash
 
 # 2. Investigate, update bug-report.md with root cause
@@ -140,7 +140,7 @@ drag-and-drop reordering, tile preview interface
 
 ```bash
 # 1. Create modification with impact analysis
-/speckit.modify 014 "make profile fields optional"
+/speckit.workflows.modify 014 "make profile fields optional"
 # Creates: modification-spec.md + impact-analysis.md
 
 # 2. Review impact analysis for:
@@ -162,7 +162,7 @@ drag-and-drop reordering, tile preview interface
 
 ```bash
 # 1. Create refactor with baseline metrics
-/speckit.refactor "reduce code duplication in user service"
+/speckit.workflows.refactor "reduce code duplication in user service"
 
 # 2. Document baseline metrics:
 #    - Code duplication %
@@ -182,7 +182,7 @@ drag-and-drop reordering, tile preview interface
 
 ```bash
 # 1. Create hotfix (expedited)
-/speckit.hotfix "payment processing failing for Stripe webhooks"
+/speckit.workflows.hotfix "payment processing failing for Stripe webhooks"
 
 # 2. Fix immediately (only workflow where test comes AFTER)
 
@@ -257,14 +257,14 @@ cleanup=disabled
 
 | Situation | DON'T use | DO use |
 |-----------|-----------|--------|
-| Simple bug | `/speckit.specify` | `/speckit.bugfix` |
-| Minor tweak | `/speckit.specify` | `/speckit.enhance` |
-| Code cleanup | `/speckit.modify` | `/speckit.refactor` |
+| Simple bug | `/speckit.specify` | `/speckit.workflows.bugfix` |
+| Minor tweak | `/speckit.specify` | `/speckit.workflows.enhance` |
+| Code cleanup | `/speckit.workflows.modify` | `/speckit.workflows.refactor` |
 
 ### 4. Review Before PRs
 
 ```bash
-/speckit.review
+/speckit.workflows.review
 # Review file is REQUIRED before creating PR
 ```
 
@@ -272,7 +272,7 @@ cleanup=disabled
 
 For modifications, always review impact before planning:
 ```bash
-/speckit.modify 014 "description"
+/speckit.workflows.modify 014 "description"
 # Review impact-analysis.md BEFORE /speckit.plan
 ```
 

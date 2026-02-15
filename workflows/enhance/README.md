@@ -6,7 +6,7 @@ The enhancement workflow is designed for **minor enhancements** to existing func
 
 ## When to Use
 
-Use `/speckit.enhance` when:
+Use `/speckit.workflows.enhance` when:
 
 - Adding small improvements to existing features
 - Making minor UI/UX enhancements
@@ -16,12 +16,12 @@ Use `/speckit.enhance` when:
 - Making small performance optimizations
 - Adding simple validation or edge case handling
 
-**Do NOT use `/speckit.enhance` for**:
+**Do NOT use `/speckit.workflows.enhance` for**:
 - Major new features → use `/speckit.specify` instead
-- Bug fixes → use `/speckit.bugfix` instead
-- Changing existing feature behavior → use `/speckit.modify` instead
-- Large refactoring efforts → use `/speckit.refactor` instead
-- Emergency fixes → use `/speckit.hotfix` instead
+- Bug fixes → use `/speckit.workflows.bugfix` instead
+- Changing existing feature behavior → use `/speckit.workflows.modify` instead
+- Large refactoring efforts → use `/speckit.workflows.refactor` instead
+- Emergency fixes → use `/speckit.workflows.hotfix` instead
 
 **Rule of thumb**: If it needs more than 1 phase or complex planning, use `/speckit.specify` instead.
 
@@ -63,7 +63,7 @@ specs/
 ## Command Usage
 
 ```bash
-/speckit.enhance "add tooltip to save button"
+/speckit.workflows.enhance "add tooltip to save button"
 ```
 
 This will:
@@ -158,7 +158,7 @@ Redesign entire authentication flow with OAuth and SSO
 - ❌ Using enhance for major features → Creates technical debt
 - ❌ Skipping tests for "small" changes → Introduces bugs
 - ❌ Not documenting the change → Team confusion
-- ❌ Breaking existing behavior → Should use `/speckit.modify`
+- ❌ Breaking existing behavior → Should use `/speckit.workflows.modify`
 
 ## Integration with Constitution
 

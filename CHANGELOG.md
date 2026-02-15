@@ -6,12 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.2.0 (native format)
+- **Extension Templates** (workflows, commands, scripts) - Currently at v2.3.0 (native format)
 - **CLI Tool** (`specify-extend`) - Currently at v1.5.12 (legacy, deprecated in favor of native)
 
 ---
 
 ## Extension Templates
+
+### [2.3.0] - 2026-02-14
+
+#### ✅ Native Install Ready
+
+- **Symlink removal** - `.specify/` is now self-contained for native spec-kit installs
+- **Extension manifest** - `extension.yml` updated to v2.3.0 with hooks and defaults
+- **Native compatibility** - `specify extension add --dev` works without copytree errors
+- **Command naming** - Workflow commands use `/speckit.workflows.*` to satisfy native extension naming rules
+
+#### 📋 Components
+
+- **Extension Templates Version**: v2.3.0 (native format)
+- **Required Spec Kit Version**: v0.0.93+
+- **Legacy CLI Tool**: v1.5.12 (still available for older spec-kit)
 
 ### [2.2.0] - 2026-02-10
 
@@ -92,7 +107,7 @@ For existing users:
   - New quality gate: No placeholder/TODO/FIXME code in reviewed scope unless justified and tracked
   - Reviewers now explicitly confirm reviewed code contains no placeholder text
   - Supports identification of incomplete implementations during code review
-  - Affects: `commands/speckit.review.md`
+  - Affects: `commands/speckit.workflows.review.md`
 
 #### 📦 Components
 
@@ -126,7 +141,7 @@ For existing users:
 
 - **PhasesToIssues Workflow Integration** - New command for creating GitHub issues from development phases
   - Added `phasestoissues` to `WORKFLOW_EXTENSIONS` list
-  - New command file: `commands/speckit.phasestoissues.md`
+  - New command file: `commands/speckit.workflows.phasestoissues.md`
   - Supports phase-level GitHub issue creation workflow
   - Affects: `specify_extend.py` (AVAILABLE_EXTENSIONS, WORKFLOW_EXTENSIONS)
 
@@ -202,7 +217,7 @@ For existing users:
   - Enables individual task assignment and task-level discussions
   - Parent phase issues auto-update status based on sub-issue completion
   - Benefits: Better delegation, parallel work at task level, cleaner phase issue UI
-  - Affects: `commands/speckit.phasestoissues.md`, `docs/phasestoissues.md`, `extensions/workflows/phasestoissues/README.md`
+  - Affects: `commands/speckit.workflows.phasestoissues.md`, `docs/phasestoissues.md`, `extensions/workflows/phasestoissues/README.md`
 
 #### 📦 Components
 
@@ -262,17 +277,17 @@ For existing users:
   - Affects: `extensions/workflows/phasestoissues/` (new directory)
 
 - **PhasesToIssues Command** - New command template for phase-level issue creation
-  - Added `commands/speckit.phasestoissues.md`
+  - Added `commands/speckit.workflows.phasestoissues.md`
   - Provides AI agent guidance for phasestoissues workflow
   - Integrates with GitHub issue creation process
-  - Affects: `commands/speckit.phasestoissues.md` (new file)
+  - Affects: `commands/speckit.workflows.phasestoissues.md` (new file)
 
 #### 🔧 Changed/Improved
 
 - **Incorporate Command** - Enhanced incorporate command documentation
-  - Updated `commands/speckit.incorporate.md` with improved guidance
+  - Updated `commands/speckit.workflows.incorporate.md` with improved guidance
   - Better integration instructions and examples
-  - Affects: `commands/speckit.incorporate.md`
+  - Affects: `commands/speckit.workflows.incorporate.md`
 
 #### 📦 Components
 
@@ -343,7 +358,7 @@ For existing users:
   - Enhanced stage advancement handoffs with clearer instructions
   - Better integration with native spec-kit commands
   - More explicit about when to use /speckit.analyze for content merging
-  - Affects: commands/speckit.incorporate.md (131 lines changed)
+  - Affects: commands/speckit.workflows.incorporate.md (131 lines changed)
 
 - **Documentation** - Improved constitution template clarity
   - Better formatting and organization of quality gates
@@ -362,14 +377,14 @@ For existing users:
 
 #### 🚀 Added
 
-- **Incorporate Command Extension** - New `/speckit.incorporate` command for intelligent document integration
+- **Incorporate Command Extension** - New `/speckit.workflows.incorporate` command for intelligent document integration
   - Automatically detects document type (spec, plan, tasks, research, checklist, post-mortem)
   - Intelligently incorporates documents into existing workflows
   - Advances workflow stages automatically based on document type
   - Initiates new workflows from documents when not in a workflow
   - Leverages native `/speckit.analyze` for smart content merging
   - Complete handoff definitions for all 8 workflows + stage advancement
-  - Affects: commands/speckit.incorporate.md (376 lines)
+  - Affects: commands/speckit.workflows.incorporate.md (376 lines)
 
 #### 🔧 Changed/Improved
 
@@ -490,7 +505,7 @@ For existing users:
 
 #### 🚀 Added
 
-- **Enhance Workflow** - New `/speckit.enhance` workflow for minor improvements and enhancements
+- **Enhance Workflow** - New `/speckit.workflows.enhance` workflow for minor improvements and enhancements
   - Quick-turnaround improvements that don't require full feature specs
   - Creates enhancement-spec.md with problem statement, proposed changes, and verification steps
   - Lighter-weight alternative to full feature development
@@ -590,7 +605,7 @@ _(No template changes yet)_
   - Adds detection for misplaced workflow dirs (e.g., `bugfix-001-*` under `specs/`), proposes moves, and applies when approved
   - Keeps unknown dirs (e.g., `specs/copilot/`) visible as warnings so users decide how to handle them
   - Updated guidance for agents to confirm plans before applying fixes and to rerun `--dry-run` until clean
-  - Affects: `scripts/create-cleanup.sh`, `extensions/workflows/cleanup/README.md`, `commands/speckit.cleanup.md`
+  - Affects: `scripts/create-cleanup.sh`, `extensions/workflows/cleanup/README.md`, `commands/speckit.workflows.cleanup.md`
 
 #### 📦 Components
 
@@ -603,7 +618,7 @@ _(No template changes yet)_
 
 #### 🚀 Added
 
-- **Baseline Workflow** - New `/speckit.baseline` workflow for establishing project context and tracking changes
+- **Baseline Workflow** - New `/speckit.workflows.baseline` workflow for establishing project context and tracking changes
   - Creates `baseline-spec.md` documenting project architecture, features, and structure
   - Creates `current-state.md` tracking all changes by workflow type
   - Automatically detects if specs exist and determines baseline commit
@@ -927,7 +942,7 @@ _(No template changes yet)_
 
 #### 🚀 Added
 
-- **Baseline Workflow** - New `/speckit.baseline` workflow for project context establishment
+- **Baseline Workflow** - New `/speckit.workflows.baseline` workflow for project context establishment
   - Added `baseline` to `AVAILABLE_EXTENSIONS` list
   - Automatic detection and installation of baseline workflow templates
   - Updated constitution template with baseline quality gates
@@ -945,7 +960,7 @@ _(No template changes yet)_
 
 #### 🚀 Added
 
-- **Cleanup Workflow** - New `/speckit.cleanup` workflow for validating and reorganizing spec-kit artifacts
+- **Cleanup Workflow** - New `/speckit.workflows.cleanup` workflow for validating and reorganizing spec-kit artifacts
   - Added `cleanup` to `AVAILABLE_EXTENSIONS` list
   - Automatic detection and installation of cleanup workflow templates
 
@@ -1070,7 +1085,7 @@ _(No template changes yet)_
 #### 🚀 Added
 
 - **Cleanup Workflow** - New workflow for validating and reorganizing spec-kit artifacts
-  - Command: `/speckit.cleanup [--dry-run] [--auto-fix] "reason"`
+  - Command: `/speckit.workflows.cleanup [--dry-run] [--auto-fix] "reason"`
   - Validates sequential numbering (001, 002, 003, etc.)
   - Detects gaps, duplicates, and incorrect directory locations
   - Automatically renumbers directories with `--auto-fix`
@@ -1174,7 +1189,7 @@ _(No template changes yet)_
 - **LLM-Enhanced Constitution Updates** - New `--llm-enhance` flag for intelligent constitution merging
   - Creates one-time prompt/command that uses AI to intelligently merge quality gates
   - For GitHub Copilot: Creates both `.github/agents/` and `.github/prompts/` files (matching spec-kit pattern)
-  - For other agents: Creates command file (e.g., `.claude/commands/speckit.enhance-constitution.md`)
+  - For other agents: Creates command file (e.g., `.claude/commands/speckit.workflows.enhance-constitution.md`)
   - Prompt files for regular workflows are pointers to agent files (`agent: speckit.{workflow}`)
   - Self-destruct instructions included to prevent accidental re-use
 
@@ -1269,7 +1284,7 @@ Prior to v2.1.1/v1.0.1, templates and CLI were versioned together.
 
 All workflows now follow this checkpoint-based pattern:
 
-1. **Initial Analysis** - Run workflow command (e.g., `/speckit.bugfix`) to create analysis/documentation
+1. **Initial Analysis** - Run workflow command (e.g., `/speckit.workflows.bugfix`) to create analysis/documentation
 2. **User Review** - Review the analysis, make adjustments as needed
 3. **Planning** - Run `/speckit.plan` to create implementation plan
 4. **Plan Review** - Review and adjust the plan
@@ -1279,27 +1294,27 @@ All workflows now follow this checkpoint-based pattern:
 
 ### 🔄 Changed Workflows
 
-#### Bugfix Workflow (`/speckit.bugfix`)
+#### Bugfix Workflow (`/speckit.workflows.bugfix`)
 - **Before**: Auto-generated 21 tasks immediately after command
 - **After**: Creates `bug-report.md` → User reviews → `/speckit.plan` → User reviews → `/speckit.tasks` → User reviews → `/speckit.implement`
 - **Benefit**: Users can adjust the fix approach before implementation, preventing incorrect solutions
 
-#### Modify Workflow (`/speckit.modify`)
+#### Modify Workflow (`/speckit.workflows.modify`)
 - **Before**: Auto-generated 36 tasks with impact analysis
 - **After**: Creates `modification-spec.md` + `impact-analysis.md` → User reviews → `/speckit.plan` → User reviews → `/speckit.tasks` → User reviews → `/speckit.implement`
 - **Benefit**: Users can review impact analysis (~80% accurate) and catch missed dependencies before making breaking changes
 
-#### Refactor Workflow (`/speckit.refactor`)
+#### Refactor Workflow (`/speckit.workflows.refactor`)
 - **Before**: Auto-generated 36 tasks after metrics capture
 - **After**: Creates `refactor-spec.md` + `metrics-before.md` → User captures baseline → `/speckit.plan` → User reviews → `/speckit.tasks` → User reviews → `/speckit.implement`
 - **Benefit**: Users ensure baseline metrics are captured and plan is incremental before starting refactoring
 
-#### Hotfix Workflow (`/speckit.hotfix`)
+#### Hotfix Workflow (`/speckit.workflows.hotfix`)
 - **Before**: Auto-generated 28 tasks for emergency fix
 - **After**: Creates `hotfix.md` → Quick assessment → `/speckit.plan` (fast-track) → Quick review → `/speckit.tasks` → Quick sanity check → `/speckit.implement`
 - **Benefit**: Even in emergencies, a 2-minute review prevents making the outage worse
 
-#### Deprecate Workflow (`/speckit.deprecate`)
+#### Deprecate Workflow (`/speckit.workflows.deprecate`)
 - **Before**: Auto-generated 58 tasks across all phases
 - **After**: Creates `deprecation.md` + `dependencies.md` → Stakeholder review → `/speckit.plan` → Approval → `/speckit.tasks` → Review → `/speckit.implement`
 - **Benefit**: Multi-month deprecations require stakeholder alignment; checkpoints ensure proper planning
@@ -1309,11 +1324,11 @@ All workflows now follow this checkpoint-based pattern:
 #### Command Names Updated
 All extension commands now require the `/speckit.` prefix to align with spec-kit v0.0.18+:
 
-- `/bugfix` → `/speckit.bugfix`
-- `/modify` → `/speckit.modify`
-- `/refactor` → `/speckit.refactor`
-- `/hotfix` → `/speckit.hotfix`
-- `/deprecate` → `/speckit.deprecate`
+- `/bugfix` → `/speckit.workflows.bugfix`
+- `/modify` → `/speckit.workflows.modify`
+- `/refactor` → `/speckit.workflows.refactor`
+- `/hotfix` → `/speckit.workflows.hotfix`
+- `/deprecate` → `/speckit.workflows.deprecate`
 
 **Migration**: Update any scripts, documentation, or habits to use the new command names.
 
@@ -1343,7 +1358,7 @@ specs/bugfix/001/
 **After** (v2.0.0):
 ```
 specs/bugfix/001/
-├── bug-report.md    # Created by /speckit.bugfix
+├── bug-report.md    # Created by /speckit.workflows.bugfix
 ├── plan.md          # Created by /speckit.plan
 └── tasks.md         # Created by /speckit.tasks
 ```

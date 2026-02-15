@@ -87,17 +87,17 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
 **Validation before release:**
 ```
-/speckit.cleanup "validate before v2.0 release"
+/speckit.workflows.cleanup "validate before v2.0 release"
 ```
 
 **Fix numbering after merge:**
 ```
-/speckit.cleanup --auto-fix "fix numbering after merge"
+/speckit.workflows.cleanup --auto-fix "fix numbering after merge"
 ```
 
 **Dry-run to see what would change:**
 ```
-/speckit.cleanup --dry-run --auto-fix "check organization"
+/speckit.workflows.cleanup --dry-run --auto-fix "check organization"
 ```
 
 ## Safety Notes

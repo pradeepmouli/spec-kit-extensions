@@ -159,11 +159,11 @@ specify-extend --all --llm-enhance
 **How it works:**
 
 1. **Creates a one-time prompt/command**:
-   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.md` and `.github/prompts/speckit.enhance-constitution.prompt.md` (matching spec-kit pattern)
-   - For **other agents** (Claude, Cursor, etc.): Creates a command like `/speckit.enhance-constitution`
+   - For **GitHub Copilot**: Creates both `.github/agents/speckit.workflows.enhance-constitution.md` and `.github/prompts/speckit.workflows.enhance-constitution.prompt.md` (matching spec-kit pattern)
+   - For **other agents** (Claude, Cursor, etc.): Creates a command like `/speckit.workflows.enhance-constitution`
 2. **You invoke it**:
    - **GitHub Copilot**: Reference the prompt in Copilot Chat or use as agent
-   - **Other agents**: Run the command (e.g., `/speckit.enhance-constitution`)
+   - **Other agents**: Run the command (e.g., `/speckit.workflows.enhance-constitution`)
 3. **Intelligent merging**: The prompt/command instructs the AI to:
    - Preserve all existing constitution content
    - Intelligently merge workflow quality gates
@@ -171,7 +171,7 @@ specify-extend --all --llm-enhance
    - Continue existing section numbering schemes
    - Avoid duplicating content
 4. **Self-destructs**: The prompt/command includes instructions to delete itself after use to prevent confusion
-   - **GitHub Copilot**: Delete both `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.md`
+   - **GitHub Copilot**: Delete both `.github/prompts/speckit.workflows.enhance-constitution.prompt.md` and `.github/agents/speckit.workflows.enhance-constitution.md`
 
 **When to use `--llm-enhance`:**
 
@@ -194,12 +194,12 @@ specify-extend --all --llm-enhance
 
 # For GitHub Copilot users:
 # In Copilot Chat, reference the prompt:
-# "Review and apply .github/prompts/speckit.enhance-constitution.prompt.md"
-# Then delete both .github/prompts/speckit.enhance-constitution.prompt.md
-# and .github/agents/speckit.enhance-constitution.md
+# "Review and apply .github/prompts/speckit.workflows.enhance-constitution.prompt.md"
+# Then delete both .github/prompts/speckit.workflows.enhance-constitution.prompt.md
+# and .github/agents/speckit.workflows.enhance-constitution.md
 
 # For Claude Code users:
-/speckit.enhance-constitution
+/speckit.workflows.enhance-constitution
 
 # The prompt/command will:
 # 1. Read your existing constitution
@@ -217,7 +217,7 @@ specify-extend --all --llm-enhance
 specify-extend --all
 
 # Try a command
-/speckit.bugfix "test bug"
+/speckit.workflows.bugfix "test bug"
 ```
 
 #### GitHub Copilot
@@ -431,8 +431,8 @@ specify-extend --all
 
 # 4. Start using workflows
 /speckit.specify "new feature"        # Core spec-kit
-/speckit.bugfix "fix bug"             # Extension
-/speckit.modify 001 "change feature"  # Extension
+/speckit.workflows.bugfix "fix bug"             # Extension
+/speckit.workflows.modify 001 "change feature"  # Extension
 ```
 
 ### For New Projects

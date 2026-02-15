@@ -113,7 +113,7 @@ See sub-issues for individual task tracking.
 
 ---
 
-**Note**: Sub-issues will be created for each task. Use `/speckit.review` to validate implementation against acceptance criteria.
+**Note**: Sub-issues will be created for each task. Use `/speckit.workflows.review` to validate implementation against acceptance criteria.
 ```
 
 ### 5. Determine Issue Labels
@@ -230,7 +230,7 @@ Next Steps:
 2. Assign to team members
 3. Add to project board/milestone
 4. Track progress by checking off tasks
-5. Use /speckit.review when ready for validation
+5. Use /speckit.workflows.review when ready for validation
 ```
 
 ## Important Notes

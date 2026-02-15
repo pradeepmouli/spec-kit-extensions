@@ -6,7 +6,7 @@ The modification workflow handles changes to existing features. It emphasizes **
 
 ## When to Use
 
-Use `/speckit.modify` when:
+Use `/speckit.workflows.modify` when:
 
 - Changing behavior of an existing feature
 - Adding capabilities to existing functionality
@@ -14,11 +14,11 @@ Use `/speckit.modify` when:
 - Altering contracts/APIs of existing code
 - Responding to changed requirements
 
-**Do NOT use `/speckit.modify` for**:
+**Do NOT use `/speckit.workflows.modify` for**:
 - Creating new features → use `/speckit.specify` instead
-- Fixing bugs without changing intended behavior → use `/speckit.bugfix` instead
-- Improving code quality without behavior changes → use `/speckit.refactor` instead
-- Deprecating entire features → use `/speckit.deprecate` instead
+- Fixing bugs without changing intended behavior → use `/speckit.workflows.bugfix` instead
+- Improving code quality without behavior changes → use `/speckit.workflows.refactor` instead
+- Deprecating entire features → use `/speckit.workflows.deprecate` instead
 
 ## Process
 
@@ -72,8 +72,8 @@ specs/
 └── 014-edit-profile-form/
     └── modifications/
         └── 001-add-avatar-compression/
-            ├── modification-spec.md  # Change documentation (created by /speckit.modify)
-            ├── impact-analysis.md    # Auto-generated impact analysis (created by /speckit.modify)
+            ├── modification-spec.md  # Change documentation (created by /speckit.workflows.modify)
+            ├── impact-analysis.md    # Auto-generated impact analysis (created by /speckit.workflows.modify)
             ├── plan.md               # Implementation plan (created by /speckit.plan after review)
             └── tasks.md              # Task breakdown (created by /speckit.tasks after plan review)
 ```
@@ -81,7 +81,7 @@ specs/
 ## Command Usage
 
 ```bash
-/speckit.modify 014 "add avatar compression to reduce storage costs"
+/speckit.workflows.modify 014 "add avatar compression to reduce storage costs"
 ```
 
 This will:
@@ -189,7 +189,7 @@ Tests referencing feature files:
 The modify workflow uses checkpoints to ensure you review the impact analysis and backward compatibility before making changes:
 
 ### Phase 1: Impact Analysis
-- **Command**: `/speckit.modify 014 "description"`
+- **Command**: `/speckit.workflows.modify 014 "description"`
 - **Creates**: `modification-spec.md` and auto-generated `impact-analysis.md`
 - **Checkpoint**: Review impacted files - did the scan catch everything? Are there hidden dependencies?
 

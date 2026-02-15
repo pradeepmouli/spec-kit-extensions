@@ -77,4 +77,4 @@ This document tracks all changes to the project, organized by specification and 
 - **Unspecified Changes**: {{UNSPEC_COVERAGE}}%
 
 ---
-*Current state document maintained by `/speckit.baseline` workflow - See .specify/extensions/workflows/baseline/*
+*Current state document maintained by `/speckit.workflows.baseline` workflow - See .specify/extensions/workflows/baseline/*

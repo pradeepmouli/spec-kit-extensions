@@ -21,7 +21,7 @@ Use the baseline workflow when:
 
 ### Scenario 1: No Existing Specs (Fresh Start)
 
-When you run `/speckit.baseline` on a project without specs:
+When you run `/speckit.workflows.baseline` on a project without specs:
 
 1. Analyzes current project state (latest commit)
 2. Creates `specs/history/baseline-spec.md` documenting current architecture, features, and structure
@@ -75,7 +75,7 @@ Change tracking organized by:
 ## Usage
 
 ```bash
-# Command: /speckit.baseline
+# Command: /speckit.workflows.baseline
 
 # Or manually:
 .specify/scripts/bash/create-baseline.sh --json
@@ -94,9 +94,9 @@ The workflow will:
 The baseline provides context for:
 
 - **Feature development** (`/speckit.specify`): Understanding existing architecture
-- **Modifications** (`/speckit.modify`): Knowing what features exist
-- **Bugfixes** (`/speckit.bugfix`): Understanding related components
-- **Refactoring** (`/speckit.refactor`): Seeing technical debt and improvement areas
+- **Modifications** (`/speckit.workflows.modify`): Knowing what features exist
+- **Bugfixes** (`/speckit.workflows.bugfix`): Understanding related components
+- **Refactoring** (`/speckit.workflows.refactor`): Seeing technical debt and improvement areas
 
 ## Best Practices
 
@@ -117,7 +117,7 @@ While the script generates initial templates, you should:
 
 ```bash
 # 1. Initialize baseline
-/speckit.baseline
+/speckit.workflows.baseline
 
 # AI agent creates templates in specs/history/
 
@@ -145,7 +145,7 @@ None - this is a documentation workflow that establishes context rather than imp
 ## Related Workflows
 
 - All workflows benefit from having baseline context
-- `/speckit.cleanup` can help organize specs after baseline creation
+- `/speckit.workflows.cleanup` can help organize specs after baseline creation
 - Consider running baseline before major feature work begins
 
 ---

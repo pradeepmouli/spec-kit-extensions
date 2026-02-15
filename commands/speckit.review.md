@@ -228,7 +228,7 @@ Create a comprehensive review report:
 **For ❌ Needs Changes**:
 1. Fix listed issues
 2. Run tests to verify fixes
-3. Request re-review with `/speckit.review`
+3. Request re-review with `/speckit.workflows.review`
 ```
 
 ### 7. Output Summary

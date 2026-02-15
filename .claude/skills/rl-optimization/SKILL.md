@@ -92,9 +92,9 @@ Choose the appropriate workflow.
 
 # After (guided)
 Choose the workflow based on the task:
-- Bug with known cause → /speckit.bugfix
-- Bug needing investigation → /speckit.bugfix (document investigation in root cause)
-- Small improvement (<7 tasks) → /speckit.enhance
+- Bug with known cause → /speckit.workflows.bugfix
+- Bug needing investigation → /speckit.workflows.bugfix (document investigation in root cause)
+- Small improvement (<7 tasks) → /speckit.workflows.enhance
 - Large feature → /speckit.specify
 ```
 

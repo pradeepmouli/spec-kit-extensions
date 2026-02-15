@@ -10,19 +10,19 @@
 
 **spec-kit** provides excellent structured workflows for feature development (`/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement`). These extensions add 8 additional workflows for the remaining ~75% of software development work:
 
-- **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
-- **`/speckit.bugfix`** - Fix bugs with regression-test-first approach
-- **`/speckit.enhance`** - Make minor enhancements with streamlined single-doc workflow
-- **`/speckit.modify`** - Modify existing features with automatic impact analysis
-- **`/speckit.refactor`** - Improve code quality with metrics tracking
-- **`/speckit.hotfix`** - Handle production emergencies with expedited process
-- **`/speckit.deprecate`** - Sunset features with phased 3-step rollout
-- **`/speckit.cleanup`** - Clean up codebase with automated scripts
+- **`/speckit.workflows.baseline`** - Establish project baseline and track all changes by workflow type
+- **`/speckit.workflows.bugfix`** - Fix bugs with regression-test-first approach
+- **`/speckit.workflows.enhance`** - Make minor enhancements with streamlined single-doc workflow
+- **`/speckit.workflows.modify`** - Modify existing features with automatic impact analysis
+- **`/speckit.workflows.refactor`** - Improve code quality with metrics tracking
+- **`/speckit.workflows.hotfix`** - Handle production emergencies with expedited process
+- **`/speckit.workflows.deprecate`** - Sunset features with phased 3-step rollout
+- **`/speckit.workflows.cleanup`** - Clean up codebase with automated scripts
 
 ### Command Extensions (provide commands without workflow structure)
 
-- **`/speckit.review`** - Review completed work with structured feedback
-- **`/speckit.phasestoissues`** - Create individual GitHub issues for each development phase
+- **`/speckit.workflows.review`** - Review completed work with structured feedback
+- **`/speckit.workflows.phasestoissues`** - Create individual GitHub issues for each development phase
 ## Why Use These Extensions?
 
 ### The Problem
@@ -45,16 +45,16 @@ These extensions bring spec-kit's structured approach to all development activit
 | Activity | Without Extensions | With Extensions |
 |----------|-------------------|-----------------|
 | **New Feature** | ✅ `/speckit.specify` workflow | ✅ Same |
-| **Project Baseline** | ❌ Ad-hoc | ✅ `/speckit.baseline` with comprehensive docs |
-| **Bug Fix** | ❌ Ad-hoc | ✅ `/speckit.bugfix` with regression tests |
-| **Minor Enhancement** | ❌ Ad-hoc | ✅ `/speckit.enhance` with streamlined planning |
-| **Modify Feature** | ❌ Ad-hoc | ✅ `/speckit.modify` with impact analysis |
-| **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.refactor` with metrics |
-| **Production Fire** | ❌ Panic | ✅ `/speckit.hotfix` with post-mortem |
-| **Remove Feature** | ❌ Hope | ✅ `/speckit.deprecate` with 3-phase sunset |
-| **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.cleanup` with automation |
-| **Work Review** | ❌ Inconsistent | ✅ `/speckit.review` with structured feedback |
-| **GitHub Issues** | ❌ Manual or fragmented | ✅ `/speckit.phasestoissues` with phase-level tracking |
+| **Project Baseline** | ❌ Ad-hoc | ✅ `/speckit.workflows.baseline` with comprehensive docs |
+| **Bug Fix** | ❌ Ad-hoc | ✅ `/speckit.workflows.bugfix` with regression tests |
+| **Minor Enhancement** | ❌ Ad-hoc | ✅ `/speckit.workflows.enhance` with streamlined planning |
+| **Modify Feature** | ❌ Ad-hoc | ✅ `/speckit.workflows.modify` with impact analysis |
+| **Refactor Code** | ❌ Ad-hoc | ✅ `/speckit.workflows.refactor` with metrics |
+| **Production Fire** | ❌ Panic | ✅ `/speckit.workflows.hotfix` with post-mortem |
+| **Remove Feature** | ❌ Hope | ✅ `/speckit.workflows.deprecate` with 3-phase sunset |
+| **Codebase Cleanup** | ❌ Manual | ✅ `/speckit.workflows.cleanup` with automation |
+| **Work Review** | ❌ Inconsistent | ✅ `/speckit.workflows.review` with structured feedback |
+| **GitHub Issues** | ❌ Manual or fragmented | ✅ `/speckit.workflows.phasestoissues` with phase-level tracking |
 ### Benefits
 ## Real-World Validation
 
@@ -101,10 +101,10 @@ specify extension add --dev /path/to/spec-kit-extensions
 **Step 3: Verify installation**:
 ```bash
 specify extension list
-# Should show: spec-kit-workflows (v2.2.0)
+# Should show: spec-kit-workflows (v2.3.0)
 
 # Test a workflow
-/speckit.bugfix --help
+/speckit.workflows.bugfix --help
 ```
 
 The native extension automatically:
@@ -180,10 +180,10 @@ See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instruct
 
 ```bash
 # In your project, try:
-/speckit.bugfix --help
+/speckit.workflows.bugfix --help
 
 # Should see:
-# Usage: /speckit.bugfix "bug description"
+# Usage: /speckit.workflows.bugfix "bug description"
 # Creates a bugfix workflow with regression-test-first approach
 ```
 
@@ -195,41 +195,41 @@ See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instruct
 
 ```
 Starting with spec-kit?
-└─ Use `/speckit.baseline` to establish project context
+└─ Use `/speckit.workflows.baseline` to establish project context
 
 Building something new?
 ├─ Major feature (multi-phase, complex)?
 │  └─ Use `/speckit.specify "description"`
 └─ Minor enhancement (simple, quick)?
-   └─ Use `/speckit.enhance "description"`
+   └─ Use `/speckit.workflows.enhance "description"`
 
 Fixing broken behavior?
 ├─ Production emergency?
-│  └─ Use `/speckit.hotfix "incident description"`
+│  └─ Use `/speckit.workflows.hotfix "incident description"`
 └─ Non-urgent bug?
-   └─ Use `/speckit.bugfix "bug description"`
+   └─ Use `/speckit.workflows.bugfix "bug description"`
 
 Changing existing feature?
 ├─ Adding/modifying behavior?
-│  └─ Use `/speckit.modify 014 "change description"`
+│  └─ Use `/speckit.workflows.modify 014 "change description"`
 └─ Improving code without changing behavior?
-   └─ Use `/speckit.refactor "improvement description"`
+   └─ Use `/speckit.workflows.refactor "improvement description"`
 
 Removing a feature?
-└─ Use `/speckit.deprecate 014 "deprecation reason"`
+└─ Use `/speckit.workflows.deprecate 014 "deprecation reason"`
 
 Reviewing completed work?
-└─ Use `/speckit.review [task-id]`
+└─ Use `/speckit.workflows.review [task-id]`
 
 Creating GitHub issues?
-└─ Use `/speckit.phasestoissues` (create issues for each development phase)
+└─ Use `/speckit.workflows.phasestoissues` (create issues for each development phase)
 ```
 
 ### Example: Fix a Bug
 
 ```bash
 # Step 1: Create bug report
-/speckit.bugfix "profile form crashes when submitting without image upload"
+/speckit.workflows.bugfix "profile form crashes when submitting without image upload"
 # Creates: bug-report.md with initial analysis
 # Shows: Next steps to review and investigate
 
@@ -252,7 +252,7 @@ Creating GitHub issues?
 
 ```bash
 # Step 1: Create modification spec with impact analysis
-/speckit.modify 014 "make profile fields optional instead of required"
+/speckit.workflows.modify 014 "make profile fields optional instead of required"
 # Creates: modification-spec.md + impact-analysis.md
 # Shows: Impact summary and next steps
 
@@ -282,7 +282,7 @@ Creating GitHub issues?
 /speckit.tasks     # Creates tasks.md with task breakdown
 
 # Create GitHub issues for each development phase
-/speckit.phasestoissues
+/speckit.workflows.phasestoissues
 # Creates: Individual GitHub issues for each phase:
 #   - Phase description
 #   - Acceptance criteria
@@ -292,7 +292,7 @@ Creating GitHub issues?
 # Output: Issues created for each phase with URLs
 
 # Track progress across phases in GitHub
-# Use /speckit.review when ready for validation
+# Use /speckit.workflows.review when ready for validation
 ```
 
 ## Workflow Cheat Sheet
@@ -300,16 +300,16 @@ Creating GitHub issues?
 | Workflow | Command | Key Feature | Test Strategy |
 |----------|---------|-------------|---------------|
 | **Feature** | `/speckit.specify "..."` | Full spec + design | TDD (test before code) |
-| **Baseline** | `/speckit.baseline` | Context tracking | No tests (doc only) |
-| **Bugfix** | `/speckit.bugfix "..."` | Regression test | Test before fix |
-| **Enhance** | `/speckit.enhance "..."` | Single-doc workflow | Tests for new behavior |
-| **Modify** | `/speckit.modify 014 "..."` | Impact analysis | Update affected tests |
-| **Refactor** | `/speckit.refactor "..."` | Baseline metrics | Tests unchanged |
-| **Hotfix** | `/speckit.hotfix "..."` | Post-mortem | Test after (only exception) |
-| **Deprecate** | `/speckit.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
-| **Review** | `/speckit.review [task-id]` | Structured feedback | Verify tests |
-| **Cleanup** | `/speckit.cleanup` | Automated scripts | Manual verification |
-| **Phases→Issues** | `/speckit.phasestoissues` | GitHub integration | N/A (tracking only) |
+| **Baseline** | `/speckit.workflows.baseline` | Context tracking | No tests (doc only) |
+| **Bugfix** | `/speckit.workflows.bugfix "..."` | Regression test | Test before fix |
+| **Enhance** | `/speckit.workflows.enhance "..."` | Single-doc workflow | Tests for new behavior |
+| **Modify** | `/speckit.workflows.modify 014 "..."` | Impact analysis | Update affected tests |
+| **Refactor** | `/speckit.workflows.refactor "..."` | Baseline metrics | Tests unchanged |
+| **Hotfix** | `/speckit.workflows.hotfix "..."` | Post-mortem | Test after (only exception) |
+| **Deprecate** | `/speckit.workflows.deprecate 014 "..."` | 3-phase sunset | Remove tests last |
+| **Review** | `/speckit.workflows.review [task-id]` | Structured feedback | Verify tests |
+| **Cleanup** | `/speckit.workflows.cleanup` | Automated scripts | Manual verification |
+| **Phases→Issues** | `/speckit.workflows.phasestoissues` | GitHub integration | N/A (tracking only) |
 
 - **[INSTALLATION.md](INSTALLATION.md)** - Step-by-step installation for all scenarios
 - **[AI-AGENTS.md](AI-AGENTS.md)** - Setup guides for different AI coding agents
@@ -481,7 +481,7 @@ git push
 
 **Complete Review Workflow**:
 1. Implement your work using spec-kit workflows
-2. Run `/speckit.review` before creating a PR (REQUIRED)
+2. Run `/speckit.workflows.review` before creating a PR (REQUIRED)
 3. Commit the review file to your branch
 4. Create PR - fill out the PR template checklist
 5. GitHub Actions automatically:
@@ -506,7 +506,7 @@ git push
 **GitHub Copilot for PRs** (if configured):
 - Ask Copilot to "Review this PR for spec-kit workflow compliance"
 - Copilot checks review completion, specification alignment, and code quality
-- Works alongside `/speckit.review` for comprehensive coverage
+- Works alongside `/speckit.workflows.review` for comprehensive coverage
 
 ### Documentation
 

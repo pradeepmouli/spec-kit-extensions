@@ -2,7 +2,7 @@
 name: spec-kit-feedback
 description: |
   Capture workflow usage data for spec-kit optimization. Auto-activates when:
-  (1) completing a spec-kit workflow (/speckit.review, final commit),
+  (1) completing a spec-kit workflow (/speckit.workflows.review, final commit),
   (2) encountering friction or confusion during workflows,
   (3) user mentions issues with prompts or templates,
   (4) workflow deviates from expected quality gates.
@@ -204,8 +204,8 @@ This skill complements the spec-kit commands:
 | `/speckit.specify` | Track spec creation friction |
 | `/speckit.plan` | Note planning clarifications |
 | `/speckit.tasks` | Observe task breakdown issues |
-| `/speckit.bugfix` | Monitor regression test compliance |
-| `/speckit.review` | Capture review feedback |
+| `/speckit.workflows.bugfix` | Monitor regression test compliance |
+| `/speckit.workflows.review` | Capture review feedback |
 
 ## Suggested Workflow Tags
 

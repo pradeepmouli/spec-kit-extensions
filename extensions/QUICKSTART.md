@@ -6,11 +6,11 @@ Get started with Specify extension workflows in 5 minutes.
 
 Extensions add specialized workflows to Specify for activities beyond feature development:
 
-- `/speckit.bugfix` - Fix defects with regression tests
-- `/speckit.modify` - Change existing features with impact analysis
-- `/speckit.refactor` - Improve code quality with metrics tracking
-- `/speckit.hotfix` - Emergency production fixes with expedited process
-- `/speckit.deprecate` - Sunset features with phased rollout
+- `/speckit.workflows.bugfix` - Fix defects with regression tests
+- `/speckit.workflows.modify` - Change existing features with impact analysis
+- `/speckit.workflows.refactor` - Improve code quality with metrics tracking
+- `/speckit.workflows.hotfix` - Emergency production fixes with expedited process
+- `/speckit.workflows.deprecate` - Sunset features with phased rollout
 
 ## Quick Decision Tree
 
@@ -22,18 +22,18 @@ Building something new?
 
 Fixing broken behavior?
 ├─ Production emergency?
-│  └─ Use `/speckit.hotfix "incident description"`
+│  └─ Use `/speckit.workflows.hotfix "incident description"`
 └─ Non-urgent bug?
-   └─ Use `/speckit.bugfix "bug description"`
+   └─ Use `/speckit.workflows.bugfix "bug description"`
 
 Changing existing feature?
 ├─ Adding/modifying behavior?
-│  └─ Use `/speckit.modify 014 "change description"`
+│  └─ Use `/speckit.workflows.modify 014 "change description"`
 └─ Improving code without changing behavior?
-   └─ Use `/speckit.refactor "improvement description"`
+   └─ Use `/speckit.workflows.refactor "improvement description"`
 
 Removing a feature?
-└─ Use `/speckit.deprecate 014 "deprecation reason"`
+└─ Use `/speckit.workflows.deprecate 014 "deprecation reason"`
 ```
 
 ## 5-Minute Tutorial
@@ -42,7 +42,7 @@ Removing a feature?
 
 ```bash
 # Step 1: Create bug report
-/speckit.bugfix "save button doesn't persist data"
+/speckit.workflows.bugfix "save button doesn't persist data"
 # Creates: bug-report.md with initial analysis
 # Shows: Next steps to review and investigate
 
@@ -68,7 +68,7 @@ Removing a feature?
 
 ```bash
 # Step 1: Create modification spec with impact analysis
-/speckit.modify 014 "add avatar compression to reduce storage costs"
+/speckit.workflows.modify 014 "add avatar compression to reduce storage costs"
 # Creates: modification-spec.md + impact-analysis.md
 # Shows: Impact summary and next steps
 
@@ -94,7 +94,7 @@ Removing a feature?
 
 ```bash
 # Step 1: Create refactor spec
-/speckit.refactor "extract tweet submission into reusable service"
+/speckit.workflows.refactor "extract tweet submission into reusable service"
 # Creates: refactor-spec.md with behavioral snapshot
 # Automatically captures baseline metrics
 
@@ -121,7 +121,7 @@ cat specs/refactor/001-extract-tweet-service/metrics-before.md
 
 ```bash
 # Step 1: Create hotfix documentation (URGENT!)
-/speckit.hotfix "database connection pool exhausted causing 503 errors"
+/speckit.workflows.hotfix "database connection pool exhausted causing 503 errors"
 # Creates: hotfix.md and post-mortem.md
 # Shows: URGENT next steps
 
@@ -151,7 +151,7 @@ cat specs/refactor/001-extract-tweet-service/metrics-before.md
 
 ```bash
 # Step 1: Create deprecation plan with dependency analysis
-/speckit.deprecate 014 "low usage (< 1%) and high maintenance burden"
+/speckit.workflows.deprecate 014 "low usage (< 1%) and high maintenance burden"
 # Creates: deprecation-plan.md + dependency-analysis.md
 # Shows: Impact summary and next steps
 
@@ -179,20 +179,20 @@ cat specs/refactor/001-extract-tweet-service/metrics-before.md
 | Workflow | Command | When to Use | Key Feature |
 |----------|---------|-------------|-------------|
 | **Feature** | `/speckit.specify "..."` | New functionality | Full spec + TDD |
-| **Bugfix** | `/speckit.bugfix "..."` | Broken behavior | Regression test first |
-| **Modify** | `/speckit.modify 014 "..."` | Change existing | Impact analysis |
-| **Refactor** | `/speckit.refactor "..."` | Code quality | Metrics + incremental |
-| **Hotfix** | `/speckit.hotfix "..."` | Production emergency | Tests after (only exception) |
-| **Deprecate** | `/speckit.deprecate 014 "..."` | Remove feature | 3-phase sunset |
+| **Bugfix** | `/speckit.workflows.bugfix "..."` | Broken behavior | Regression test first |
+| **Modify** | `/speckit.workflows.modify 014 "..."` | Change existing | Impact analysis |
+| **Refactor** | `/speckit.workflows.refactor "..."` | Code quality | Metrics + incremental |
+| **Hotfix** | `/speckit.workflows.hotfix "..."` | Production emergency | Tests after (only exception) |
+| **Deprecate** | `/speckit.workflows.deprecate 014 "..."` | Remove feature | 3-phase sunset |
 
 ## Common Questions
 
-### When should I use `/speckit.bugfix` vs `/speckit.hotfix`?
+### When should I use `/speckit.workflows.bugfix` vs `/speckit.workflows.hotfix`?
 
 - **Bugfix**: Non-urgent, can wait for proper TDD process
 - **Hotfix**: Production emergency, every minute counts
 
-### When should I use `/speckit.modify` vs `/speckit.refactor`?
+### When should I use `/speckit.workflows.modify` vs `/speckit.workflows.refactor`?
 
 - **Modify**: Changing what the code does (behavior)
 - **Refactor**: Improving how the code works (structure/quality)
@@ -273,8 +273,8 @@ specs/
 ## Troubleshooting
 
 **Command doesn't work**: Ensure you're using the exact format:
-- ✅ `/speckit.bugfix "description"`
-- ❌ `/speckit.bugfix description` (missing quotes)
+- ✅ `/speckit.workflows.bugfix "description"`
+- ❌ `/speckit.workflows.bugfix description` (missing quotes)
 
 **Script fails**: Check you're in the repository root with `.specify/` directory
 

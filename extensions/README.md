@@ -8,12 +8,12 @@ The extension system provides additional workflow types beyond the core `/specif
 - **`/specify`** - Create new features from scratch (greenfield development)
 
 ### Extension Workflows
-- **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
-- **`/speckit.bugfix`** - Bug remediation with regression-test-first approach
-- **`/speckit.modify`** - Extend or modify existing features with impact analysis
-- **`/speckit.refactor`** - Improve code quality while preserving behavior with metrics
-- **`/speckit.hotfix`** - Emergency production fixes with expedited checkpoint process
-- **`/speckit.deprecate`** - Planned sunset of features with 3-phase migration
+- **`/speckit.workflows.baseline`** - Establish project baseline and track all changes by workflow type
+- **`/speckit.workflows.bugfix`** - Bug remediation with regression-test-first approach
+- **`/speckit.workflows.modify`** - Extend or modify existing features with impact analysis
+- **`/speckit.workflows.refactor`** - Improve code quality while preserving behavior with metrics
+- **`/speckit.workflows.hotfix`** - Emergency production fixes with expedited checkpoint process
+- **`/speckit.workflows.deprecate`** - Planned sunset of features with 3-phase migration
 
 ## Enabling Extensions
 
@@ -23,13 +23,13 @@ Extensions are enabled by default in this project. To disable an extension, edit
 
 | Scenario | Use This Workflow |
 |----------|------------------|
-| Establishing project context | `/speckit.baseline` |
+| Establishing project context | `/speckit.workflows.baseline` |
 | Building new feature | `/specify` |
-| Fixing a bug | `/speckit.bugfix` |
-| Adding fields to existing feature | `/speckit.modify` |
-| Extracting duplicate code | `/speckit.refactor` |
-| Production is down | `/speckit.hotfix` |
-| Removing old feature | `/speckit.deprecate` |
+| Fixing a bug | `/speckit.workflows.bugfix` |
+| Adding fields to existing feature | `/speckit.workflows.modify` |
+| Extracting duplicate code | `/speckit.workflows.refactor` |
+| Production is down | `/speckit.workflows.hotfix` |
+| Removing old feature | `/speckit.workflows.deprecate` |
 
 ## Extension Structure
 

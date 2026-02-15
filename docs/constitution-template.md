@@ -7,28 +7,28 @@
 4. Task breakdown using `/speckit.tasks` for execution roadmap
 5. Implementation via `/speckit.implement` following task order
 ### Extension Workflows
-- **Baseline**: `/speckit.baseline` → baseline-spec.md + current-state.md establishing project context
-- **Bugfix**: `/speckit.bugfix "<description>"` → bug-report.md + tasks.md with regression test requirement
-- **Enhancement**: `/speckit.enhance "<description>"` → enhancement.md (condensed single-doc with spec + plan + tasks)
-- **Modification**: `/speckit.modify <feature_num> "<description>"` → modification.md + impact analysis + tasks.md
-- **Refactor**: `/speckit.refactor "<description>"` → refactor.md + baseline metrics + incremental tasks.md
-- **Hotfix**: `/speckit.hotfix "<incident>"` → hotfix.md + expedited tasks.md + post-mortem.md (within 48 hours)
-- **Deprecation**: `/speckit.deprecate <feature_num> "<reason>"` → deprecation.md + dependency scan + phased tasks.md
-- **Review**: `/speckit.review <task_id>` → review implementation against spec + update tasks.md + generate report
-- **Cleanup**: `/speckit.cleanup` → organize specs/ directory + archive old branches + update documentation
+- **Baseline**: `/speckit.workflows.baseline` → baseline-spec.md + current-state.md establishing project context
+- **Bugfix**: `/speckit.workflows.bugfix "<description>"` → bug-report.md + tasks.md with regression test requirement
+- **Enhancement**: `/speckit.workflows.enhance "<description>"` → enhancement.md (condensed single-doc with spec + plan + tasks)
+- **Modification**: `/speckit.workflows.modify <feature_num> "<description>"` → modification.md + impact analysis + tasks.md
+- **Refactor**: `/speckit.workflows.refactor "<description>"` → refactor.md + baseline metrics + incremental tasks.md
+- **Hotfix**: `/speckit.workflows.hotfix "<incident>"` → hotfix.md + expedited tasks.md + post-mortem.md (within 48 hours)
+- **Deprecation**: `/speckit.workflows.deprecate <feature_num> "<reason>"` → deprecation.md + dependency scan + phased tasks.md
+- **Review**: `/speckit.workflows.review <task_id>` → review implementation against spec + update tasks.md + generate report
+- **Cleanup**: `/speckit.workflows.cleanup` → organize specs/ directory + archive old branches + update documentation
 
 
 ### Workflow Selection
 Development activities SHALL use the appropriate workflow type based on the nature of the work. Each workflow enforces specific quality gates and documentation requirements tailored to its purpose:
 
-- **Baseline** (`/speckit.baseline`): Project context establishment - requires comprehensive documentation of existing architecture and change tracking
+- **Baseline** (`/speckit.workflows.baseline`): Project context establishment - requires comprehensive documentation of existing architecture and change tracking
 - **Feature Development** (`/speckit.specify`): New functionality - requires full specification, planning, and TDD approach
-- **Bug Fixes** (`/speckit.bugfix`): Defect remediation - requires regression test BEFORE applying fix
-- **Enhancements** (`/speckit.enhance`): Minor improvements to existing features - streamlined single-document workflow with simple single-phase plan (max 7 tasks)
-- **Modifications** (`/speckit.modify`): Changes to existing features - requires impact analysis and backward compatibility assessment
-- **Refactoring** (`/speckit.refactor`): Code quality improvements - requires baseline metrics, behavior preservation guarantee, and incremental validation
-- **Hotfixes** (`/speckit.hotfix`): Emergency production issues - expedited process with deferred testing and mandatory post-mortem
-- **Deprecation** (`/speckit.deprecate`): Feature sunset - requires phased rollout (warnings → disabled → removed), migration guide, and stakeholder approvals
+- **Bug Fixes** (`/speckit.workflows.bugfix`): Defect remediation - requires regression test BEFORE applying fix
+- **Enhancements** (`/speckit.workflows.enhance`): Minor improvements to existing features - streamlined single-document workflow with simple single-phase plan (max 7 tasks)
+- **Modifications** (`/speckit.workflows.modify`): Changes to existing features - requires impact analysis and backward compatibility assessment
+- **Refactoring** (`/speckit.workflows.refactor`): Code quality improvements - requires baseline metrics, behavior preservation guarantee, and incremental validation
+- **Hotfixes** (`/speckit.workflows.hotfix`): Emergency production issues - expedited process with deferred testing and mandatory post-mortem
+- **Deprecation** (`/speckit.workflows.deprecate`): Feature sunset - requires phased rollout (warnings → disabled → removed), migration guide, and stakeholder approvals
 
 The wrong workflow SHALL NOT be used - features must not bypass specification, bugs must not skip regression tests, refactorings must not alter behavior, and enhancements requiring complex multi-phase plans must use full feature development workflow.
 

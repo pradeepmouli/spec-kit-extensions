@@ -17,7 +17,7 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.bugfix` in the triggering message **is** the bug description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/speckit.workflows.bugfix` in the triggering message **is** the bug description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 Given that bug description, do this:
 

@@ -55,7 +55,7 @@ This pull request is from a spec-kit workflow branch but does not have
 a completed code review.
 
 To complete this PR, please:
-1. Run '/speckit.review' command to perform code review
+1. Run '/speckit.workflows.review' command to perform code review
 2. Ensure the review status is 'Approved' or 'Approved with Notes'
 3. Commit the review file to your branch
 4. Push the changes
@@ -93,7 +93,7 @@ To complete this PR, please:
    ```
    🔍 Searching for branches without reviews...
    ⚠️  specs/bugfix/002-auth-issue
-      Missing review file - run /speckit.review
+      Missing review file - run /speckit.workflows.review
    ```
 
 3. **validate-branch** - Validate spec-kit branch has all required files
@@ -135,7 +135,7 @@ This PR is from a spec-kit workflow branch but doesn't have a completed code rev
 ### Before merging this PR:
 
 1. Complete the code review:
-   /speckit.review
+   /speckit.workflows.review
 
 2. Verify review status:
    - Review file should be created in your spec directory
@@ -179,7 +179,7 @@ This PR is from a spec-kit workflow branch but doesn't have a completed code rev
 **Integration**:
 - Works with automated review enforcement workflow
 - Provides context for human reviewers
-- Ensures both AI review (/speckit.review) and human review are completed
+- Ensures both AI review (/speckit.workflows.review) and human review are completed
 
 ### 5. CODEOWNERS Configuration (`CODEOWNERS.example`)
 
@@ -213,7 +213,7 @@ src/auth/                       @your-org/security-team
 4. Commit to `.github/CODEOWNERS`
 
 **How it works with spec-kit**:
-1. Developer runs `/speckit.review` (AI review)
+1. Developer runs `/speckit.workflows.review` (AI review)
 2. Developer commits review file and creates PR
 3. GitHub automatically requests human reviewers via CODEOWNERS
 4. Automated workflow checks AI review is approved
@@ -232,7 +232,7 @@ src/auth/                       @your-org/security-team
 - Workflow-specific review checklists
 
 **Review instructions include**:
-- **Spec-Kit Review Completion** - Verify `/speckit.review` was run
+- **Spec-Kit Review Completion** - Verify `/speckit.workflows.review` was run
 - **Specification Alignment** - Compare implementation to spec.md
 - **Workflow-Specific Checks** - Different checks for bugfix vs refactor vs modify
 - **Code Quality** - Best practices, security, performance
@@ -247,7 +247,7 @@ src/auth/                       @your-org/security-team
 
 **Integration**:
 - Works with GitHub Copilot for Pull Requests feature
-- Complements `/speckit.review` AI review
+- Complements `/speckit.workflows.review` AI review
 - Provides context-aware code review assistance
 - Helps human reviewers focus on architecture and UX
 
@@ -260,14 +260,14 @@ Structured issue templates for each spec-kit workflow type:
 | Template | Label | Workflow Command |
 |----------|-------|------------------|
 | 🚀 Feature Request | `enhancement`, `spec-kit:feature` | `/speckit.specify` |
-| 🐛 Bug Report | `bug`, `spec-kit:bugfix` | `/speckit.bugfix` |
-| ✨ Enhancement Request | `enhancement`, `spec-kit:enhance` | `/speckit.enhance` |
-| 🔄 Modification Request | `modification`, `spec-kit:modify` | `/speckit.modify` |
-| 🔨 Refactoring Request | `refactoring`, `spec-kit:refactor` | `/speckit.refactor` |
-| 🚨 Hotfix Request | `hotfix`, `priority:critical`, `spec-kit:hotfix` | `/speckit.hotfix` |
-| ⚠️ Deprecation Request | `deprecation`, `spec-kit:deprecate` | `/speckit.deprecate` |
-| 🧹 Cleanup Request | `cleanup`, `tech-debt`, `spec-kit:cleanup` | `/speckit.cleanup` |
-| 📋 Baseline/Documentation | `documentation`, `baseline`, `spec-kit:baseline` | `/speckit.baseline` |
+| 🐛 Bug Report | `bug`, `spec-kit:bugfix` | `/speckit.workflows.bugfix` |
+| ✨ Enhancement Request | `enhancement`, `spec-kit:enhance` | `/speckit.workflows.enhance` |
+| 🔄 Modification Request | `modification`, `spec-kit:modify` | `/speckit.workflows.modify` |
+| 🔨 Refactoring Request | `refactoring`, `spec-kit:refactor` | `/speckit.workflows.refactor` |
+| 🚨 Hotfix Request | `hotfix`, `priority:critical`, `spec-kit:hotfix` | `/speckit.workflows.hotfix` |
+| ⚠️ Deprecation Request | `deprecation`, `spec-kit:deprecate` | `/speckit.workflows.deprecate` |
+| 🧹 Cleanup Request | `cleanup`, `tech-debt`, `spec-kit:cleanup` | `/speckit.workflows.cleanup` |
+| 📋 Baseline/Documentation | `documentation`, `baseline`, `spec-kit:baseline` | `/speckit.workflows.baseline` |
 
 ### Template Features
 
@@ -372,13 +372,13 @@ Once `spec-kit-review-required.yml` is installed:
 
 1. **Create a spec-kit branch** and implement your work:
    ```bash
-   /speckit.bugfix "fix login issue"
+   /speckit.workflows.bugfix "fix login issue"
    # ... implement fix ...
    ```
 
 2. **Run code review** (REQUIRED):
    ```bash
-   /speckit.review
+   /speckit.workflows.review
    ```
 
 3. **Commit the review file**:
@@ -503,7 +503,7 @@ This ensures:
 **Problem**: PR blocked with "No review file found"
 
 **Solution**:
-1. Run `/speckit.review` in your working directory
+1. Run `/speckit.workflows.review` in your working directory
 2. Ensure review.md is created in the spec directory
 3. Commit and push the review file
 4. Re-run the check
@@ -553,13 +553,13 @@ Status: Approved
 # 1. Create issue using bug report template (via GitHub UI)
 
 # 2. Start work
-/speckit.bugfix "fix authentication timeout"
+/speckit.workflows.bugfix "fix authentication timeout"
 
 # 3. Implement the fix
 # ... code changes ...
 
 # 4. Run review (REQUIRED)
-/speckit.review
+/speckit.workflows.review
 
 # 5. Review creates file: specs/bugfix/001-fix-authentication-timeout/review.md
 # Ensure it shows: **Status**: ✅ Approved

@@ -17,9 +17,9 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.modify` in the triggering message can be:
-- `/speckit.modify <feature-number> "modification description"` - Direct with feature number
-- `/speckit.modify "modification description"` - Interactive (will prompt for feature selection)
+The text the user typed after `/speckit.workflows.modify` in the triggering message can be:
+- `/speckit.workflows.modify <feature-number> "modification description"` - Direct with feature number
+- `/speckit.workflows.modify "modification description"` - Interactive (will prompt for feature selection)
 
 Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below.
 
@@ -92,5 +92,5 @@ Given that modification request, do this:
 Note: The script creates and checks out the new branch, runs impact analysis, and prepares directory structure before writing.
 
 **Interactive Mode Usage Examples**:
-- User: `/speckit.modify "add avatar compression"` → Shows feature list → User selects → Creates modification
-- User: `/speckit.modify 014 "add avatar compression"` → Directly creates modification for feature 014
+- User: `/speckit.workflows.modify "add avatar compression"` → Shows feature list → User selects → Creates modification
+- User: `/speckit.workflows.modify 014 "add avatar compression"` → Directly creates modification for feature 014

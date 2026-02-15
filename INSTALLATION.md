@@ -30,10 +30,10 @@ specify extension add --from https://github.com/pradeepmouli/spec-kit-extensions
 
 # 3. Verify installation
 specify extension list
-# Should show: spec-kit-workflows (v2.2.0)
+# Should show: spec-kit-workflows (v2.3.0)
 
 # 4. Test a workflow
-/speckit.bugfix --help
+/speckit.workflows.bugfix --help
 ```
 
 **What it does:**
@@ -178,11 +178,11 @@ After installation, verify everything works:
 
 ```bash
 # Test each command (should show usage)
-/speckit.bugfix --help
-/speckit.modify --help
-/speckit.refactor --help
-/speckit.hotfix --help
-/speckit.deprecate --help
+/speckit.workflows.bugfix --help
+/speckit.workflows.modify --help
+/speckit.workflows.refactor --help
+/speckit.workflows.hotfix --help
+/speckit.workflows.deprecate --help
 ```
 
 ### Test Bash Scripts

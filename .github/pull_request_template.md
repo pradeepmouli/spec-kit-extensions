@@ -11,14 +11,14 @@
 <!-- Check the workflow type used for this PR -->
 
 - [ ] Feature (`/speckit.specify`)
-- [ ] Bug Fix (`/speckit.bugfix`)
-- [ ] Enhancement (`/speckit.enhance`)
-- [ ] Modification (`/speckit.modify`)
-- [ ] Refactoring (`/speckit.refactor`)
-- [ ] Hotfix (`/speckit.hotfix`)
-- [ ] Deprecation (`/speckit.deprecate`)
-- [ ] Cleanup (`/speckit.cleanup`)
-- [ ] Baseline/Documentation (`/speckit.baseline`)
+- [ ] Bug Fix (`/speckit.workflows.bugfix`)
+- [ ] Enhancement (`/speckit.workflows.enhance`)
+- [ ] Modification (`/speckit.workflows.modify`)
+- [ ] Refactoring (`/speckit.workflows.refactor`)
+- [ ] Hotfix (`/speckit.workflows.hotfix`)
+- [ ] Deprecation (`/speckit.workflows.deprecate`)
+- [ ] Cleanup (`/speckit.workflows.cleanup`)
+- [ ] Baseline/Documentation (`/speckit.workflows.baseline`)
 - [ ] Not a spec-kit workflow
 
 ## Spec Directory
@@ -34,7 +34,7 @@
 <!-- NOTE: GitHub does not enforce checkbox completion - these are guidelines.
      The spec-kit-review-required workflow will validate your review file and status. -->
 
-- [ ] **I have run `/speckit.review`** and completed the code review
+- [ ] **I have run `/speckit.workflows.review`** and completed the code review
 - [ ] **Review file committed** to branch (e.g., `specs/*/review.md`)
 - [ ] **Review status is "Approved"** or "Approved with Notes"
 

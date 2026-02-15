@@ -310,7 +310,7 @@ Low Impact  │ Do when time     │ Skip entirely
 #### Prompt Changes (commands/*.md)
 
 ```markdown
-**Location**: commands/speckit.bugfix.md, line 45
+**Location**: commands/speckit.workflows.bugfix.md, line 45
 
 **Before**:
 Create the bug report file with the required sections.

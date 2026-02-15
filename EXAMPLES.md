@@ -2,7 +2,7 @@
 
 These examples come from **Tweeter**, a production React Router v7 Twitter clone where these workflows were developed and validated.
 
-## Example 1: `/speckit.bugfix` - Profile Form Crash
+## Example 1: `/speckit.workflows.bugfix` - Profile Form Crash
 
 ### The Problem
 
@@ -17,7 +17,7 @@ Error: Invalid file type: application/octet-stream
 
 ```bash
 # Step 1: Create bug report
-/speckit.bugfix "when submitting the profile edit form and only changing the bio, it results in: Error: Invalid file type: application/octet-stream"
+/speckit.workflows.bugfix "when submitting the profile edit form and only changing the bio, it results in: Error: Invalid file type: application/octet-stream"
 # Creates: bug-report.md with initial analysis
 # Shows: Next steps to review and investigate
 
@@ -48,9 +48,9 @@ Error: Invalid file type: application/octet-stream
 
 ### Key Process Enforced
 
-The `/speckit.bugfix` workflow with review checkpoints enforced **regression-test-first** approach:
+The `/speckit.workflows.bugfix` workflow with review checkpoints enforced **regression-test-first** approach:
 
-1. **Initial analysis** via `/speckit.bugfix`
+1. **Initial analysis** via `/speckit.workflows.bugfix`
 2. **User review** of bug report and investigation
 3. **Fix planning** via `/speckit.plan` - user reviews approach before implementation
 4. **Task breakdown** via `/speckit.tasks` - ensures test-before-fix order
@@ -102,7 +102,7 @@ The **checkpoint-based workflow** with regression-test-first approach proved val
 
 ---
 
-## Example 2: `/speckit.modify` - Making Profile Fields Optional
+## Example 2: `/speckit.workflows.modify` - Making Profile Fields Optional
 
 ### The Problem
 
@@ -116,7 +116,7 @@ Profile edit form forced users to provide all fields even when they only wanted 
 
 ```bash
 # Step 1: Create modification spec with impact analysis
-/speckit.modify 014 "make profile fields optional and remove email from form"
+/speckit.workflows.modify 014 "make profile fields optional and remove email from form"
 # Creates: modification-spec.md + impact-analysis.md (auto-scanned)
 # Shows: Impact summary and next steps
 
@@ -254,7 +254,7 @@ The **checkpoint-based workflow** with automatic impact analysis was invaluable:
 
 ---
 
-## Example 3: `/speckit.modify` - Fixing Image Removal UX Bug
+## Example 3: `/speckit.workflows.modify` - Fixing Image Removal UX Bug
 
 ### The Problem
 
@@ -264,7 +264,7 @@ After the first modification (making fields optional), users reported their prof
 
 ```bash
 # Step 1: Create modification spec with impact analysis
-/speckit.modify 014 "make profile edits submit even if the user doesn't add a profile image"
+/speckit.workflows.modify 014 "make profile edits submit even if the user doesn't add a profile image"
 # Creates: modification-spec.md + impact-analysis.md
 # Shows: Impact summary - identified hidden field causing automatic removal
 
@@ -371,7 +371,7 @@ This structure with review checkpoints makes it easy to:
 
 ---
 
-## Example 4: `/speckit.review` - Validating Completed Implementation
+## Example 4: `/speckit.workflows.review` - Validating Completed Implementation
 
 ### The Context
 
@@ -381,7 +381,7 @@ After implementing the profile form crash bugfix (Example 1), we need to validat
 
 ```bash
 # After implementing the bugfix tasks
-/speckit.review
+/speckit.workflows.review
 # Performs: Code review, test validation, spec verification
 ```
 
@@ -500,13 +500,13 @@ The review automatically marked completed tasks:
 
 ### The Value
 
-**Before `/speckit.review`**:
+**Before `/speckit.workflows.review`**:
 - ❌ Manual review process (inconsistent)
 - ❌ Easy to forget to run tests
 - ❌ No structured validation checklist
 - ❌ Tasks manually marked (often forgotten)
 
-**With `/speckit.review`**:
+**With `/speckit.workflows.review`**:
 - ✅ Structured, repeatable review process
 - ✅ Automatic test execution
 - ✅ Verification against specification
@@ -527,7 +527,7 @@ The review workflow completes the spec-kit cycle:
 
 ```bash
 # 1. Report the bug
-/speckit.bugfix "profile form crashes when..."
+/speckit.workflows.bugfix "profile form crashes when..."
 
 # 2. Plan the fix
 /speckit.plan
@@ -539,7 +539,7 @@ The review workflow completes the spec-kit cycle:
 /speckit.implement
 
 # 5. Review (NEW!)
-/speckit.review
+/speckit.workflows.review
 # ✅ Validates implementation
 # ✅ Runs tests
 # ✅ Marks tasks complete
@@ -563,9 +563,9 @@ Here's how the same work would have been done **without** vs **with** extensions
 
 | Task | Without Extensions | With Extensions (Checkpoint-Based) | Time Saved | Quality Impact |
 |------|-------------------|-----------------------------------|------------|----------------|
-| **Profile form crash** | 1. Find bug<br>2. Quick fix<br>3. Push<br>4. Hope it doesn't recur | 1. `/speckit.bugfix`<br>2. Review root cause<br>3. `/speckit.plan` (review approach)<br>4. `/speckit.tasks`<br>5. `/speckit.implement` (test-first)<br>6. Tests pass | ~Same time | ✅ Regression prevented<br>✅ User reviewed fix approach |
-| **Make fields optional** | 1. Change schema<br>2. Update form<br>3. Push<br>4. Discover broken contract<br>5. Fix contract<br>6. Push again | 1. `/speckit.modify 014`<br>2. Review impact analysis<br>3. `/speckit.plan` (review backward compatibility)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Push once | Saved 2 hours | ✅ No breaking changes<br>✅ User reviewed before coding |
-| **Fix image removal** | 1. Change code<br>2. Test manually<br>3. Push<br>4. Filed in wrong place | 1. `/speckit.modify 014` again<br>2. Review impact analysis<br>3. `/speckit.plan` (review solution)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Auto-nested under feature | Saved 1 hour | ✅ Organized history<br>✅ Correct solution from review |
+| **Profile form crash** | 1. Find bug<br>2. Quick fix<br>3. Push<br>4. Hope it doesn't recur | 1. `/speckit.workflows.bugfix`<br>2. Review root cause<br>3. `/speckit.plan` (review approach)<br>4. `/speckit.tasks`<br>5. `/speckit.implement` (test-first)<br>6. Tests pass | ~Same time | ✅ Regression prevented<br>✅ User reviewed fix approach |
+| **Make fields optional** | 1. Change schema<br>2. Update form<br>3. Push<br>4. Discover broken contract<br>5. Fix contract<br>6. Push again | 1. `/speckit.workflows.modify 014`<br>2. Review impact analysis<br>3. `/speckit.plan` (review backward compatibility)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Push once | Saved 2 hours | ✅ No breaking changes<br>✅ User reviewed before coding |
+| **Fix image removal** | 1. Change code<br>2. Test manually<br>3. Push<br>4. Filed in wrong place | 1. `/speckit.workflows.modify 014` again<br>2. Review impact analysis<br>3. `/speckit.plan` (review solution)<br>4. `/speckit.tasks`<br>5. `/speckit.implement`<br>6. Auto-nested under feature | Saved 1 hour | ✅ Organized history<br>✅ Correct solution from review |
 
 **Cumulative impact over 3 modifications**:
 - ⏱️ **Time saved**: ~3 hours
@@ -586,19 +586,19 @@ Iteration 1: /speckit.specify "edit profile form"
 ├─ spec → plan → tasks → implement
 └─ Status: ✅ Complete
 
-Iteration 2: /speckit.modify 014 "make fields optional"
+Iteration 2: /speckit.workflows.modify 014 "make fields optional"
 ├─ modify → review impact → plan → review approach → tasks → implement
 ├─ Impact analysis caught contract changes
 ├─ User reviewed backward compatibility before coding
 └─ Status: ✅ Complete
 
-Iteration 3: /speckit.modify 014 "fix image removal UX"
+Iteration 3: /speckit.workflows.modify 014 "fix image removal UX"
 ├─ modify → review impact → plan → review solution → tasks → implement
 ├─ Discovered unintended behavior via impact analysis
 ├─ User reviewed fix approach before implementation
 └─ Status: ✅ Complete
 
-Iteration 4: /speckit.bugfix "form crash without image"
+Iteration 4: /speckit.workflows.bugfix "form crash without image"
 ├─ bugfix → investigate → plan → review fix → tasks → implement
 ├─ Regression test written first
 ├─ User reviewed root cause and fix approach
@@ -607,8 +607,8 @@ Iteration 4: /speckit.bugfix "form crash without image"
 
 **This evolution shows the power of spec-kit + extensions with review checkpoints**:
 1. Start with structured `/speckit.specify`
-2. Modify safely with `/speckit.modify` (automatic impact analysis + review checkpoints)
-3. Fix bugs with `/speckit.bugfix` (regression tests + review before implementation)
+2. Modify safely with `/speckit.workflows.modify` (automatic impact analysis + review checkpoints)
+3. Fix bugs with `/speckit.workflows.bugfix` (regression tests + review before implementation)
 4. **User controls direction** at each checkpoint (prevents failed implementations)
 5. All history is organized and traceable
 
@@ -619,16 +619,16 @@ Iteration 4: /speckit.bugfix "form crash without image"
 ### What Worked Well
 
 1. **Review Checkpoints** (all workflows): User controls direction before implementation - **prevents failed fixes**
-2. **Regression Tests First** (`/speckit.bugfix`): Prevented bugs from recurring
-3. **Automatic Impact Analysis** (`/speckit.modify`): Caught dependencies we would have missed
+2. **Regression Tests First** (`/speckit.workflows.bugfix`): Prevented bugs from recurring
+3. **Automatic Impact Analysis** (`/speckit.workflows.modify`): Caught dependencies we would have missed
 4. **Nested Modifications**: Kept feature history organized
 5. **Workflow Quality Gates**: Enforced best practices with user review at each stage
 
 ### Common Patterns
 
 - **Start with `/speckit.specify`** for new features
-- **Use `/speckit.modify`** for changes that affect behavior
-- **Use `/speckit.bugfix`** for production issues with regression tests
+- **Use `/speckit.workflows.modify`** for changes that affect behavior
+- **Use `/speckit.workflows.bugfix`** for production issues with regression tests
 - **Review before implementing**: Every workflow gives you checkpoints to review and adjust
 - **Modifications nest** under parent features (organized history)
 - **Impact analysis catches** ~80% of affected files automatically
@@ -652,9 +652,9 @@ Ready to try these workflows on your project?
 1. **Install**: [INSTALLATION.md](INSTALLATION.md)
 2. **Quick Start**: [QUICKSTART.md](extensions/QUICKSTART.md)
 3. **Pick a real task**:
-   - Have a bug? Try `/speckit.bugfix "description"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
-   - Need to modify a feature? Try `/speckit.modify NNN "change"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
-   - Want to refactor? Try `/speckit.refactor "improvement"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+   - Have a bug? Try `/speckit.workflows.bugfix "description"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+   - Need to modify a feature? Try `/speckit.workflows.modify NNN "change"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+   - Want to refactor? Try `/speckit.workflows.refactor "improvement"` → review → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
 
 **Remember**: The checkpoint-based workflow gives you control at each phase. Review and adjust before implementing!
 

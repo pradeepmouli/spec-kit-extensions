@@ -14,42 +14,42 @@ This project supports these spec-kit workflows:
 - **Use for**: New features and functionality
 
 ### Bug Fixes
-- **Command**: `/speckit.bugfix "description"`
+- **Command**: `/speckit.workflows.bugfix "description"`
 - **Branch pattern**: `bugfix/001-description`
 - **Use for**: Fixing bugs and issues
 
 ### Enhancements
-- **Command**: `/speckit.enhance "description"`
+- **Command**: `/speckit.workflows.enhance "description"`
 - **Branch pattern**: `enhance/001-description`
 - **Use for**: Improving existing features
 
 ### Modifications
-- **Command**: `/speckit.modify "description"`
+- **Command**: `/speckit.workflows.modify "description"`
 - **Branch pattern**: `modify/001^002-description`
 - **Use for**: Changing existing features
 
 ### Refactoring
-- **Command**: `/speckit.refactor "description"`
+- **Command**: `/speckit.workflows.refactor "description"`
 - **Branch pattern**: `refactor/001-description`
 - **Use for**: Restructuring code without changing behavior
 
 ### Hotfixes
-- **Command**: `/speckit.hotfix "description"`
+- **Command**: `/speckit.workflows.hotfix "description"`
 - **Branch pattern**: `hotfix/001-description`
 - **Use for**: Critical production issues
 
 ### Deprecation
-- **Command**: `/speckit.deprecate "description"`
+- **Command**: `/speckit.workflows.deprecate "description"`
 - **Branch pattern**: `deprecate/001-description`
 - **Use for**: Deprecating features or APIs
 
 ### Cleanup
-- **Command**: `/speckit.cleanup "description"`
+- **Command**: `/speckit.workflows.cleanup "description"`
 - **Branch pattern**: `cleanup/001-description`
 - **Use for**: Removing dead code and tech debt
 
 ### Code Review
-- **Command**: `/speckit.review`
+- **Command**: `/speckit.workflows.review`
 - **Use for**: Reviewing completed implementation work
 
 ## Important Rules
@@ -58,7 +58,7 @@ This project supports these spec-kit workflows:
 
 **Every spec-kit branch MUST have a completed code review before merging:**
 
-1. After completing implementation work, run: `/speckit.review`
+1. After completing implementation work, run: `/speckit.workflows.review`
 2. Ensure the review generates a review file (e.g., `review.md`) in the spec directory
 3. The review file must contain one of these statuses:
    - `Status: ✅ Approved`
@@ -87,7 +87,7 @@ When starting new work:
 
 When reviewing code:
 
-1. Run `/speckit.review` to start the review
+1. Run `/speckit.workflows.review` to start the review
 2. The review should check:
    - Implementation matches specification
    - All acceptance criteria met
@@ -134,7 +134,7 @@ specs/
 
 ### When Fixing Bugs
 
-1. Use `/speckit.bugfix` for bug fixes
+1. Use `/speckit.workflows.bugfix` for bug fixes
 2. Document the bug clearly in the spec
 3. Include reproduction steps
 4. Verify the fix with tests
@@ -142,7 +142,7 @@ specs/
 
 ### When Refactoring
 
-1. Use `/speckit.refactor` for refactoring work
+1. Use `/speckit.workflows.refactor` for refactoring work
 2. Ensure behavior doesn't change
 3. Verify all existing tests still pass
 4. Document the refactoring goals
@@ -197,14 +197,14 @@ The repository has automated checks:
 /speckit.tasks
 
 # For a bug fix
-/speckit.bugfix "login button not working on mobile"
+/speckit.workflows.bugfix "login button not working on mobile"
 ```
 
 ### Completing Work
 
 ```bash
 # After implementation
-/speckit.review
+/speckit.workflows.review
 
 # Review generates report - ensure it shows "Approved"
 # Commit the review file
@@ -222,7 +222,7 @@ If review shows "Needs Changes":
 
 1. Address the issues listed in the review
 2. Run tests to verify fixes
-3. Run `/speckit.review` again
+3. Run `/speckit.workflows.review` again
 4. Commit the updated review file
 5. Push changes
 
@@ -239,7 +239,7 @@ All workflows use standard spec-kit commands and patterns, so the experience is 
 
 ## Reminders
 
-- ✅ **ALWAYS** run `/speckit.review` before creating a PR
+- ✅ **ALWAYS** run `/speckit.workflows.review` before creating a PR
 - ✅ **ALWAYS** commit the review file to your branch
 - ✅ **ALWAYS** ensure review status is "Approved" or "Approved with Notes"
 - ❌ **NEVER** merge without a completed, approved review
@@ -248,9 +248,9 @@ All workflows use standard spec-kit commands and patterns, so the experience is 
 ## Questions?
 
 If you're unsure which workflow to use, ask the developer. Default to:
-- Bug fixes → `/speckit.bugfix`
+- Bug fixes → `/speckit.workflows.bugfix`
 - New features → `/speckit.specify`
-- Improvements → `/speckit.enhance`
-- Code cleanup → `/speckit.cleanup`
+- Improvements → `/speckit.workflows.enhance`
+- Code cleanup → `/speckit.workflows.cleanup`
 
 **And remember: ALWAYS review before merge!**

@@ -38,12 +38,12 @@ Select the workflow based on task characteristics:
 | If the task is... | Use this workflow |
 |-------------------|-------------------|
 | New functionality (>7 tasks) | `/speckit.specify` |
-| Small improvement (<7 tasks) | `/speckit.enhance` |
-| Bug fix with known cause | `/speckit.bugfix` |
-| Change to existing feature | `/speckit.modify` |
-| Code quality (no behavior change) | `/speckit.refactor` |
-| Production emergency | `/speckit.hotfix` |
-| Removing a feature | `/speckit.deprecate` |
+| Small improvement (<7 tasks) | `/speckit.workflows.enhance` |
+| Bug fix with known cause | `/speckit.workflows.bugfix` |
+| Change to existing feature | `/speckit.workflows.modify` |
+| Code quality (no behavior change) | `/speckit.workflows.refactor` |
+| Production emergency | `/speckit.workflows.hotfix` |
+| Removing a feature | `/speckit.workflows.deprecate` |
 ```
 
 **Why**: Eliminates guesswork and ensures consistent workflow selection.
@@ -132,7 +132,7 @@ Report completion with:
 
 Tasks: {completed}/{total}
 Tests: {passing}/{total}
-Ready for: /speckit.review
+Ready for: /speckit.workflows.review
 ```
 ```
 

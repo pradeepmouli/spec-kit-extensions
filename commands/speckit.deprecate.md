@@ -17,11 +17,11 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.deprecate` in the triggering message can be:
-- `/speckit.deprecate <feature_number> "reason"` - Direct with feature number
-- `/speckit.deprecate "reason"` - Interactive (will prompt for feature selection)
+The text the user typed after `/speckit.workflows.deprecate` in the triggering message can be:
+- `/speckit.workflows.deprecate <feature_number> "reason"` - Direct with feature number
+- `/speckit.workflows.deprecate "reason"` - Interactive (will prompt for feature selection)
 
-For example: `/speckit.deprecate 014 "low usage and high maintenance burden"` or `/speckit.deprecate "low usage"`. Assume you always have it available even if `$ARGUMENTS` appears literally below.
+For example: `/speckit.workflows.deprecate 014 "low usage and high maintenance burden"` or `/speckit.workflows.deprecate "low usage"`. Assume you always have it available even if `$ARGUMENTS` appears literally below.
 
 **📦 DEPRECATION WORKFLOW - PHASED SUNSET**
 
@@ -101,5 +101,5 @@ Given that input, do this:
 - Get stakeholder sign-off before starting (Product, Engineering, Support)
 
 **Interactive Mode Usage Examples**:
-- User: `/speckit.deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
-- User: `/speckit.deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014
+- User: `/speckit.workflows.deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
+- User: `/speckit.workflows.deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014

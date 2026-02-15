@@ -13,7 +13,7 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.enhance` in the triggering message **is** the enhancement description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/speckit.workflows.enhance` in the triggering message **is** the enhancement description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 Given that enhancement description, do this:
 

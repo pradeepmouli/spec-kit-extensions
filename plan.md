@@ -50,7 +50,7 @@ schema: "1.0"
 
 id: spec-kit-workflows
 name: "Spec-Kit Workflow Extensions"
-version: "2.2.0"  # new major version for native format
+version: "2.3.0"  # new major version for native format
 description: "7 production-tested workflows for the complete software development lifecycle"
 author: "pradeepmouli"
 repository: "https://github.com/pradeepmouli/spec-kit-extensions"
@@ -62,37 +62,37 @@ requirements:
 provides:
   commands:
     - name: speckit.bugfix
-      file: commands/speckit.bugfix.md
+      file: commands/speckit.workflows.bugfix.md
       description: "Create a bug fix workflow with regression test"
     - name: speckit.baseline
-      file: commands/speckit.baseline.md
+      file: commands/speckit.workflows.baseline.md
       description: "Create a baseline documentation workflow"
     - name: speckit.enhance
-      file: commands/speckit.enhance.md
+      file: commands/speckit.workflows.enhance.md
       description: "Create an enhancement workflow"
     - name: speckit.modify
-      file: commands/speckit.modify.md
+      file: commands/speckit.workflows.modify.md
       description: "Create a modification workflow for existing features"
     - name: speckit.refactor
-      file: commands/speckit.refactor.md
+      file: commands/speckit.workflows.refactor.md
       description: "Create a refactoring workflow"
     - name: speckit.hotfix
-      file: commands/speckit.hotfix.md
+      file: commands/speckit.workflows.hotfix.md
       description: "Create a hotfix workflow for critical production issues"
     - name: speckit.deprecate
-      file: commands/speckit.deprecate.md
+      file: commands/speckit.workflows.deprecate.md
       description: "Create a deprecation workflow"
     - name: speckit.cleanup
-      file: commands/speckit.cleanup.md
+      file: commands/speckit.workflows.cleanup.md
       description: "Create a cleanup workflow"
     - name: speckit.review
-      file: commands/speckit.review.md
+      file: commands/speckit.workflows.review.md
       description: "Code review with quality gates"
     - name: speckit.phasestoissues
-      file: commands/speckit.phasestoissues.md
+      file: commands/speckit.workflows.phasestoissues.md
       description: "Convert spec phases to GitHub issues"
     - name: speckit.incorporate
-      file: commands/speckit.incorporate.md
+      file: commands/speckit.workflows.incorporate.md
       description: "Document incorporation workflow"
   configs:
     - file: config-template.yml
@@ -172,8 +172,8 @@ The native extension system expects files at specific locations. Restructure:
 ```
 CURRENT                                    TARGET (native extension format)
 ─────────────────────────────────────────  ────────────────────────────────────
-commands/speckit.bugfix.md                 commands/speckit.bugfix.md         ✅ (already correct)
-commands/speckit.baseline.md               commands/speckit.baseline.md       ✅ (already correct)
+commands/speckit.workflows.bugfix.md                 commands/speckit.workflows.bugfix.md         ✅ (already correct)
+commands/speckit.workflows.baseline.md               commands/speckit.workflows.baseline.md       ✅ (already correct)
 ...                                        ...
 extensions/enabled.conf                    config-template.yml                🔄 (replaced)
 extensions/workflows/bugfix/*              workflows/bugfix/*                 🔄 (move up one level)
@@ -228,17 +228,17 @@ After native installation, the extension lives at `.specify/extensions/spec-kit-
 ```
 
 ### 3.3 Commands to update:
-- `commands/speckit.bugfix.md`
-- `commands/speckit.baseline.md`
-- `commands/speckit.enhance.md`
-- `commands/speckit.modify.md`
-- `commands/speckit.refactor.md`
-- `commands/speckit.hotfix.md`
-- `commands/speckit.deprecate.md`
-- `commands/speckit.cleanup.md`
-- `commands/speckit.review.md`
-- `commands/speckit.phasestoissues.md`
-- `commands/speckit.incorporate.md`
+- `commands/speckit.workflows.bugfix.md`
+- `commands/speckit.workflows.baseline.md`
+- `commands/speckit.workflows.enhance.md`
+- `commands/speckit.workflows.modify.md`
+- `commands/speckit.workflows.refactor.md`
+- `commands/speckit.workflows.hotfix.md`
+- `commands/speckit.workflows.deprecate.md`
+- `commands/speckit.workflows.cleanup.md`
+- `commands/speckit.workflows.review.md`
+- `commands/speckit.workflows.phasestoissues.md`
+- `commands/speckit.workflows.incorporate.md`
 
 ---
 
@@ -321,7 +321,7 @@ Create a simple migration script instead of maintaining the full CLI:
 Structure the release ZIP to match what `specify extension add --from <url>` expects:
 
 ```
-spec-kit-workflows-v2.2.0.zip
+spec-kit-workflows-v2.3.0.zip
 ├── extension.yml
 ├── config-template.yml
 ├── README.md
@@ -360,8 +360,8 @@ Fork spec-kit, add entry to `extensions/catalog.json`:
     "description": "7 production-tested workflows for the complete SDLC",
     "author": "pradeepmouli",
     "repository": "https://github.com/pradeepmouli/spec-kit-extensions",
-    "latest_version": "2.2.0",
-    "download_url": "https://github.com/pradeepmouli/spec-kit-extensions/releases/download/v2.2.0/spec-kit-workflows-v2.2.0.zip",
+    "latest_version": "2.3.0",
+    "download_url": "https://github.com/pradeepmouli/spec-kit-extensions/releases/download/v2.3.0/spec-kit-workflows-v2.3.0.zip",
     "speckit_version": ">=0.0.93",
     "tags": ["workflows", "bugfix", "refactor", "hotfix", "lifecycle"],
     "verified": false,
@@ -416,7 +416,7 @@ Update development instructions to reflect the native extension structure.
 - `INSTALLATION.md` — native installation primary, legacy secondary
 - `AI-AGENTS.md` — remove custom agent detection docs (native system handles it)
 - `CLAUDE.md` — update development commands and architecture
-- `CHANGELOG.md` — document v2.2.0 migration
+- `CHANGELOG.md` — document v2.3.0 migration
 - Create `MIGRATION.md` (new)
 
 ---
@@ -435,7 +435,7 @@ specify extension list  # Should show spec-kit-workflows
 ls .specify/extensions/spec-kit-workflows/  # Files present
 
 # Test a workflow
-/speckit.bugfix "test bug"  # Should work end-to-end
+/speckit.workflows.bugfix "test bug"  # Should work end-to-end
 ```
 
 ### 8.2 Test migration from legacy

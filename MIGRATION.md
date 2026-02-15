@@ -53,10 +53,10 @@ Choose the migration path that fits your situation:
 3. **Verify installation**:
    ```bash
    specify extension list
-   # Should show: spec-kit-workflows (v2.2.0)
+   # Should show: spec-kit-workflows (v2.3.0)
 
    # Test a command
-   /speckit.bugfix --help
+   /speckit.workflows.bugfix --help
    ```
 
 ### Path 2: Automated Migration
@@ -84,7 +84,7 @@ Choose the migration path that fits your situation:
    specify extension list
 
    # Test workflows still work
-   /speckit.bugfix "test migration"
+   /speckit.workflows.bugfix "test migration"
 
    # Verify existing specs are still accessible
    ls specs/bugfix/  # Your existing workflow directories should still be there
@@ -236,7 +236,7 @@ vim .specify/extensions/spec-kit-workflows/config.yml
 
 # Set constitution.auto_update to true
 # Or manually run constitution update command
-/speckit.enhance-constitution
+/speckit.workflows.enhance-constitution
 ```
 
 ### Issue: Old patched common.sh causing conflicts
@@ -254,7 +254,7 @@ fi
 
 | Extension Version | Requires spec-kit | Notes |
 |-------------------|-------------------|-------|
-| v2.2.0+ (native) | >= 0.0.93 | Native extension format |
+| v2.3.0+ (native) | >= 0.0.93 | Native extension format |
 | v2.1.x (legacy) | >= 0.0.80 | Uses `specify-extend` CLI |
 | v2.0.x (legacy) | >= 0.0.70 | Legacy format |
 
@@ -300,7 +300,7 @@ A: Yes, the workflows themselves are identical. Only the installation method and
 A: Custom workflow templates and scripts can be preserved by copying them to the new location after installation. See the native extension's documentation for customization guidelines.
 
 **Q: Do agent commands change?**
-A: No, agent commands remain the same: `/speckit.bugfix`, `/speckit.modify`, etc.
+A: Yes for native installs. Native commands use `/speckit.workflows.*` (e.g. `/speckit.workflows.bugfix`). Legacy installs keep `/speckit.*`.
 
 ---
 

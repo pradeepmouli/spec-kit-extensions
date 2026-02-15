@@ -133,7 +133,7 @@ Create command template files in the `commands/` directory following the agent's
 
 #### Markdown Format (Claude, Cursor, Copilot, opencode, Windsurf, Amazon Q)
 
-**File**: `commands/speckit.bugfix.md` (example)
+**File**: `commands/speckit.workflows.bugfix.md` (example)
 
 ```markdown
 ---
@@ -166,7 +166,7 @@ Execute the bugfix workflow script...
 
 #### TOML Format (Gemini, Qwen)
 
-**File**: `commands/speckit.bugfix.toml` (example)
+**File**: `commands/speckit.workflows.bugfix.toml` (example)
 
 ```toml
 description = "Fix bugs with regression-test-first approach"
@@ -226,7 +226,7 @@ Add a complete setup guide for the new agent following the existing pattern:
 
 3. Test a command:
    ```bash
-   /speckit.bugfix --help
+   /speckit.workflows.bugfix --help
    ```
 
 **Usage**:
@@ -265,7 +265,7 @@ Add a complete setup guide for the new agent following the existing pattern:
 4. **Test command execution**:
    ```bash
    # Test with the actual agent CLI
-   new-agent-cli /speckit.bugfix "test workflow"
+   new-agent-cli /speckit.workflows.bugfix "test workflow"
    ```
 
 5. **Verify workflow creation**:
@@ -402,7 +402,7 @@ You are a workflow automation specialist for the **plan** workflow in spec-kit p
 [... full subagent instructions ...]
 ```
 
-2. **Adds Stop hook** to command frontmatter (`.claude/commands/speckit.bugfix.md`):
+2. **Adds Stop hook** to command frontmatter (`.claude/commands/speckit.workflows.bugfix.md`):
 ```yaml
 ---
 description: Create a bug fix workflow
@@ -470,23 +470,23 @@ spec-kit-extensions provides these workflows that must be supported for each age
 
 1. **bugfix** - Fix bugs with regression-test-first approach
    - Script: `.specify/scripts/bash/create-bugfix.sh`
-   - Command: `/speckit.bugfix "description"`
+   - Command: `/speckit.workflows.bugfix "description"`
 
 2. **modify** - Modify existing features with impact analysis
    - Script: `.specify/scripts/bash/create-modification.sh`
-   - Command: `/speckit.modify NNN "description"`
+   - Command: `/speckit.workflows.modify NNN "description"`
 
 3. **refactor** - Improve code quality with metrics tracking
    - Script: `.specify/scripts/bash/create-refactor.sh`
-   - Command: `/speckit.refactor "description"`
+   - Command: `/speckit.workflows.refactor "description"`
 
 4. **hotfix** - Handle production emergencies
    - Script: `.specify/scripts/bash/create-hotfix.sh`
-   - Command: `/speckit.hotfix "description"`
+   - Command: `/speckit.workflows.hotfix "description"`
 
 5. **deprecate** - Sunset features with phased rollout
    - Script: `.specify/scripts/bash/create-deprecate.sh`
-   - Command: `/speckit.deprecate NNN "reason"`
+   - Command: `/speckit.workflows.deprecate NNN "reason"`
 
 ## Common Pitfalls
 

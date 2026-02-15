@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **spec-kit-extensions** extends GitHub's spec-kit with 7 additional production-tested workflows that cover the complete software development lifecycle beyond just feature development.
 
-**Architecture (v2.2.0+)**: Native spec-kit extension format
+**Architecture (v2.3.0+)**: Native spec-kit extension format
 - **Extension Manifest**: `extension.yml` declares all commands and configuration
 - **Workflow Templates**: Stored in `workflows/` directory
 - **Scripts**: Located in `scripts/` directory (including `common.sh`)
@@ -31,10 +31,10 @@ specify extension add --dev /path/to/spec-kit-extensions
 
 # Verify installation
 specify extension list
-# Should show: spec-kit-workflows (v2.2.0)
+# Should show: spec-kit-workflows (v2.3.0)
 
 # Test a workflow
-/speckit.bugfix "test bug"
+/speckit.workflows.bugfix "test bug"
 git branch  # Should show: bugfix/001-test-bug
 ls specs/bugfix/  # Should show: 001-test-bug/
 
@@ -66,7 +66,7 @@ specify-extend --all
 
 **IMPORTANT**: This project now uses a single version number for the native extension format:
 
-1. **Extension version** in `extension.yml` (`version: "2.2.0"`)
+1. **Extension version** in `extension.yml` (`version: "2.3.0"`)
 2. **Extension templates version** documented in `CHANGELOG.md`
 3. **Legacy CLI version** (deprecated) in `pyproject.toml` and `specify_extend.py`
 
@@ -92,7 +92,7 @@ git push origin v1.3.9
 
 ## Architecture
 
-### Core Components (Native Format v2.2.0+)
+### Core Components (Native Format v2.3.0+)
 
 1. **`extension.yml`** - Extension manifest
    - Declares all 11 commands (8 workflows + 3 command extensions)

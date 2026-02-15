@@ -92,4 +92,4 @@
 {{SCALABILITY_CONCERNS}}
 
 ---
-*Baseline spec created using `/speckit.baseline` workflow - See .specify/extensions/workflows/baseline/*
+*Baseline spec created using `/speckit.workflows.baseline` workflow - See .specify/extensions/workflows/baseline/*

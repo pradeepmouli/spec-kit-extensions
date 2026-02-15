@@ -169,10 +169,10 @@ Use this command when:
 
 ```bash
 # From your feature branch
-/speckit.phasestoissues
+/speckit.workflows.phasestoissues
 
 # Or with context
-/speckit.phasestoissues "Include priority: high, mark dependencies"
+/speckit.workflows.phasestoissues "Include priority: high, mark dependencies"
 ```
 
 **Creates:**
@@ -238,7 +238,7 @@ Next Steps:
 
 2. **Issue Creation**
    ```bash
-   /speckit.phasestoissues  # Create GitHub issues per phase
+   /speckit.workflows.phasestoissues  # Create GitHub issues per phase
    ```
 
 3. **Implementation Phase**
@@ -249,7 +249,7 @@ Next Steps:
 
 4. **Review Phase**
    ```bash
-   /speckit.review     # Validate per phase
+   /speckit.workflows.review     # Validate per phase
    # Update phase issues with review results
    ```
 
@@ -304,5 +304,5 @@ Structure your spec.md to clearly define phases:
 
 - `/speckit.plan` - Create specification with phases
 - `/speckit.tasks` - Break down into tasks
-- `/speckit.review` - Validate phase completion
+- `/speckit.workflows.review` - Validate phase completion
 - `/speckit.implement` - Execute task implementation

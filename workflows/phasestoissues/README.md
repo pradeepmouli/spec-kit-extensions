@@ -27,7 +27,7 @@ Use this command when you want to:
 ## Command
 
 ```bash
-/speckit.phasestoissues [optional context]
+/speckit.workflows.phasestoissues [optional context]
 ```
 
 ## Prerequisites
@@ -109,14 +109,14 @@ Plus status labels:
 
 ```bash
 # From your feature branch
-/speckit.phasestoissues
+/speckit.workflows.phasestoissues
 ```
 
 ### With Context
 
 ```bash
 # Add specific context or guidance
-/speckit.phasestoissues "Include dependencies between phases"
+/speckit.workflows.phasestoissues "Include dependencies between phases"
 ```
 
 ### Output
@@ -158,7 +158,7 @@ Fits naturally into spec-kit workflows:
 
 ### 2. Issue Creation
 ```bash
-/speckit.phasestoissues  # Create GitHub issues per phase
+/speckit.workflows.phasestoissues  # Create GitHub issues per phase
 ```
 
 ### 3. Implementation
@@ -169,7 +169,7 @@ Fits naturally into spec-kit workflows:
 
 ### 4. Review
 ```bash
-/speckit.review     # Validate completion
+/speckit.workflows.review     # Validate completion
 # Update phase issues with review results
 ```
 
@@ -192,7 +192,7 @@ Fits naturally into spec-kit workflows:
 4. **Update regularly**: Update phase issues as work progresses
 5. **Use milestones**: Add all phase issues to appropriate milestone/project
 6. **Link commits**: Reference phase issues in commit messages
-7. **Review per phase**: Use `/speckit.review` to validate each phase completion
+7. **Review per phase**: Use `/speckit.workflows.review` to validate each phase completion
 
 ## Troubleshooting
 
@@ -225,7 +225,7 @@ Fits naturally into spec-kit workflows:
 - `/speckit.plan` - Create specification with phases
 - `/speckit.tasks` - Break down work into tasks
 - `/speckit.implement` - Execute task implementation
-- `/speckit.review` - Validate phase completion
+- `/speckit.workflows.review` - Validate phase completion
 
 ## Additional Resources
 

@@ -4,7 +4,7 @@ The Review workflow provides structured code review for completed work, validati
 
 ## When to Use Review
 
-Use `/speckit.review` when:
+Use `/speckit.workflows.review` when:
 
 - ✅ You've completed implementation work and need code review
 - ✅ You want to validate implementation against specification
@@ -27,21 +27,21 @@ The Review workflow:
 
 ```bash
 # Review current implementation work
-/speckit.review
+/speckit.workflows.review
 ```
 
 ### Review Specific Task
 
 ```bash
 # Review a specific task by ID
-/speckit.review T001
+/speckit.workflows.review T001
 ```
 
 ### Review with Context
 
 ```bash
 # Review with additional context
-/speckit.review "Implemented user authentication feature"
+/speckit.workflows.review "Implemented user authentication feature"
 ```
 
 ## Review Process
@@ -190,7 +190,7 @@ The Review workflow integrates seamlessly with spec-kit:
 # Implement tasks...
 
 # Review completed work
-/speckit.review
+/speckit.workflows.review
 
 # If approved, merge
 git push origin feature-branch
@@ -209,7 +209,7 @@ git push origin feature-branch
 ### Example 1: Basic Review
 
 ```bash
-$ /speckit.review
+$ /speckit.workflows.review
 
 ✅ Review Complete
 
@@ -224,7 +224,7 @@ All acceptance criteria met. Ready to merge.
 ### Example 2: Review with Issues
 
 ```bash
-$ /speckit.review
+$ /speckit.workflows.review
 
 ⚠️ Review Complete
 
@@ -244,7 +244,7 @@ Please fix issues and request re-review.
 ### Example 3: Specific Task Review
 
 ```bash
-$ /speckit.review T005
+$ /speckit.workflows.review T005
 
 ✅ Task T005 Review Complete
 
@@ -282,9 +282,9 @@ The Review workflow updates these files:
 
 ## Related Workflows
 
-- **`/speckit.bugfix`** - Use for bug fixes, then review with `/speckit.review`
-- **`/speckit.modify`** - Use for modifications, then review with `/speckit.review`
-- **`/speckit.refactor`** - Use for refactoring, then review with `/speckit.review`
+- **`/speckit.workflows.bugfix`** - Use for bug fixes, then review with `/speckit.workflows.review`
+- **`/speckit.workflows.modify`** - Use for modifications, then review with `/speckit.workflows.review`
+- **`/speckit.workflows.refactor`** - Use for refactoring, then review with `/speckit.workflows.review`
 
 ## Best Practices
 
@@ -299,7 +299,7 @@ The Review workflow updates these files:
 ---
 
 **Next Steps**:
-- Run `/speckit.review` to review completed implementation work
+- Run `/speckit.workflows.review` to review completed implementation work
 - Address any issues found during review
 - Mark tasks as complete when approved
 - Merge feature branch when ready

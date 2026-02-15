@@ -234,7 +234,7 @@ fi
 - No workflow-specific sections by default
 
 **Spec-Kit-Extensions Approach**:
-1. **LLM-Enhanced Mode** (default): Creates one-time `/speckit.enhance-constitution` command
+1. **LLM-Enhanced Mode** (default): Creates one-time `/speckit.workflows.enhance-constitution` command
 2. **Direct Append Mode** (`--no-llm-enhance`): Appends `docs/constitution-template.md` to constitution
 
 **Detection Logic** (specify_extend.py:1323-1354):
@@ -251,7 +251,7 @@ fi
 
 **Version Drift Example**:
 - Spec-kit 0.0.22: No workflow sections
-- Spec-kit 0.0.25 (hypothetical): Adds `/speckit.bugfix` as core feature
+- Spec-kit 0.0.25 (hypothetical): Adds `/speckit.workflows.bugfix` as core feature
 - spec-kit-extensions: Already patched with bugfix workflow
 - **Result**: Duplicate or conflicting guidance
 
@@ -279,7 +279,7 @@ fi
 - Examples: `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement`
 
 **Spec-Kit-Extensions Convention**: `/speckit.*` prefix (aligned since v2.1.0)
-- Examples: `/speckit.bugfix`, `/speckit.baseline`, `/speckit.refactor`, `/speckit.hotfix`
+- Examples: `/speckit.workflows.bugfix`, `/speckit.workflows.baseline`, `/speckit.workflows.refactor`, `/speckit.workflows.hotfix`
 
 **Compatibility**: ✅ **FULLY ALIGNED** as of spec-kit 0.0.18 and spec-kit-extensions v2.1.0
 

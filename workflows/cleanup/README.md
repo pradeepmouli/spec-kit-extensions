@@ -6,7 +6,7 @@ The cleanup workflow validates the structure and organization of spec-kit artifa
 
 ## When to Use
 
-Use `/speckit.cleanup` when:
+Use `/speckit.workflows.cleanup` when:
 
 - Spec directories are out of sequential order
 - There are gaps in numbering (001, 002, 005 → missing 003, 004)
@@ -15,7 +15,7 @@ Use `/speckit.cleanup` when:
 - After merging multiple branches with spec changes
 - Periodically as maintenance to keep specs organized
 
-**Do NOT use `/speckit.cleanup` for**:
+**Do NOT use `/speckit.workflows.cleanup` for**:
 - Fixing code issues → use appropriate workflow instead
 - Changing spec content → edit files directly
 - Deleting old specs → archive them manually first
@@ -81,17 +81,17 @@ The cleanup workflow **validates** and **reorganizes** but does not create any f
 
 ### Basic validation (dry-run):
 ```bash
-/speckit.cleanup --dry-run "regular maintenance"
+/speckit.workflows.cleanup --dry-run "regular maintenance"
 ```
 
 ### Validation and auto-fix:
 ```bash
-/speckit.cleanup --auto-fix "fix numbering after merge"
+/speckit.workflows.cleanup --auto-fix "fix numbering after merge"
 ```
 
 ### Just validate and report:
 ```bash
-/speckit.cleanup "pre-release validation"
+/speckit.workflows.cleanup "pre-release validation"
 ```
 
 ## Script Options
@@ -111,7 +111,7 @@ Options:
 ### Example 1: Pre-Release Validation
 
 ```bash
-/speckit.cleanup "validate specs before v2.0 release"
+/speckit.workflows.cleanup "validate specs before v2.0 release"
 ```
 
 Result:
@@ -125,7 +125,7 @@ Result:
 After merging branches that both added bugfix specs:
 
 ```bash
-/speckit.cleanup --auto-fix "fix duplicates after feature merge"
+/speckit.workflows.cleanup --auto-fix "fix duplicates after feature merge"
 ```
 
 Before:
@@ -152,10 +152,10 @@ specs/bugfix/
 
 ```bash
 # See what would change
-/speckit.cleanup --dry-run --auto-fix "monthly maintenance"
+/speckit.workflows.cleanup --dry-run --auto-fix "monthly maintenance"
 
 # Review the suggested changes, then apply
-/speckit.cleanup --auto-fix "monthly maintenance"
+/speckit.workflows.cleanup --auto-fix "monthly maintenance"
 ```
 
 ### Example 4: Fix Misplaced Workflow Directories
@@ -163,7 +163,7 @@ specs/bugfix/
 When workflow directories are created at the wrong level:
 
 ```bash
-/speckit.cleanup --auto-fix "reorganize misplaced directories"
+/speckit.workflows.cleanup --auto-fix "reorganize misplaced directories"
 ```
 
 Before:
@@ -271,21 +271,21 @@ The cleanup script validates these workflow subdirectories:
 ```bash
 # Two branches both created bugfix-003
 # After resolving conflict, cleanup to renumber
-/speckit.cleanup --auto-fix "resolve numbering after merge conflict"
+/speckit.workflows.cleanup --auto-fix "resolve numbering after merge conflict"
 ```
 
 **Periodic Maintenance:**
 ```bash
 # Monthly cleanup to keep specs organized
-/speckit.cleanup --dry-run "monthly maintenance check"
+/speckit.workflows.cleanup --dry-run "monthly maintenance check"
 # Review output, then apply if needed
-/speckit.cleanup --auto-fix "monthly maintenance"
+/speckit.workflows.cleanup --auto-fix "monthly maintenance"
 ```
 
 **Pre-Release Validation:**
 ```bash
 # Ensure all specs are properly organized before release
-/speckit.cleanup "validate specs for v3.0 release"
+/speckit.workflows.cleanup "validate specs for v3.0 release"
 ```
 
 ## Integration with Constitution

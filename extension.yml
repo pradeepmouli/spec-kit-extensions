@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "spec-kit-workflows"
   name: "Spec-Kit Workflow Extensions"
-  version: "2.2.0"
+  version: "2.3.0"
   description: "Production-tested workflows for bug fixes, refactoring, hotfixes, deprecation, and cleanup"
   author: "pradeepmouli"
   repository: "https://github.com/pradeepmouli/spec-kit-extensions"
@@ -48,6 +48,18 @@ provides:
     - name: "speckit.workflows.incorporate"
       file: "commands/speckit.incorporate.md"
       description: "Document incorporation workflow"
+  config:
+    - name: "spec-kit-workflows-config.yml"
+      template: "config-template.yml"
+      description: "Workflow extension configuration"
+      required: false
+
+hooks:
+  after_tasks:
+    command: "speckit.workflows.review"
+    optional: true
+    prompt: "Run code review quality gates?"
+    description: "Run code review with quality gates after task creation"
 
 tags:
   - "workflows"
@@ -57,3 +69,16 @@ tags:
   - "deprecate"
   - "cleanup"
   - "lifecycle"
+
+defaults:
+  enabled_workflows:
+    - baseline
+    - bugfix
+    - enhance
+    - modify
+    - refactor
+    - hotfix
+    - deprecate
+    - cleanup
+  branch_validation: true
+  constitution_updates: true

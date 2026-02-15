@@ -101,7 +101,7 @@ Incorporate external documents (specs, plans, research, checklists, etc.) into e
 ## Usage
 
 ```bash
-/speckit.incorporate <document-path> [--type TYPE] [--workflow WORKFLOW] [--stage STAGE] [--enrich] [--dry-run]
+/speckit.workflows.incorporate <document-path> [--type TYPE] [--workflow WORKFLOW] [--stage STAGE] [--enrich] [--dry-run]
 ```
 
 **Options:**
@@ -189,11 +189,11 @@ Based on workflow context and document type, choose strategy:
 2. Save the document to a temporary location, with appropriate naming (e.g., `spec.md`, `bugfix.md`, `plan.md` etc.	)
 
 3. Execute the appropriate handoff to create the workflow:
-   - For feature/enhancement: `/speckit.specify` or `/speckit.enhance`
-   - For bugfix/hotfix: `/speckit.bugfix` or `/speckit.hotfix`
-   - For refactor: `/speckit.refactor`
-   - For deprecate: `/speckit.deprecate`
-   - For baseline: `/speckit.baseline`
+   - For feature/enhancement: `/speckit.specify` or `/speckit.workflows.enhance`
+   - For bugfix/hotfix: `/speckit.workflows.bugfix` or `/speckit.workflows.hotfix`
+   - For refactor: `/speckit.workflows.refactor`
+   - For deprecate: `/speckit.workflows.deprecate`
+   - For baseline: `/speckit.workflows.baseline`
 
 ### Scenario B: Currently **in** Workflow - Document Type Matches Current Stage
 
@@ -345,7 +345,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 
 ```bash
 # You're in bugfix/001-login-error with bug-report.md
-/speckit.incorporate api-authentication-research.md
+/speckit.workflows.incorporate api-authentication-research.md
 
 # Result:
 # ✅ Detected: Research document
@@ -357,7 +357,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 
 ```bash
 # You're in enhance/023-improve-ui with enhancement-spec.md
-/speckit.incorporate implementation-approach.md
+/speckit.workflows.incorporate implementation-approach.md
 
 # Result:
 # ✅ Detected: Plan document
@@ -370,7 +370,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 
 ```bash
 # Not in any workflow
-/speckit.incorporate hotfix-analysis.md --workflow hotfix
+/speckit.workflows.incorporate hotfix-analysis.md --workflow hotfix
 
 # Result:
 # ✅ Detected: Hotfix needed
@@ -383,7 +383,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 
 ```bash
 # You're in refactor/005-cleanup with refactor-spec.md only
-/speckit.incorporate detailed-task-breakdown.md
+/speckit.workflows.incorporate detailed-task-breakdown.md
 
 # Result:
 # ⚠️  Document is tasks, but no plan exists
@@ -397,7 +397,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 ### Example 5: Dry Run
 
 ```bash
-/speckit.incorporate research.md --dry-run
+/speckit.workflows.incorporate research.md --dry-run
 
 # Result:
 # 🔍 Dry Run - No changes will be made
@@ -409,7 +409,7 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 #   • New section: "Background Research"
 #   • Lines to add: ~45 lines
 #
-# To execute: /speckit.incorporate research.md
+# To execute: /speckit.workflows.incorporate research.md
 ```
 
 ## Error Handling
@@ -423,7 +423,7 @@ Please check the path and try again.
 ### Cannot Determine Workflow Type
 ```
 ❌ Cannot determine appropriate workflow type from document.
-Please specify: /speckit.incorporate document.md --workflow [type]
+Please specify: /speckit.workflows.incorporate document.md --workflow [type]
 
 Available workflows:
   baseline, bugfix, enhance, modify, refactor, hotfix, deprecate, cleanup
