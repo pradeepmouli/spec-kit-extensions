@@ -12,9 +12,9 @@ body:
         Use the spec-kit hotfix workflow for urgent fixes:
 
         ```bash
-        /speckit.hotfix "critical issue description"
+        /speckit.workflows.hotfix "critical issue description"
         # ... implement fix ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
         ⚠️ **Note**: Hotfixes should be for production-critical issues only!

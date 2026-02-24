@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the enhancement with:
 
         ```bash
-        /speckit.enhance "enhancement description"
+        /speckit.workflows.enhance "enhancement description"
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input

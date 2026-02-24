@@ -118,7 +118,7 @@ jobs:
             echo "❌ No review file found"
             echo ""
             echo "To complete the review:"
-            echo "  1. Run: /speckit.review"
+            echo "  1. Run: /speckit.workflows.review"
             echo "  2. Commit the generated review file"
             echo "  3. Push to your branch"
             exit 0
@@ -138,7 +138,7 @@ jobs:
             echo "Issues found:"
             grep -A 10 "## Findings" "$REVIEW_FILE" || true
             echo ""
-            echo "Please address the issues and run /speckit.review again"
+            echo "Please address the issues and run /speckit.workflows.review again"
           else
             echo "⚠️  Review status unclear"
             echo ""
@@ -172,7 +172,7 @@ jobs:
             if [ "$HAS_REVIEW" = false ]; then
               FOUND_PENDING=true
               echo "⚠️  $SPEC_DIR"
-              echo "   Missing review file - run /speckit.review"
+              echo "   Missing review file - run /speckit.workflows.review"
               echo ""
             fi
           done
@@ -255,7 +255,7 @@ jobs:
             echo "  2. /speckit.plan"
             echo "  3. /speckit.tasks"
             echo "  4. Implement changes"
-            echo "  5. /speckit.review (REQUIRED)"
+            echo "  5. /speckit.workflows.review (REQUIRED)"
           fi
 
       - name: Non spec-kit branch

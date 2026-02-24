@@ -72,13 +72,13 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed real-world examples.
 
 ### Prerequisites
 
-- **spec-kit v0.0.93+** installed ([installation guide](https://github.com/github/spec-kit))
+- **spec-kit v0.1.0+** installed ([installation guide](https://github.com/github/spec-kit))
 - **AI coding agent** (Claude Code, GitHub Copilot, Gemini CLI, Cursor, etc.)
 - **Git** repository with `.specify/` directory
 
 ### Installation
 
-#### Native Extension (Recommended - requires spec-kit v0.0.93+)
+#### Native Extension (Recommended - requires spec-kit v0.1.0+)
 
 **Step 1: Initialize spec-kit** (if not already done):
 ```bash

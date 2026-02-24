@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the fix with:
 
         ```bash
-        /speckit.bugfix "bug description"
+        /speckit.workflows.bugfix "bug description"
         # ... implement fix ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: textarea

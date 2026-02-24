@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the baseline documentation with:
 
         ```bash
-        /speckit.baseline "baseline description"
+        /speckit.workflows.baseline "baseline description"
         # ... document ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input

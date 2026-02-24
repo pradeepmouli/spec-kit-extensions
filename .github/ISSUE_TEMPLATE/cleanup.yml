@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the cleanup with:
 
         ```bash
-        /speckit.cleanup "cleanup description"
+        /speckit.workflows.cleanup "cleanup description"
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input

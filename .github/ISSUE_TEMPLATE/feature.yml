@@ -16,7 +16,7 @@ body:
         /speckit.plan
         /speckit.tasks
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: textarea

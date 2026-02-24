@@ -1,0 +1,33 @@
+schema_version: "1.0"
+
+extension:
+  id: "spec-kit-workflows"
+  name: "Spec-Kit Workflow Extensions"
+  version: "2.3.0"
+  description: "Production-tested workflows for bug fixes, refactoring, hotfixes, deprecation, and cleanup"
+  author: "pradeepmouli"
+  repository: "https://github.com/pradeepmouli/spec-kit-extensions"
+  homepage: "https://github.com/pradeepmouli/spec-kit-extensions"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.1.0"
+
+provides:
+  commands:
+    - name: "speckit.workflows.bugfix"
+      file: "commands/speckit.bugfix.md"
+      description: "Create a bug fix workflow with regression test"
+      aliases: ["speckit.workflows.bug"]
+
+hooks:
+  after_tasks:
+    command: "speckit.workflows.review"
+    optional: true
+    prompt: "Run code review quality gates?"
+    description: "Run code review with quality gates after task creation"
+    condition: "true"
+
+tags:
+  - workflows
+  - bugfix

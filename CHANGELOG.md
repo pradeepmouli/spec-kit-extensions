@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### 📋 Components
 
 - **Extension Templates Version**: v2.3.0 (native format)
-- **Required Spec Kit Version**: v0.0.93+
+- **Required Spec Kit Version**: v0.1.0+
 - **Legacy CLI Tool**: v1.5.12 (still available for older spec-kit)
 
 ### [2.2.0] - 2026-02-10

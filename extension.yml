@@ -11,43 +11,54 @@ extension:
   homepage: "https://github.com/pradeepmouli/spec-kit-extensions"
 
 requires:
-  speckit_version: ">=0.0.93"
+  speckit_version: ">=0.1.0"
 
 provides:
   commands:
     - name: "speckit.workflows.bugfix"
       file: "commands/speckit.bugfix.md"
       description: "Create a bug fix workflow with regression test"
+      aliases: ["speckit.workflows.bug"]
     - name: "speckit.workflows.baseline"
       file: "commands/speckit.baseline.md"
       description: "Create a baseline documentation workflow"
+      aliases: ["speckit.workflows.base"]
     - name: "speckit.workflows.enhance"
       file: "commands/speckit.enhance.md"
       description: "Create an enhancement workflow"
+      aliases: ["speckit.workflows.improve"]
     - name: "speckit.workflows.modify"
       file: "commands/speckit.modify.md"
       description: "Create a modification workflow for existing features"
+      aliases: ["speckit.workflows.change"]
     - name: "speckit.workflows.refactor"
       file: "commands/speckit.refactor.md"
       description: "Create a refactoring workflow"
+      aliases: ["speckit.workflows.restructure"]
     - name: "speckit.workflows.hotfix"
       file: "commands/speckit.hotfix.md"
       description: "Create a hotfix workflow for critical production issues"
+      aliases: ["speckit.workflows.emergency"]
     - name: "speckit.workflows.deprecate"
       file: "commands/speckit.deprecate.md"
       description: "Create a deprecation workflow"
+      aliases: ["speckit.workflows.sunset"]
     - name: "speckit.workflows.cleanup"
       file: "commands/speckit.cleanup.md"
       description: "Create a cleanup workflow"
+      aliases: ["speckit.workflows.tidy"]
     - name: "speckit.workflows.review"
       file: "commands/speckit.review.md"
       description: "Code review with quality gates"
+      aliases: ["speckit.workflows.audit"]
     - name: "speckit.workflows.phasestoissues"
       file: "commands/speckit.phasestoissues.md"
       description: "Convert spec phases to GitHub issues"
+      aliases: ["speckit.workflows.phaseissues"]
     - name: "speckit.workflows.incorporate"
       file: "commands/speckit.incorporate.md"
       description: "Document incorporation workflow"
+      aliases: ["speckit.workflows.mergecontext"]
   config:
     - name: "spec-kit-workflows-config.yml"
       template: "config-template.yml"
@@ -60,6 +71,19 @@ hooks:
     optional: true
     prompt: "Run code review quality gates?"
     description: "Run code review with quality gates after task creation"
+    condition: "true"
+  after_implement:
+    command: "speckit.workflows.review"
+    optional: true
+    prompt: "Run post-implementation review quality gates?"
+    description: "Run code review with quality gates after implementation"
+    condition: "true"
+  before_commit:
+    command: "speckit.workflows.review"
+    optional: true
+    prompt: "Run final review before commit?"
+    description: "Run code review with quality gates before commit"
+    condition: "true"
 
 tags:
   - "workflows"

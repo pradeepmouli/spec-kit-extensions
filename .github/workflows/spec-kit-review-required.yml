@@ -229,7 +229,7 @@ jobs:
 
           echo ""
           echo "To complete this PR, please:"
-          echo "1. Run '/speckit.review' command to perform code review"
+          echo "1. Run '/speckit.workflows.review' command to perform code review"
           echo "2. Ensure the review status is 'Approved' or 'Approved with Notes'"
           echo "3. Commit the review file to your branch"
           echo "4. Push the changes"

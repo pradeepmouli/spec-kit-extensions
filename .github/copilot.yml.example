@@ -47,14 +47,14 @@ review_instructions: |
   This repository uses spec-kit-extensions workflows. Understand the workflow type:
 
   - **Feature**: New functionality (specs/NNN-name/ or /speckit.specify)
-  - **Bugfix**: Bug fixes (specs/bugfix/NNN-*/ or /speckit.bugfix)
-  - **Enhance**: Enhancements (specs/enhance/NNN-*/ or /speckit.enhance)
-  - **Modify**: Modifications (specs/modify/NNN^MMM-*/ or /speckit.modify)
-  - **Refactor**: Code refactoring (specs/refactor/NNN-*/ or /speckit.refactor)
-  - **Hotfix**: Production emergencies (specs/hotfix/NNN-*/ or /speckit.hotfix)
-  - **Deprecate**: Feature deprecation (specs/deprecate/NNN-*/ or /speckit.deprecate)
-  - **Cleanup**: Code cleanup (specs/cleanup/NNN-*/ or /speckit.cleanup)
-  - **Baseline**: Documentation (specs/baseline/NNN-*/ or /speckit.baseline)
+  - **Bugfix**: Bug fixes (specs/bugfix/NNN-*/ or /speckit.workflows.bugfix)
+  - **Enhance**: Enhancements (specs/enhance/NNN-*/ or /speckit.workflows.enhance)
+  - **Modify**: Modifications (specs/modify/NNN^MMM-*/ or /speckit.workflows.modify)
+  - **Refactor**: Code refactoring (specs/refactor/NNN-*/ or /speckit.workflows.refactor)
+  - **Hotfix**: Production emergencies (specs/hotfix/NNN-*/ or /speckit.workflows.hotfix)
+  - **Deprecate**: Feature deprecation (specs/deprecate/NNN-*/ or /speckit.workflows.deprecate)
+  - **Cleanup**: Code cleanup (specs/cleanup/NNN-*/ or /speckit.workflows.cleanup)
+  - **Baseline**: Documentation (specs/baseline/NNN-*/ or /speckit.workflows.baseline)
 
   ## Review Checklist
 
@@ -62,7 +62,7 @@ review_instructions: |
 
   - **Check if review file exists**: Look for `review.md` in the spec directory
   - **Verify review status**: Must be "✅ Approved" or "⚠️ Approved with Notes"
-  - **Flag missing reviews**: If no review file or status is "❌ Needs Changes", comment that `/speckit.review` must be completed
+  - **Flag missing reviews**: If no review file or status is "❌ Needs Changes", comment that `/speckit.workflows.review` must be completed
 
   ### 2. Specification Alignment
 
@@ -140,7 +140,7 @@ review_instructions: |
   ### Spec-Kit Review Status
   - ✅ Review file exists and approved
   - ⚠️ Review file exists but needs attention
-  - ❌ No review file found - `/speckit.review` required
+  - ❌ No review file found - `/speckit.workflows.review` required
 
   ### Strengths
   What's done well in this PR.
@@ -185,14 +185,14 @@ chat:
 # Workflow for using Copilot in reviews:
 #
 # 1. Developer completes implementation
-# 2. Developer runs: /speckit.review (generates AI review file)
+# 2. Developer runs: /speckit.workflows.review (generates AI review file)
 # 3. Developer commits review file and creates PR
 # 4. GitHub Copilot provides initial PR review
 # 5. Human reviewers perform detailed review
 # 6. Both AI review (approved) + human review (approved) required
 #
 # This creates a multi-layer review process:
-# - Layer 1: /speckit.review (spec alignment, tests, quality)
+# - Layer 1: /speckit.workflows.review (spec alignment, tests, quality)
 # - Layer 2: GitHub Copilot (code review, best practices, security)
 # - Layer 3: Human reviewers (architecture, UX, business logic)
 # - Layer 4: Automated checks (CI/CD, linting, tests)
@@ -220,5 +220,5 @@ chat:
 #
 # Remember:
 # - Copilot assists but doesn't replace human review
-# - Use in conjunction with /speckit.review for comprehensive coverage
+# - Use in conjunction with /speckit.workflows.review for comprehensive coverage
 # - Configure branch protection to require both AI and human approval

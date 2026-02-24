@@ -50,14 +50,14 @@ jobs:
 
             # Get workflow command
             case "$WORKFLOW_TYPE" in
-              bugfix) COMMAND="/speckit.bugfix" ;;
-              enhance) COMMAND="/speckit.enhance" ;;
-              modify) COMMAND="/speckit.modify" ;;
-              refactor) COMMAND="/speckit.refactor" ;;
-              hotfix) COMMAND="/speckit.hotfix" ;;
-              deprecate) COMMAND="/speckit.deprecate" ;;
-              cleanup) COMMAND="/speckit.cleanup" ;;
-              baseline) COMMAND="/speckit.baseline" ;;
+              bugfix) COMMAND="/speckit.workflows.bugfix" ;;
+              enhance) COMMAND="/speckit.workflows.enhance" ;;
+              modify) COMMAND="/speckit.workflows.modify" ;;
+              refactor) COMMAND="/speckit.workflows.refactor" ;;
+              hotfix) COMMAND="/speckit.workflows.hotfix" ;;
+              deprecate) COMMAND="/speckit.workflows.deprecate" ;;
+              cleanup) COMMAND="/speckit.workflows.cleanup" ;;
+              baseline) COMMAND="/speckit.workflows.baseline" ;;
               feature) COMMAND="/speckit.specify" ;;
               *) COMMAND="/speckit.*" ;;
             esac
@@ -136,7 +136,7 @@ jobs:
 
             1. **Complete the code review**:
                \`\`\`bash
-               /speckit.review
+               /speckit.workflows.review
                \`\`\`
 
             2. **Verify review status**:
@@ -153,7 +153,7 @@ jobs:
 
             ### About Spec-Kit Review
 
-            The \`/speckit.review\` workflow:
+            The \`/speckit.workflows.review\` workflow:
             - ✅ Validates implementation against specification
             - ✅ Checks code quality and best practices
             - ✅ Runs tests and verifies results

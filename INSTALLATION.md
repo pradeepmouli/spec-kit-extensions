@@ -6,7 +6,7 @@ This guide covers installing **spec-kit-extensions** for different scenarios.
 
 Before installing, ensure you have:
 
-- ✅ **spec-kit v0.0.93+** installed (for native extension support)
+- ✅ **spec-kit v0.1.0+** installed (for native extension support)
   ```bash
   uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
   ```
@@ -15,7 +15,7 @@ Before installing, ensure you have:
 
 ## Quick Install (Native Extension - Recommended)
 
-**For spec-kit v0.0.93+, use the native extension system:**
+**For spec-kit v0.1.0+, use the native extension system:**
 
 ```bash
 # 1. In your project, initialize spec-kit (if not already done)

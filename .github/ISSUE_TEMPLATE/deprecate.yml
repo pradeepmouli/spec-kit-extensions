@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the deprecation with:
 
         ```bash
-        /speckit.deprecate "deprecation description"
+        /speckit.workflows.deprecate "deprecation description"
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input

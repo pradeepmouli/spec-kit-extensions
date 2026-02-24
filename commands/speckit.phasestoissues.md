@@ -156,20 +156,20 @@ For each task within a phase:
 
 1. **Create task issue** using GitHub MCP:
    - `title`: "T001: [Task description]" (preserve task ID)
-   - `body`: 
+   - `body`:
      ```markdown
      ## Task Details
-     
+
      [Task description from tasks.md]
-     
+
      ## Context
-     
+
      **Parent Phase**: #[phase-issue-number]
      **Branch**: [branch-name]
      **Feature Directory**: [feature-dir]
-     
+
      ---
-     
+
      Part of larger feature spec-kit workflow.
      ```
    - `labels`: Same labels as parent phase issue

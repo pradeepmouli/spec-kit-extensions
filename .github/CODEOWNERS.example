@@ -17,7 +17,7 @@
 # Integration with Spec-Kit Workflows:
 # - Use this to ensure appropriate reviewers are assigned based on workflow type
 # - Combine with spec-kit review enforcement for comprehensive quality control
-# - Teams/users will be notified to perform human review after /speckit.review
+# - Teams/users will be notified to perform human review after /speckit.workflows.review
 #
 # Syntax:
 # pattern @username @org/team-name
@@ -160,7 +160,7 @@ tests/                         @your-org/qa-team
 # ==============================================================================
 
 # Example 1: Solo Developer with AI Agents
-# (Review all changes yourself, rely on /speckit.review for AI review)
+# (Review all changes yourself, rely on /speckit.workflows.review for AI review)
 # *       @yourusername
 
 # Example 2: Small Team (2-5 developers)
@@ -182,7 +182,7 @@ tests/                         @your-org/qa-team
 # How CODEOWNERS works with spec-kit review:
 #
 # 1. Developer completes implementation
-# 2. Developer runs: /speckit.review (AI code review)
+# 2. Developer runs: /speckit.workflows.review (AI code review)
 # 3. Review file generated with findings
 # 4. Developer commits review file
 # 5. Developer creates PR
@@ -192,7 +192,7 @@ tests/                         @your-org/qa-team
 # 9. Both AI review (approved) + human review (approved) required to merge
 #
 # This creates a comprehensive review process:
-# - AI Review (/speckit.review): Fast, consistent, catches common issues
+# - AI Review (/speckit.workflows.review): Fast, consistent, catches common issues
 # - Human Review (CODEOWNERS): Context-aware, architectural decisions, UX
 # - Automated Enforcement (GitHub Actions): Ensures process is followed
 

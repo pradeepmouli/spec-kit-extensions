@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the refactoring with:
 
         ```bash
-        /speckit.refactor "refactoring description"
+        /speckit.workflows.refactor "refactoring description"
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input

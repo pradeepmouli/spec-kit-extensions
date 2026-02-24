@@ -1,6 +1,6 @@
 # Migration Guide: Legacy → Native Extension System
 
-This guide helps you migrate from the legacy `specify-extend` CLI tool to the native spec-kit v0.0.93+ extension system.
+This guide helps you migrate from the legacy `specify-extend` CLI tool to the native spec-kit v0.1.0+ extension system.
 
 ## Overview
 
@@ -43,7 +43,7 @@ Choose the migration path that fits your situation:
 
 2. **Install native extension**:
    ```bash
-   # From catalog (requires spec-kit v0.0.93+)
+   # From catalog (requires spec-kit v0.1.0+)
    specify extension add spec-kit-workflows
 
    # Or directly from GitHub

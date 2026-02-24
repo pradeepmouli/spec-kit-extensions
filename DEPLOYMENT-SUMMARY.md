@@ -26,7 +26,7 @@ spec-kit-extensions is **ready for native deployment (Path B)**. Symlinks in `.s
 
 ### AI Agent Support (v2.3.0)
 - ✅ GitHub Copilot
-- ✅ Claude Code  
+- ✅ Claude Code
 - ✅ Cursor
 - ✅ Windsurf
 - ✅ Amazon Q Developer
@@ -42,7 +42,7 @@ The spec-kit-extensions migration includes branch pattern patches that ensure sp
 
 **Validated Patterns**:
 - `001-description` (standard features)
-- `bugfix/001-description`  
+- `bugfix/001-description`
 - `refactor/001-description`
 - `hotfix/001-description`
 - `deprecate/001-description`
@@ -67,9 +67,9 @@ When encountering unfamiliar systems, research existing working implementations 
 - [ ] Tag v2.3.0
 - [ ] Update README and INSTALLATION for native flow
 
-### Post-Release (TODO)  
+### Post-Release (TODO)
 - [ ] Create GitHub release with notes
-- [ ] Announce native migration completion  
+- [ ] Announce native migration completion
 - [ ] Update AI-AGENTS.md with v2.3.0 notes
 
 ## File Status

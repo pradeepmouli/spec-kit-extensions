@@ -12,9 +12,9 @@ body:
         After this issue is created, you can start the modification with:
 
         ```bash
-        /speckit.modify "modification description"
+        /speckit.workflows.modify "modification description"
         # ... implement ...
-        /speckit.review
+        /speckit.workflows.review
         ```
 
   - type: input
