@@ -1,0 +1,85 @@
+name: Dependabit - Auto Update Manifest
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - '**.ts'
+      - '**.js'
+      - '**.py'
+      - '**.rs'
+      - '**.go'
+      - 'package.json'
+      - 'requirements.txt'
+      - 'Cargo.toml'
+      - 'go.mod'
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    name: Update Dependency Manifest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Validate existing manifest
+        id: validate
+        if: hashFiles('.dependabit/manifest.json') != ''
+        uses: pradeepmouli/dependabit@main
+        with:
+          action: validate
+          manifest_path: .dependabit/manifest.json
+          config_path: .dependabit/config.yml
+        continue-on-error: true
+
+      - name: Update manifest
+        id: update
+        uses: pradeepmouli/dependabit@main
+        with:
+          action: update
+          repo_path: .
+          manifest_path: .dependabit/manifest.json
+          llm_provider: github-copilot
+          llm_api_key: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit updated manifest
+        if: steps.update.outputs.changes_detected == 'true'
+        run: |
+          git config user.name "dependabit[bot]"
+          git config user.email "dependabit[bot]@users.noreply.github.com"
+          git add .dependabit/manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(dependabit): update manifest [skip ci]"
+            git push
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Manifest Update Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.update.outputs.changes_detected }}" == "true" ]; then
+            echo "**Changes detected and manifest updated**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **Dependencies Added**: ${{ steps.update.outputs.dependencies_added }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Dependencies Removed**: ${{ steps.update.outputs.dependencies_removed }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Total Dependencies**: ${{ steps.update.outputs.total_dependencies }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Files Analyzed**: ${{ steps.update.outputs.files_analyzed }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No changes detected in dependencies" >> $GITHUB_STEP_SUMMARY
+          fi
