@@ -36,7 +36,7 @@ jobs:
       - name: Validate existing manifest
         id: validate
         if: hashFiles('.dependabit/manifest.json') != ''
-        uses: pradeepmouli/dependabit@main
+        uses: pradeepmouli/dependabit@master
         with:
           action: validate
           manifest_path: .dependabit/manifest.json
@@ -45,7 +45,7 @@ jobs:
 
       - name: Update manifest
         id: update
-        uses: pradeepmouli/dependabit@main
+        uses: pradeepmouli/dependabit@master
         with:
           action: update
           repo_path: .

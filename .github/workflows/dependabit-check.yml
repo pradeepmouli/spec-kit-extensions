@@ -46,7 +46,7 @@ jobs:
       - name: Validate manifest
         id: validate
         if: steps.manifest_check.outputs.exists == 'true'
-        uses: pradeepmouli/dependabit@main
+        uses: pradeepmouli/dependabit@master
         with:
           action: validate
           manifest_path: .dependabit/manifest.json
