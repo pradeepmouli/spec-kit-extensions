@@ -6,16 +6,74 @@ This guide covers installing **spec-kit-extensions** for different scenarios.
 
 Before installing, ensure you have:
 
-- ✅ **spec-kit** installed (v0.0.18+)
+- ✅ **spec-kit v0.1.0+** installed (for native extension support)
   ```bash
   uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
   ```
 - ✅ **Git** repository initialized
 - ✅ **AI coding agent** (Claude Code, GitHub Copilot, etc.) - optional but recommended
 
-## Quick Install (Recommended)
+## Quick Install (Native Extension - Recommended)
 
-**The `specify-extend` tool is the easiest way to install extensions:**
+**For spec-kit v0.1.0+, use the native extension system:**
+
+```bash
+# 1. In your project, initialize spec-kit (if not already done)
+cd your-project
+specify init .
+
+# 2. Install the extension
+specify extension add spec-kit-workflows
+
+# Or directly from GitHub
+specify extension add --from https://github.com/pradeepmouli/spec-kit-extensions/releases/latest
+
+# 3. Verify installation
+specify extension list
+# Should show: spec-kit-workflows (v2.3.0)
+
+# 4. Test a workflow
+/speckit.workflows.bugfix --help
+```
+
+**What it does:**
+- ✅ Automatically detects your AI agent and installs appropriate commands
+- ✅ Sets up all 8 workflows + 2 command extensions
+- ✅ Configures quality gates via hooks
+- ✅ Provides branch validation
+- ✅ No file patching required!
+
+### Configuration
+
+Customize the extension after installation:
+
+```bash
+# Edit configuration
+vim .specify/extensions/spec-kit-workflows/config.yml
+```
+
+Example configuration:
+```yaml
+workflows:
+  baseline: true
+  bugfix: true
+  enhance: true
+  modify: true
+  refactor: true
+  hotfix: true
+  deprecate: false  # disable if not needed
+  cleanup: false    # disable if not needed
+
+branch_validation:
+  enabled: true
+
+constitution:
+  auto_update: true
+```
+
+## Legacy Installation (for spec-kit < 0.0.93)
+
+**If you're using an older spec-kit version, use the legacy `specify-extend` CLI tool:**
 
 ```bash
 # 1. In your project, initialize spec-kit (if not already done)
@@ -24,79 +82,55 @@ specify init .
 
 # 2. Install specify-extend (choose one method)
 
-# Method A: Install with pip from PyPI (Recommended)
+# Method A: Install with pip from PyPI
 pip install specify-extend
 specify-extend --all
-specify-extend --all --script ps  # Optional: install PowerShell workflows
-
-# Optional: install command files for multiple agents in the same repo
-specify-extend --agents claude,copilot,cursor-agent --all
-
-# Optional (advanced): use symlinks instead of copying agent command files
-specify-extend --agents claude,cursor-agent --all --link
 
 # Method B: Use with uvx (no installation)
 uvx specify-extend --all
 
-# Method C: Install from GitHub (for development or latest unreleased features)
+# Method C: Install from GitHub (for latest unreleased features)
 pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
 specify-extend --all
 
-# Method D: Run Python script directly from source
-git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
-python3 /tmp/spec-kit-extensions/specify_extend.py --all
-rm -rf /tmp/spec-kit-extensions
+# 3. Optional: PowerShell workflows
+specify-extend --all --script ps
+
+# 4. Optional: Multiple agents in same repo
+specify-extend --agents claude,copilot,cursor-agent --all
+
+# 5. Optional: GitHub integration features
+specify-extend --all --github-integration
 ```
 
 **What it does:**
 - ✅ Downloads latest extensions from GitHub releases
-- ✅ Automatically detects your AI agent (Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, etc.)
+- ✅ Automatically detects your AI agent
 - ✅ Installs appropriate extensions and commands
 - ✅ Updates constitution with quality gates
-- ✅ Makes scripts executable
+- ✅ Patches spec-kit's `common.sh` for branch patterns
 
 See [specify-extend documentation](docs/specify-extend.md) for advanced usage.
 
-## Manual Installation Methods
+## Migration from Legacy to Native
 
-If you prefer manual installation or need more control, choose one of these methods:
+**If you have an existing legacy installation and want to upgrade:**
 
-### Method 1: Add to Existing spec-kit Project
-
-**Use this if:** You already have a spec-kit project and want to add extensions manually
+See [MIGRATION.md](MIGRATION.md) for a complete migration guide, or use the automated migration script:
 
 ```bash
-# 1. Clone extensions repo to temporary location
-git clone https://github.com/pradeepmouli/spec-kit-extensions.git /tmp/spec-kit-extensions
+# Download and run migration script
+curl -sSL https://raw.githubusercontent.com/pradeepmouli/spec-kit-extensions/main/scripts/migrate-to-native.sh > migrate.sh
+chmod +x migrate.sh
+./migrate.sh
 
-# 2. Navigate to your project
-cd your-project
-
-# 3. Copy extension workflows
-cp -r /tmp/spec-kit-extensions/extensions/* .specify/extensions/
-
-# 4. Copy bash scripts
-cp /tmp/spec-kit-extensions/scripts/create-*.sh .specify/scripts/bash/
-
-# 4b. Optional: Copy PowerShell scripts (Windows-friendly)
-cp /tmp/spec-kit-extensions/scripts/powershell/create-*.ps1 .specify/scripts/powershell/
-
-# 5. Copy Claude Code commands (if using Claude Code)
-mkdir -p .claude/commands
-cp /tmp/spec-kit-extensions/commands/*.md .claude/commands/
-
-# 6. Merge constitution (append workflow quality gates)
-cat /tmp/spec-kit-extensions/docs/constitution-template.md >> .specify/memory/constitution.md
-
-# 7. Make scripts executable
-chmod +x .specify/scripts/bash/create-*.sh
-
-# 8. Clean up
-rm -rf /tmp/spec-kit-extensions
-
-# 9. Verify installation
-/bugfix --help
+# Then install native extension
+specify extension add spec-kit-workflows
 ```
+
+## Manual Installation Methods
+
+If you prefer manual installation or need more control:
 
 ### Method 2: Git Submodule (For Teams)
 
@@ -144,11 +178,11 @@ After installation, verify everything works:
 
 ```bash
 # Test each command (should show usage)
-/speckit.bugfix --help
-/speckit.modify --help
-/speckit.refactor --help
-/speckit.hotfix --help
-/speckit.deprecate --help
+/speckit.workflows.bugfix --help
+/speckit.workflows.modify --help
+/speckit.workflows.refactor --help
+/speckit.workflows.hotfix --help
+/speckit.workflows.deprecate --help
 ```
 
 ### Test Bash Scripts
