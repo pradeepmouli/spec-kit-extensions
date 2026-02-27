@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-02-27T03:17:55.694Z",
+  "generatedBy": {
+    "action": "dependabit",
+    "version": "1.0.0",
+    "llmProvider": "github-copilot",
+    "llmModel": "gpt-4"
+  },
+  "repository": {
+    "owner": "pradeepmouli",
+    "name": "spec-kit-extensions",
+    "branch": "main",
+    "commit": "707b6f37358ba2a123c7ab3ab250309ecd6217ba"
+  },
+  "dependencies": [
+    {
+      "id": "06c65b2c-737f-4d3b-85d7-9e7b4b6f10ee",
+      "url": "https://docs.github.com/en/issues",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "issues",
+      "description": "GitHub Issues Documentation",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-02-27T03:17:50.404Z",
+      "lastChecked": "2026-02-27T03:17:50.404Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "extensions/workflows/phasestoissues/README.md",
+          "line": 235,
+          "context": "GitHub Issues Documentation"
+        }
+      ],
+      "changeHistory": []
+    }
+  ],
+  "statistics": {
+    "totalDependencies": 1,
+    "byType": {
+      "documentation": 1
+    },
+    "byAccessMethod": {
+      "github-api": 1
+    },
+    "byDetectionMethod": {
+      "llm-analysis": 1
+    },
+    "averageConfidence": 0.9
+  }
+}
