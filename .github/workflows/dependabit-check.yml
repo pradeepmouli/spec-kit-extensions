@@ -47,10 +47,11 @@ jobs:
         id: validate
         if: steps.manifest_check.outputs.exists == 'true'
         uses: pradeepmouli/dependabit@master
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           action: validate
           manifest_path: .dependabit/manifest.json
-          config_path: .dependabit/config.yml
 
       - name: Summary
         if: always() && steps.manifest_check.outputs.exists == 'true'
