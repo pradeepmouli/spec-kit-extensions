@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-02-27T03:17:55.694Z",
+  "generatedAt": "2026-03-08T21:56:12.245Z",
   "generatedBy": {
     "action": "dependabit",
     "version": "1.0.0",
@@ -11,11 +11,119 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "707b6f37358ba2a123c7ab3ab250309ecd6217ba"
+    "commit": "e94dcd33182c36565e7e4c06b564fb01906ceeae"
   },
   "dependencies": [
     {
-      "id": "06c65b2c-737f-4d3b-85d7-9e7b4b6f10ee",
+      "id": "64ec2b86-3151-4d89-af54-7fafa75f1a58",
+      "url": "https://github.com/MartyBonacci/specswarm",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "specswarm",
+      "description": "github.com/MartyBonacci/specswarm",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 1,
+          "context": "github.com/MartyBonacci/specswarm"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "16d5bf47-d3eb-4135-942b-0938985dc9e2",
+      "url": "https://github.com/github/spec-kit",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit",
+      "description": "spec-kit",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 5,
+          "context": "spec-kit"
+        },
+        {
+          "file": "extensions/workflows/phasestoissues/README.md",
+          "line": 234,
+          "context": "Spec-Kit Documentation"
+        },
+        {
+          "file": "AGENTS.md",
+          "line": 598,
+          "context": "Original spec-kit repo"
+        },
+        {
+          "file": "INSTALLATION.md",
+          "line": 431,
+          "context": "spec-kit repo"
+        },
+        {
+          "file": "docs/architecture.md",
+          "line": 535,
+          "context": "spec-kit Architecture"
+        },
+        {
+          "file": "docs/specify-extend.md",
+          "line": 3,
+          "context": "spec-kit"
+        },
+        {
+          "file": "extensions/DEVELOPMENT.md",
+          "line": 604,
+          "context": "Specify Documentation"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ae0257c5-f7f1-4071-947d-0d1132630a46",
+      "url": "https://github.com/github/spec-kit/issues/",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "issues",
+      "description": "That's the plan! We've opened [an issue](https://github.com/github/spec-kit/issues/[NUMBER]) proposing these extensions be incorporated upstream. Until then, use this repo.",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 637,
+          "context": "That's the plan! We've opened [an issue](https://github.com/github/spec-kit/issues/[NUMBER]) proposing these extensions be incorporated upstream. Until then, use this repo."
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "39f4f936-b50c-414e-998d-8b1d8fcecc3d",
       "url": "https://docs.github.com/en/issues",
       "type": "documentation",
       "accessMethod": "github-api",
@@ -24,8 +132,8 @@
       "currentStateHash": "",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.9,
-      "detectedAt": "2026-02-27T03:17:50.404Z",
-      "lastChecked": "2026-02-27T03:17:50.404Z",
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
       "monitoring": {
         "enabled": true,
         "checkFrequency": "daily",
@@ -39,19 +147,546 @@
         }
       ],
       "changeHistory": []
+    },
+    {
+      "id": "62122b01-0ea5-4d25-bb54-53f335b5e17e",
+      "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "v1.0.0...v2.0",
+      "description": "2.0.0",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 1362,
+          "context": "2.0.0"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ffa99968-0573-4bfd-9dc2-44c59346b940",
+      "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "v1.0",
+      "description": "1.0.0",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 1363,
+          "context": "1.0.0"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "6977873a-c7ee-47c7-a3bb-c144b8280803",
+      "url": "https://github.com/github/spec-kit.git",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit",
+      "description": "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "INSTALLATION.md",
+          "line": 11,
+          "context": "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
+        },
+        {
+          "file": "docs/specify-extend.md",
+          "line": 308,
+          "context": "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "43dbcb7c-2603-4a87-9fad-27ace4089c0b",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#commands",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "description": "Claude Code Commands Spec",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 53,
+          "context": "Claude Code Commands Spec"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "57983575-15c5-48ee-abef-51c368e77579",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#agents",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "description": "Claude Code Agents",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 82,
+          "context": "Claude Code Agents"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "211df733-87c0-46aa-9d45-ed2e4dcc25fa",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#skills",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "description": "Claude Code Skills",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 110,
+          "context": "Claude Code Skills"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ec1b0343-841d-4088-86a2-0156de8a04a8",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#instructions",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "description": "Claude Code Instructions",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 132,
+          "context": "Claude Code Instructions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "99c63897-f402-4d8d-bf7b-2bd04bd618ad",
+      "url": "https://docs.anthropic.com/claude/docs/model-context-protocol",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "model-context-protocol",
+      "description": "Claude MCP Integration",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 145,
+          "context": "Claude MCP Integration"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "7f3ae85b-0ac6-487a-8d2d-b1045cfa4b6a",
+      "url": "https://docs.github.com/en/copilot/customizing-copilot/using-github-copilot-agents",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "using-github-copilot-agents",
+      "description": "GitHub Copilot Extensions",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 167,
+          "context": "GitHub Copilot Extensions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "4ee3aabc-0a1e-4c57-ab40-781586f00a8c",
+      "url": "https://docs.github.com/en/copilot/customizing-copilot/using-github-copilot-skills",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "using-github-copilot-skills",
+      "description": "GitHub Copilot Skills",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 202,
+          "context": "GitHub Copilot Skills"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "445ebe41-279b-476f-a386-e38ad3862def",
+      "url": "https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "adding-custom-instructions-for-github-copilot",
+      "description": "GitHub Copilot Instructions",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 213,
+          "context": "GitHub Copilot Instructions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "df6dd406-592c-47b2-a682-e5f314cc2ff0",
+      "url": "https://docs.cursor.com/context/rules-for-ai#composer",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "rules-for-ai",
+      "description": "Cursor Composer",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 229,
+          "context": "Cursor Composer"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "053936ee-4388-4fd2-9283-e27f8b82eafb",
+      "url": "https://docs.cursor.com/context/rules-for-ai",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "rules-for-ai",
+      "description": "Cursor Rules",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 243,
+          "context": "Cursor Rules"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "af5358ac-be91-4892-a219-ad642d327071",
+      "url": "https://docs.cursor.com/",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "docs.cursor.com",
+      "description": "Cursor MCP Support",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 265,
+          "context": "Cursor MCP Support"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "aff353c5-9caf-4de5-97b3-61a1f2b7aa20",
+      "url": "https://github.com/google/generative-ai-cli",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "generative-ai-cli",
+      "description": "Gemini CLI",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 282,
+          "context": "Gemini CLI"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "1edcf296-b5d9-4e34-a04f-c73ae0fb6b8e",
+      "url": "https://github.com/QwenLM/Qwen-Code",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "Qwen-Code",
+      "description": "Qwen Code",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 312,
+          "context": "Qwen Code"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "944cc0fc-4654-4845-b13c-9489bf3d007e",
+      "url": "https://github.com/codex-cli/codex",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "codex",
+      "description": "Codex CLI",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 332,
+          "context": "Codex CLI"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "bf05b991-e2e4-4dce-b09b-8d0daa035f51",
+      "url": "https://github.com/codex-cli/codex#skills",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "codex",
+      "description": "Codex Skills",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 351,
+          "context": "Codex Skills"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "b15881fb-ed5f-4624-99b8-e9a077f9a224",
+      "url": "https://github.com/opencode/opencode",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "opencode",
+      "description": "OpenCode",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 380,
+          "context": "OpenCode"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "5fc6684d-32b0-485f-ae6e-af2eb7e895a6",
+      "url": "https://docs.claude.com/claude-code",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "description": "Claude Code Docs",
+      "currentStateHash": "",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.9,
+      "detectedAt": "2026-03-08T21:55:51.000Z",
+      "lastChecked": "2026-03-08T21:55:51.000Z",
+      "monitoring": {
+        "enabled": true,
+        "checkFrequency": "daily",
+        "ignoreChanges": false
+      },
+      "referencedIn": [
+        {
+          "file": "extensions/DEVELOPMENT.md",
+          "line": 607,
+          "context": "Claude Code Docs"
+        }
+      ],
+      "changeHistory": []
     }
   ],
   "statistics": {
-    "totalDependencies": 1,
+    "totalDependencies": 24,
     "byType": {
-      "documentation": 1
+      "reference-implementation": 11,
+      "documentation": 13
     },
     "byAccessMethod": {
-      "github-api": 1
+      "github-api": 15,
+      "http": 9
     },
     "byDetectionMethod": {
-      "llm-analysis": 1
+      "llm-analysis": 24
     },
-    "averageConfidence": 0.9
+    "averageConfidence": 0.8999999999999998
   }
 }
