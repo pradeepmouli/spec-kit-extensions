@@ -1,5 +1,8 @@
 ---
 description: Create a refactoring workflow with metrics tracking and behavior preservation validation.
+scripts:
+  sh: scripts/bash/create-refactor.sh --json
+  ps: scripts/powershell/create-refactor.ps1 -Json
 handoffs:
   - label: Create Implementation Plan
     agent: speckit.plan
@@ -17,14 +20,14 @@ User input:
 
 $ARGUMENTS
 
-The text the user typed after `/speckit.refactor` in the triggering message **is** the refactoring description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/speckit.workflows.refactor` (or `/speckit.refactor`) in the triggering message **is** the refactoring description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 Given that refactoring description, do this:
 
-1. Run the script `.specify/scripts/bash/create-refactor.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for REFACTOR_ID, BRANCH_NAME, REFACTOR_SPEC_FILE, TESTING_GAPS, METRICS_BEFORE, BEHAVIORAL_SNAPSHOT. All file paths must be absolute.
+1. Run the script `.specify/extensions/workflows/scripts/bash/create-refactor.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for REFACTOR_ID, BRANCH_NAME, REFACTOR_SPEC_FILE, TESTING_GAPS, METRICS_BEFORE, BEHAVIORAL_SNAPSHOT. All file paths must be absolute.
   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-2. Load `.specify/extensions/workflows/refactor/refactor-template.md` to understand required sections.
+2. Load `.specify/extensions/workflows/templates/refactor/refactor-template.md` to understand required sections.
 
 3. Write the refactor spec to REFACTOR_SPEC_FILE using the template structure:
    - Fill "Motivation" section with code smells and justification from description
@@ -49,7 +52,7 @@ Given that refactoring description, do this:
 6. Report completion with Next Steps:
 
 ```
-✅ Refactor workflow initialized
+Refactor workflow initialized
 
 **Refactor ID**: [REFACTOR_ID]
 **Branch**: [BRANCH_NAME]
@@ -57,8 +60,8 @@ Given that refactoring description, do this:
 **Testing Gaps**: [TESTING_GAPS]
 **Behavioral Snapshot**: [BEHAVIORAL_SNAPSHOT]
 
-📋 **Next Steps:**
-1. 🔴 **CRITICAL FIRST STEP**: Complete testing gap assessment in [TESTING_GAPS]
+**Next Steps:**
+1. **CRITICAL FIRST STEP**: Complete testing gap assessment in [TESTING_GAPS]
    - Identify all code that will be modified
    - Assess test coverage for affected areas
    - Add tests for critical gaps BEFORE capturing baseline
@@ -68,8 +71,8 @@ Given that refactoring description, do this:
 5. Run `/speckit.tasks` to break down into tasks
 6. Run `/speckit.implement` to execute refactoring
 
-💡 **Reminder**: Behavior must not change - all tests must still pass
-⚠️ **NEW**: Testing gap assessment ensures adequate coverage exists to validate behavior preservation
+**Reminder**: Behavior must not change - all tests must still pass
+**NEW**: Testing gap assessment ensures adequate coverage exists to validate behavior preservation
 ```
 
 Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after. **NEW**: Testing gaps must be assessed and critical gaps filled BEFORE baseline capture. Baseline metrics are automatically captured during workflow creation but should only be trusted after testing gaps are addressed.

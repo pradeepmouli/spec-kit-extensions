@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "workflows": {
+      "name": "Spec Kit Workflow Extensions",
+      "id": "workflows",
+      "version": "3.0.0",
+      "description": "7 additional production-tested workflows covering the complete software development lifecycle beyond feature development.",
+      "author": "pradeepmouli",
+      "license": "MIT",
+      "download_url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/v3.0.0.zip",
+      "repository": "https://github.com/pradeepmouli/spec-kit-extensions",
+      "homepage": "https://github.com/pradeepmouli/spec-kit-extensions",
+      "requires": {
+        "speckit_version": ">=0.2.0"
+      },
+      "tags": [
+        "workflows",
+        "bugfix",
+        "hotfix",
+        "refactor",
+        "deprecation",
+        "review",
+        "lifecycle"
+      ]
+    }
+  }
+}

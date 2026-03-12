@@ -38,9 +38,11 @@ else
     fi
 fi
 
-# Source branch utilities if present (provides generate_branch_name)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
 # Verify generate_branch_name function is available
@@ -98,7 +100,7 @@ ENHANCE_DIR="$ENHANCE_SUBDIR/${ENHANCE_NUM}-${WORDS}"
 mkdir -p "$ENHANCE_DIR"
 
 # Copy template
-ENHANCE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/enhance/enhancement-template.md"
+ENHANCE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/enhance/enhancement-template.md"
 ENHANCEMENT_FILE="$ENHANCE_DIR/enhancement.md"
 
 if [ -f "$ENHANCE_TEMPLATE" ]; then

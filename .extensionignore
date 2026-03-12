@@ -1,0 +1,54 @@
+# Development files
+tests/
+.github/
+.gitignore
+.gitmodules
+
+# Build artifacts
+__pycache__/
+*.pyc
+dist/
+*.egg-info/
+
+# CLI tool (not needed for native install)
+specify_extend.py
+pyproject.toml
+uv.lock
+
+# Documentation (keep README only)
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+AI-AGENTS.md
+INSTALLATION.md
+EXAMPLES.md
+AGENTS.md
+COMPATIBILITY-REPORT.md
+*.tmp
+
+# Test files
+test_*.py
+test_*.sh
+TEST_RESULTS.md
+
+# Development scripts
+bump-version.sh
+
+# Specs (local only)
+specs/
+
+# Agent configuration (not needed for native install)
+.agents/
+.claude/
+.codex/
+.gemini/
+.vscode/
+.dependabit/
+
+# Virtual environment
+.venv/
+
+# Misc
+CLAUDE.md
+SUMMARY.md
+catalog-entry.json

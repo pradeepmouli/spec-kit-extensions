@@ -1,0 +1,72 @@
+schema_version: "1.0"
+
+extension:
+  id: "workflows"
+  name: "Spec Kit Workflow Extensions"
+  version: "3.0.0"
+  description: "7 additional production-tested workflows covering the complete software development lifecycle beyond feature development."
+  author: "pradeepmouli"
+  repository: "https://github.com/pradeepmouli/spec-kit-extensions"
+  license: "MIT"
+  homepage: "https://github.com/pradeepmouli/spec-kit-extensions"
+
+requires:
+  speckit_version: ">=0.2.0"
+  commands:
+    - "speckit.specify"
+
+provides:
+  commands:
+    - name: "speckit.workflows.bugfix"
+      file: "commands/bugfix.md"
+      description: "Create a bug fix workflow with regression test and minimal documentation"
+      aliases: ["speckit.bugfix"]
+    - name: "speckit.workflows.hotfix"
+      file: "commands/hotfix.md"
+      description: "Create an emergency hotfix workflow"
+      aliases: ["speckit.hotfix"]
+    - name: "speckit.workflows.enhance"
+      file: "commands/enhance.md"
+      description: "Create a minor enhancement workflow"
+      aliases: ["speckit.enhance"]
+    - name: "speckit.workflows.refactor"
+      file: "commands/refactor.md"
+      description: "Create a refactoring workflow"
+      aliases: ["speckit.refactor"]
+    - name: "speckit.workflows.deprecate"
+      file: "commands/deprecate.md"
+      description: "Initiate a deprecation workflow"
+      aliases: ["speckit.deprecate"]
+    - name: "speckit.workflows.modify"
+      file: "commands/modify.md"
+      description: "Modify an existing feature with impact analysis"
+      aliases: ["speckit.modify"]
+    - name: "speckit.workflows.baseline"
+      file: "commands/baseline.md"
+      description: "Create baseline documentation"
+      aliases: ["speckit.baseline"]
+    - name: "speckit.workflows.cleanup"
+      file: "commands/cleanup.md"
+      description: "Validate and reorganize spec-kit artifacts"
+      aliases: ["speckit.cleanup"]
+    - name: "speckit.workflows.review"
+      file: "commands/review.md"
+      description: "Review completed implementation work"
+      aliases: ["speckit.review"]
+    - name: "speckit.workflows.phasestoissues"
+      file: "commands/phasestoissues.md"
+      description: "Convert development phases into GitHub issues"
+      aliases: ["speckit.phasestoissues"]
+    - name: "speckit.workflows.incorporate"
+      file: "commands/incorporate.md"
+      description: "Incorporate documents into workflows"
+      aliases: ["speckit.incorporate"]
+
+tags:
+  - "workflows"
+  - "bugfix"
+  - "hotfix"
+  - "refactor"
+  - "deprecation"
+  - "review"
+  - "lifecycle"

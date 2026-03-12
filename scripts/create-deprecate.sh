@@ -4,9 +4,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source branch utilities if present (provides generate_branch_name for consistency)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
 JSON_MODE=false
@@ -140,7 +142,7 @@ DEPRECATE_DIR="$DEPRECATE_SUBDIR/${DEPRECATE_NUM}-${FEATURE_SHORT}"
 mkdir -p "$DEPRECATE_DIR"
 
 # Copy template
-DEPRECATION_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/deprecate/deprecation-template.md"
+DEPRECATION_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/deprecate/deprecation-template.md"
 
 DEPRECATION_FILE="$DEPRECATE_DIR/deprecation.md"
 
@@ -155,7 +157,7 @@ ln -sf "deprecation.md" "$DEPRECATE_DIR/spec.md"
 
 # Run dependency scan
 DEPENDENCIES_FILE="$DEPRECATE_DIR/dependencies.md"
-SCAN_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/deprecate/scan-dependencies.sh"
+SCAN_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/templates/deprecate/scan-dependencies.sh"
 
 if [ -f "$SCAN_SCRIPT" ] && [ -x "$SCAN_SCRIPT" ]; then
     "$SCAN_SCRIPT" "$FEATURE_NUM" "$DEPENDENCIES_FILE" 2>/dev/null || true

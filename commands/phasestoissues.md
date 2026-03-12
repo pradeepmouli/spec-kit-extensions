@@ -113,7 +113,7 @@ See sub-issues for individual task tracking.
 
 ---
 
-**Note**: Sub-issues will be created for each task. Use `/speckit.review` to validate implementation against acceptance criteria.
+**Note**: Sub-issues will be created for each task. Use `/speckit.workflows.review` to validate implementation against acceptance criteria.
 ```
 
 ### 5. Determine Issue Labels
@@ -121,17 +121,17 @@ See sub-issues for individual task tracking.
 Automatically assign labels based on:
 
 **Workflow Type** (from branch pattern):
-- `bugfix/*` → `bug`, `bugfix`
-- `refactor/*` → `refactor`, `technical-debt`
-- `hotfix/*` → `hotfix`, `urgent`
-- `modify/*` → `enhancement`, `modification`
-- `deprecate/*` → `deprecation`, `breaking-change`
-- Standard feature → `feature`, `enhancement`
+- `bugfix/*` -> `bug`, `bugfix`
+- `refactor/*` -> `refactor`, `technical-debt`
+- `hotfix/*` -> `hotfix`, `urgent`
+- `modify/*` -> `enhancement`, `modification`
+- `deprecate/*` -> `deprecation`, `breaking-change`
+- Standard feature -> `feature`, `enhancement`
 
 **Priority** (from spec.md if available):
-- Critical/High → `priority: high`
-- Medium → `priority: medium`
-- Low → `priority: low`
+- Critical/High -> `priority: high`
+- Medium -> `priority: medium`
+- Low -> `priority: low`
 
 **Status**:
 - `status: planning` (if tasks exist but none completed)
@@ -156,20 +156,20 @@ For each task within a phase:
 
 1. **Create task issue** using GitHub MCP:
    - `title`: "T001: [Task description]" (preserve task ID)
-   - `body`: 
+   - `body`:
      ```markdown
      ## Task Details
-     
+
      [Task description from tasks.md]
-     
+
      ## Context
-     
+
      **Parent Phase**: #[phase-issue-number]
      **Branch**: [branch-name]
      **Feature Directory**: [feature-dir]
-     
+
      ---
-     
+
      Part of larger feature spec-kit workflow.
      ```
    - `labels`: Same labels as parent phase issue
@@ -199,7 +199,7 @@ Labels: feature, status: planning
 Body: [Full formatted content]
 ```
 
-### 7. Link Issue to Branch
+### 9. Link Issue to Branch
 
 After creating the issue, provide instructions to link it:
 
@@ -211,12 +211,12 @@ echo -e "\n## GitHub Issue\n\n#[issue-number]" >> "$FEATURE_SPEC"
 git commit --amend -m "feat: [phase title] (#[issue-number])"
 ```
 
-### 8. Output Summary
+### 10. Output Summary
 
 Display result to user:
 
 ```
-✅ GitHub Issue Created
+GitHub Issue Created
 
 Issue: #[number]
 Title: [phase title]
@@ -230,7 +230,7 @@ Next Steps:
 2. Assign to team members
 3. Add to project board/milestone
 4. Track progress by checking off tasks
-5. Use /speckit.review when ready for validation
+5. Use /speckit.workflows.review when ready for validation
 ```
 
 ## Important Notes

@@ -25,15 +25,17 @@ elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
     COMMON_SH_FOUND=true
 fi
 
-# Source branch utilities if present (provides generate_branch_name)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
-# Ensure generate_branch_name is available from common.sh or branch-utils fallback
+# Ensure generate_branch_name is available
 if ! declare -f generate_branch_name > /dev/null; then
-    echo "Error: generate_branch_name is not available. common.sh missing the function and branch-utils.sh not found." >&2
-    echo "Please ensure common.sh is present or update spec-kit-extensions to include branch-utils.sh." >&2
+    echo "Error: generate_branch_name is not available." >&2
+    echo "Please ensure spec-kit-extensions is properly installed." >&2
     exit 1
 fi
 
@@ -108,8 +110,8 @@ HOTFIX_DIR="$HOTFIX_SUBDIR/${HOTFIX_NUM}-${WORDS}"
 mkdir -p "$HOTFIX_DIR"
 
 # Copy templates
-HOTFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/hotfix/hotfix-template.md"
-POSTMORTEM_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/hotfix/post-mortem-template.md"
+HOTFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/hotfix/hotfix-template.md"
+POSTMORTEM_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/hotfix/post-mortem-template.md"
 
 HOTFIX_FILE="$HOTFIX_DIR/hotfix.md"
 POSTMORTEM_FILE="$HOTFIX_DIR/post-mortem.md"

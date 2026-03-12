@@ -142,7 +142,7 @@ New-Item -ItemType Directory -Path $deprecateRoot -Force | Out-Null
 $deprecateDir = Join-Path $deprecateRoot "$deprecateNum-$featureShort"
 New-Item -ItemType Directory -Path $deprecateDir -Force | Out-Null
 
-$template = Join-Path $repoRoot '.specify/extensions/workflows/deprecate/deprecation-template.md'
+$template = Join-Path $repoRoot '.specify/extensions/workflows/templates/deprecate/deprecation-template.md'
 $deprecationFile = Join-Path $deprecateDir 'deprecation.md'
 
 if (Test-Path $template) {
@@ -174,14 +174,14 @@ try {
 
 # NOTE:
 # The dependency scanner is currently implemented as a bash script
-# located at `.specify/extensions/workflows/deprecate/scan-dependencies.sh`.
+# located at `.specify/extensions/workflows/templates/deprecate/scan-dependencies.sh`.
 # This PowerShell workflow will invoke it via `bash` when available.
 # If bash is not installed or the script is missing, this script will
 # still succeed but will note in the dependencies file that manual analysis
 # is required.
 
 $dependenciesFile = Join-Path $deprecateDir 'dependencies.md'
-$scanScript = Join-Path $repoRoot '.specify/extensions/workflows/deprecate/scan-dependencies.sh'
+$scanScript = Join-Path $repoRoot '.specify/extensions/workflows/templates/deprecate/scan-dependencies.sh'
 
 if (Test-Path $scanScript) {
     $bash = Get-Command bash -ErrorAction SilentlyContinue

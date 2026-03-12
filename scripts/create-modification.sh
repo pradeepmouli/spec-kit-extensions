@@ -38,9 +38,11 @@ else
     fi
 fi
 
-# Source branch utilities if present (provides generate_branch_name)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
 # Verify generate_branch_name function is available
@@ -184,7 +186,7 @@ mkdir -p "$MOD_DIR"
 mkdir -p "$MOD_DIR/contracts"
 
 # Copy template
-MODIFY_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/modify/modification-template.md"
+MODIFY_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/modify/modification-template.md"
 MOD_SPEC_FILE="$MOD_DIR/modification-spec.md"
 
 if [ -f "$MODIFY_TEMPLATE" ]; then
@@ -197,7 +199,7 @@ fi
 ln -sf "modification-spec.md" "$MOD_DIR/spec.md"
 
 # Run impact analysis
-IMPACT_SCANNER="$REPO_ROOT/.specify/extensions/workflows/modify/scan-impact.sh"
+IMPACT_SCANNER="$REPO_ROOT/.specify/extensions/workflows/templates/modify/scan-impact.sh"
 IMPACT_FILE="$MOD_DIR/impact-analysis.md"
 
 if [ -x "$IMPACT_SCANNER" ]; then

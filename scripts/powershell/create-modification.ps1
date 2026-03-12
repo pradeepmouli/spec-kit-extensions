@@ -174,7 +174,7 @@ $modDir = Join-Path $modificationsDir "$modNum-$words"
 New-Item -ItemType Directory -Path $modDir -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $modDir 'contracts') -Force | Out-Null
 
-$template = Join-Path $repoRoot '.specify/extensions/workflows/modify/modification-template.md'
+$template = Join-Path $repoRoot '.specify/extensions/workflows/templates/modify/modification-template.md'
 $modSpecFile = Join-Path $modDir 'modification-spec.md'
 
 if (Test-Path $template) {
@@ -206,14 +206,14 @@ try {
 
 # NOTE:
 # The impact scanner is currently implemented as a bash script
-# located at `.specify/extensions/workflows/modify/scan-impact.sh`.
+# located at `.specify/extensions/workflows/templates/modify/scan-impact.sh`.
 # This PowerShell workflow will invoke it via `bash` when available.
 # If bash is not installed or the script is missing, this script will
 # still succeed but will note in the impact file that manual analysis
 # is required.
 
 $impactFile = Join-Path $modDir 'impact-analysis.md'
-$impactScanner = Join-Path $repoRoot '.specify/extensions/workflows/modify/scan-impact.sh'
+$impactScanner = Join-Path $repoRoot '.specify/extensions/workflows/templates/modify/scan-impact.sh'
 
 if (Test-Path $impactScanner) {
     $header = @(

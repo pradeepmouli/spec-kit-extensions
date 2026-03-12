@@ -1,5 +1,8 @@
 ---
 description: Validate and reorganize spec-kit artifacts with proper numbering and structure
+scripts:
+  sh: scripts/bash/create-cleanup.sh --json
+  ps: scripts/powershell/create-cleanup.ps1 -Json
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -29,17 +32,17 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
    **For validation only (dry-run):**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json --dry-run "$ARGUMENTS"
+   .specify/extensions/workflows/scripts/bash/create-cleanup.sh --json --dry-run "$ARGUMENTS"
    ```
 
    **For validation with auto-fix:**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
+   .specify/extensions/workflows/scripts/bash/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
    ```
 
    **For validation only:**
    ```bash
-   .specify/scripts/bash/create-cleanup.sh --json "$ARGUMENTS"
+   .specify/extensions/workflows/scripts/bash/create-cleanup.sh --json "$ARGUMENTS"
    ```
 
 3. **Parse the JSON output** which includes:
@@ -52,14 +55,14 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
    If status is "success":
    ```
-   ✅ Spec structure validation complete
+   Spec structure validation complete
 
    No issues found - all spec-kit artifacts are properly organized!
    ```
 
    If status is "issues_found":
    ```
-   ⚠️ Spec structure validation found issues
+   Spec structure validation found issues
 
    **Issues detected: [count]**
    [List issues from JSON with severity badges]
@@ -67,7 +70,7 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    **Actions [taken/suggested]: [count]**
    [List actions from JSON]
 
-   💡 **Next Steps:**
+   **Next Steps:**
    - Review the issues and actions
    - Apply fixes (`--auto-fix` or agent-driven) after user confirmation
    - Rerun the script in `--dry-run` mode to verify it reports no issues
@@ -87,27 +90,27 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 
 **Validation before release:**
 ```
-/speckit.cleanup "validate before v2.0 release"
+/speckit.workflows.cleanup "validate before v2.0 release"
 ```
 
 **Fix numbering after merge:**
 ```
-/speckit.cleanup --auto-fix "fix numbering after merge"
+/speckit.workflows.cleanup --auto-fix "fix numbering after merge"
 ```
 
 **Dry-run to see what would change:**
 ```
-/speckit.cleanup --dry-run --auto-fix "check organization"
+/speckit.workflows.cleanup --dry-run --auto-fix "check organization"
 ```
 
 ## Safety Notes
 
 Remind users that:
-- ✅ Only affects documentation in `specs/` directory
-- ✅ Code files are never touched
-- ✅ Changes are reversible (git history preserved)
-- ✅ Dry-run mode available to preview changes
-- ✅ Detailed report generated for every run
+- Only affects documentation in `specs/` directory
+- Code files are never touched
+- Changes are reversible (git history preserved)
+- Dry-run mode available to preview changes
+- Detailed report generated for every run
 
 ## Common Scenarios
 

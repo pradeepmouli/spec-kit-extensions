@@ -48,7 +48,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.6.0"
+__version__ = "2.0.0"
 
 # Initialize Rich console
 console = Console()
@@ -2740,6 +2740,11 @@ def main(
         "--github-integration",
         help="Install optional GitHub workflows, PR template, issue templates, and code review integration",
     ),
+    patch_only: bool = typer.Option(
+        False,
+        "--patch",
+        help="Only patch spec-kit's common.sh for extension branch support (use after 'specify extension add')",
+    ),
 ) -> None:
     """
     Installation tool for spec-kit-extensions that detects your existing
@@ -2770,6 +2775,20 @@ def main(
             console.print(f"               [dim]Quality Gate: {gate}[/dim]\n")
 
         console.print("[dim]Use: specify-extend [extension names...] or specify-extend --all[/dim]")
+        raise typer.Exit(0)
+
+    # Handle --patch (patch-only mode for use after 'specify extension add')
+    if patch_only:
+        repo_root = get_repo_root()
+        if not validate_speckit_installation(repo_root):
+            raise typer.Exit(1)
+        patch_common_sh(repo_root, dry_run)
+        patch_common_ps1(repo_root, dry_run)
+        if not dry_run:
+            console.print("\n[green]✓[/green] Patching complete. Extension branch patterns are now supported.")
+            console.print("[dim]Native extensions installed via 'specify extension add' will work with all branch patterns.[/dim]")
+        else:
+            console.print("\n[dim]Dry run complete. No changes were made.[/dim]")
         raise typer.Exit(0)
 
     # Determine extensions to install
@@ -2893,117 +2912,48 @@ def main(
         # Non-interactive: enable what's being installed + keep current
         workflows_to_enable = currently_enabled | set(extensions_to_install)
 
-    # Download latest release
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_path = Path(temp_dir)
-        source_dir = download_latest_release(temp_path, github_token)
+    # Install via spec-kit native extension system
+    console.print(f"\n[bold]Installing extensions via spec-kit:[/bold] {', '.join(extensions_to_install)}")
+    console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
-        if not source_dir:
-            console.print(
-                "[red]✗[/red] Failed to download extensions. Installation aborted.",
-                style="red bold"
-            )
+    # Build the specify extension add command
+    specify_cmd = ["specify", "extension", "add", GITHUB_REPO]
+    if dry_run:
+        specify_cmd.append("--dry-run")
+
+    console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
+
+    if not dry_run:
+        result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
+        if result.returncode != 0:
+            console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
+            if result.stderr:
+                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+            if result.stdout:
+                console.print(f"  [dim]{result.stdout.strip()}[/dim]")
             raise typer.Exit(1)
+        if result.stdout:
+            console.print(result.stdout.strip())
+        console.print("[green]✓[/green] Extension installed via spec-kit native system")
+    else:
+        console.print("  [dim]Would run: specify extension add[/dim]")
 
-        # Install files
-        console.print(f"\n[bold]Installing extensions:[/bold] {', '.join(extensions_to_install)}")
-        console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
-
-        # Default the script type only once we reach installation. At this point,
-        # agent resolution and related checks have already completed, so it's safe
-        # to fall back to "sh" if the user did not explicitly pass --script.
-        selected_script = script_type or "sh"
-        if selected_script not in {"sh", "ps"}:
-            console.print(
-                f"[red]Error:[/red] Invalid --script option '{selected_script}'. Must be 'sh' or 'ps'."
-            )
-            raise typer.Exit(1)
-
-        install_extension_files(
-            repo_root,
-            source_dir,
-            extensions_to_install,
-            dry_run,
-            install_powershell=selected_script == "ps",
-        )
-        for target_agent in resolved_agents:
-            install_agent_commands(
-                repo_root,
-                source_dir,
-                target_agent,
-                extensions_to_install,
-                dry_run,
-                link=link,
-                install_powershell=selected_script == "ps",
-                ai_commands_dir=ai_commands_dir,
-            )
-
-        # Constitution update is repo-level; use the first agent for formatting conventions
-        update_constitution(repo_root, source_dir, resolved_agents[0], dry_run, llm_enhance)
-        patch_common_sh(repo_root, dry_run)
-        patch_common_ps1(repo_root, dry_run)
-        patch_update_agent_context_sh(repo_root, dry_run)
-
-        # Install extension commands as agent skills if requested (--ai-skills)
-        if ai_skills:
-            for target_agent in resolved_agents:
-                install_extension_skills(repo_root, source_dir, target_agent, dry_run)
-
-        # Install GitHub integration if requested
-        if github_integration:
-            install_github_integration(
-                repo_root,
-                source_dir,
-                dry_run=dry_run,
-                non_interactive=(not interactive),
-            )
-
-    # Update enabled.conf with selected workflows
-    if workflows_to_enable and not dry_run:
-        update_enabled_conf(repo_root, workflows_to_enable, dry_run)
-        console.print(f"[blue]ℹ[/blue] Enabled workflows: {', '.join(sorted(workflows_to_enable))}\n")
+    # Patch common.sh for extension branch pattern support
+    patch_common_sh(repo_root, dry_run)
+    patch_common_ps1(repo_root, dry_run)
 
     # Success message
     console.print("\n" + "━" * 60)
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")
     console.print("━" * 60 + "\n")
 
-    console.print(f"[blue]ℹ[/blue] Installed extensions: {', '.join(extensions_to_install)}")
-    console.print(f"[blue]ℹ[/blue] Configured for: {', '.join(resolved_agents)}\n")
+    console.print(f"[blue]ℹ[/blue] Installed via: specify extension add {GITHUB_REPO}\n")
 
     # Next steps
     console.print("[bold]Next steps:[/bold]")
-    primary_agent = resolved_agents[0]
-    agent_info = AGENT_CONFIG.get(primary_agent, AGENT_CONFIG["manual"])
-    agent_name = agent_info["name"]
-
-    if llm_enhance and primary_agent != "manual":
-        if primary_agent == "copilot":
-            console.print("  [bold yellow]1. Reference the constitution enhancement prompt[/bold yellow]")
-            console.print("     [dim]In Copilot Chat, reference .github/prompts/speckit.enhance-constitution.md[/dim]")
-            console.print("     [dim]This uses LLM intelligence to merge quality gates into your existing constitution[/dim]")
-            console.print("     [dim]Delete both .github/prompts/ and .github/agents/ files after use[/dim]")
-        else:
-            console.print("  [bold yellow]1. Run /speckit.enhance-constitution to update your constitution[/bold yellow]")
-            console.print("     [dim]This uses LLM intelligence to merge quality gates into your existing constitution[/dim]")
-            console.print("     [dim]The command will self-destruct after use[/dim]")
-        console.print("  2. Try a workflow command after constitution is updated")
-        console.print("  3. Read the docs: .specify/extensions/README.md")
-    elif primary_agent == "claude":
-        console.print("  1. Try a command: /speckit.bugfix \"test bug\"")
-        console.print("  2. Read the docs: .specify/extensions/README.md")
-    elif primary_agent == "copilot":
-        console.print("  1. Reload VS Code or restart Copilot")
-        console.print("  2. Use in Copilot Chat: @workspace /speckit.bugfix \"test bug\"")
-        console.print("  3. Read the docs: .specify/extensions/README.md")
-    elif primary_agent == "cursor-agent":
-        console.print("  1. Ask Cursor: /speckit.bugfix \"test bug\"")
-        console.print("  2. Read the docs: .specify/extensions/README.md")
-    else:
-        console.print("  1. Run: .specify/scripts/bash/create-bugfix.sh \"test bug\"")
-        console.print("  2. Ask your AI agent to implement following the generated files")
-        console.print("  3. Read the docs: .specify/extensions/README.md")
-
+    console.print("  1. Verify: specify extension list")
+    console.print("  2. Try a command: /speckit.workflows.bugfix \"test bug\"")
+    console.print("  3. Or use alias: /speckit.bugfix \"test bug\"")
     console.print()
 
 

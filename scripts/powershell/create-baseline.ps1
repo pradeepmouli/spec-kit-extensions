@@ -82,7 +82,7 @@ if ($hasGit) {
 }
 
 $baselineSpec = Join-Path $historyDir 'baseline-spec.md'
-$baselineTemplate = Join-Path $repoRoot '.specify/extensions/workflows/baseline/baseline-spec-template.md'
+$baselineTemplate = Join-Path $repoRoot '.specify/extensions/workflows/templates/baseline/baseline-spec-template.md'
 
 if (Test-Path $baselineTemplate) {
     Copy-Item $baselineTemplate $baselineSpec -Force
@@ -191,7 +191,7 @@ if (Test-Path $baselineTemplate) {
 }
 
 $currentState = Join-Path $historyDir 'current-state.md'
-$currentStateTemplate = Join-Path $repoRoot '.specify/extensions/workflows/baseline/current-state-template.md'
+$currentStateTemplate = Join-Path $repoRoot '.specify/extensions/workflows/templates/baseline/current-state-template.md'
 
 if (Test-Path $currentStateTemplate) {
     Copy-Item $currentStateTemplate $currentState -Force

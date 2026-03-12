@@ -128,7 +128,7 @@ New-Item -ItemType Directory -Path $refactorRoot -Force | Out-Null
 $refactorDir = Join-Path $refactorRoot "$refactorNum-$words"
 New-Item -ItemType Directory -Path $refactorDir -Force | Out-Null
 
-$template = Join-Path $repoRoot '.specify/extensions/workflows/refactor/refactor-template.md'
+$template = Join-Path $repoRoot '.specify/extensions/workflows/templates/refactor/refactor-template.md'
 $refactorSpecFile = Join-Path $refactorDir 'refactor-spec.md'
 
 if (Test-Path $template) {
@@ -170,7 +170,7 @@ Baseline metrics are automatically captured when the refactor workflow is create
 If you need to re-capture baseline metrics, run:
 
 ```bash
-.specify/extensions/workflows/refactor/measure-metrics.sh --before --dir "$refactorDir"
+.specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir "$refactorDir"
 ```
 
 This should be done BEFORE making any code changes.
@@ -178,7 +178,7 @@ This should be done BEFORE making any code changes.
 
 # NOTE:
 # The metrics measurement is currently implemented as a bash script
-# located at `.specify/extensions/workflows/refactor/measure-metrics.sh`.
+# located at `.specify/extensions/workflows/templates/refactor/measure-metrics.sh`.
 # When using this PowerShell workflow, you will need to invoke the bash script
 # manually (as shown in the instructions above) or ensure bash is available
 # on your system to run the script via `bash measure-metrics.sh`.
@@ -191,7 +191,7 @@ This should be done BEFORE making any code changes.
 Run the following command to capture post-refactoring metrics:
 
 ```bash
-.specify/extensions/workflows/refactor/measure-metrics.sh --after --dir "$refactorDir"
+.specify/extensions/workflows/templates/refactor/measure-metrics.sh --after --dir "$refactorDir"
 ```
 
 This should be done AFTER refactoring is complete and all tests pass.
@@ -237,7 +237,7 @@ npm run dev # Manual testing steps...
 $env:SPECIFY_REFACTOR = $refactorId
 
 # Capture baseline metrics automatically
-$measureScript = Join-Path $repoRoot '.specify/extensions/workflows/refactor/measure-metrics.sh'
+$measureScript = Join-Path $repoRoot '.specify/extensions/workflows/templates/refactor/measure-metrics.sh'
 if (Test-Path $measureScript) {
     if (-not $Json) {
         Write-Output ""
@@ -266,7 +266,7 @@ if (Test-Path $measureScript) {
                 if (-not $Json) {
                     Write-Output ""
                     Write-Warning "Failed to capture baseline metrics automatically"
-                    Write-Output "  Run manually: bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+                    Write-Output "  Run manually: bash .specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir $refactorDir"
                     Write-Output ""
                 }
             }
@@ -274,7 +274,7 @@ if (Test-Path $measureScript) {
             if (-not $Json) {
                 Write-Output ""
                 Write-Warning "Bash not found. Please run baseline metrics manually:"
-                Write-Output "  bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+                Write-Output "  bash .specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir $refactorDir"
                 Write-Output ""
             }
         }
@@ -282,7 +282,7 @@ if (Test-Path $measureScript) {
         if (-not $Json) {
             Write-Output ""
             Write-Warning "Failed to capture baseline metrics automatically: $($_.Exception.Message)"
-            Write-Output "  Run manually: bash .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $refactorDir"
+            Write-Output "  Run manually: bash .specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir $refactorDir"
             Write-Output ""
         }
     }

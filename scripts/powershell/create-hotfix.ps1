@@ -128,8 +128,8 @@ New-Item -ItemType Directory -Path $hotfixRoot -Force | Out-Null
 $hotfixDir = Join-Path $hotfixRoot "$hotfixNum-$words"
 New-Item -ItemType Directory -Path $hotfixDir -Force | Out-Null
 
-$hotfixTemplate = Join-Path $repoRoot '.specify/extensions/workflows/hotfix/hotfix-template.md'
-$postmortemTemplate = Join-Path $repoRoot '.specify/extensions/workflows/hotfix/post-mortem-template.md'
+$hotfixTemplate = Join-Path $repoRoot '.specify/extensions/workflows/templates/hotfix/hotfix-template.md'
+$postmortemTemplate = Join-Path $repoRoot '.specify/extensions/workflows/templates/hotfix/post-mortem-template.md'
 
 $hotfixFile = Join-Path $hotfixDir 'hotfix.md'
 $postmortemFile = Join-Path $hotfixDir 'post-mortem.md'

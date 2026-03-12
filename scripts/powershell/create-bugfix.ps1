@@ -128,7 +128,7 @@ New-Item -ItemType Directory -Path $bugfixDir -Force | Out-Null
 $bugDir = Join-Path $bugfixDir "$bugNum-$words"
 New-Item -ItemType Directory -Path $bugDir -Force | Out-Null
 
-$template = Join-Path $repoRoot '.specify/extensions/workflows/bugfix/bug-report-template.md'
+$template = Join-Path $repoRoot '.specify/extensions/workflows/templates/bugfix/bug-report-template.md'
 $bugReportFile = Join-Path $bugDir 'bug-report.md'
 
 if (Test-Path $template) {

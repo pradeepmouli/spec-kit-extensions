@@ -128,7 +128,7 @@ New-Item -ItemType Directory -Path $enhanceDir -Force | Out-Null
 $enhancementDir = Join-Path $enhanceDir "$enhanceNum-$words"
 New-Item -ItemType Directory -Path $enhancementDir -Force | Out-Null
 
-$template = Join-Path $repoRoot '.specify/extensions/workflows/enhance/enhancement-template.md'
+$template = Join-Path $repoRoot '.specify/extensions/workflows/templates/enhance/enhancement-template.md'
 $enhancementFile = Join-Path $enhancementDir 'enhancement.md'
 
 if (Test-Path $template) {

@@ -38,9 +38,11 @@ else
     fi
 fi
 
-# Source branch utilities if present (kept for consistency across workflows)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
 JSON_MODE=false
@@ -101,7 +103,7 @@ fi
 
 # Create baseline-spec.md
 BASELINE_SPEC="$HISTORY_DIR/baseline-spec.md"
-BASELINE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/baseline/baseline-spec-template.md"
+BASELINE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/baseline/baseline-spec-template.md"
 
 if [ -f "$BASELINE_TEMPLATE" ]; then
     cp "$BASELINE_TEMPLATE" "$BASELINE_SPEC"
@@ -211,7 +213,7 @@ fi
 
 # Create current-state.md
 CURRENT_STATE="$HISTORY_DIR/current-state.md"
-CURRENT_STATE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/baseline/current-state-template.md"
+CURRENT_STATE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/baseline/current-state-template.md"
 
 if [ -f "$CURRENT_STATE_TEMPLATE" ]; then
     cp "$CURRENT_STATE_TEMPLATE" "$CURRENT_STATE"

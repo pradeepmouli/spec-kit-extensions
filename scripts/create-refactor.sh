@@ -25,9 +25,11 @@ elif [ -f "$SCRIPT_DIR/../../scripts/bash/common.sh" ]; then
     COMMON_SH_FOUND=true
 fi
 
-# Source branch utilities if present (provides generate_branch_name)
-if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
-    source "$SCRIPT_DIR/branch-utils.sh"
+# Source extension utilities (provides generate_branch_name, get_global_* functions)
+if [ -f "$SCRIPT_DIR/bash/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/bash/extension-utils.sh"
+elif [ -f "$SCRIPT_DIR/extension-utils.sh" ]; then
+    source "$SCRIPT_DIR/extension-utils.sh"
 fi
 
 # Ensure generate_branch_name is available from common.sh; provide a local fallback if missing
@@ -140,7 +142,7 @@ REFACTOR_DIR="$REFACTOR_SUBDIR/${REFACTOR_NUM}-${WORDS}"
 mkdir -p "$REFACTOR_DIR"
 
 # Copy template
-REFACTOR_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/refactor/refactor-template.md"
+REFACTOR_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/refactor/refactor-template.md"
 REFACTOR_SPEC_FILE="$REFACTOR_DIR/refactor-spec.md"
 
 if [ -f "$REFACTOR_TEMPLATE" ]; then
@@ -166,7 +168,7 @@ Baseline metrics are automatically captured when the refactor workflow is create
 If you need to re-capture baseline metrics, run:
 
 ```bash
-.specify/extensions/workflows/refactor/measure-metrics.sh --before --dir "$REFACTOR_DIR"
+.specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir "$REFACTOR_DIR"
 ```
 
 This should be done BEFORE making any code changes.
@@ -180,7 +182,7 @@ cat > "$METRICS_AFTER" << 'EOF'
 Run the following command to capture post-refactoring metrics:
 
 ```bash
-.specify/extensions/workflows/refactor/measure-metrics.sh --after --dir "$REFACTOR_DIR"
+.specify/extensions/workflows/templates/refactor/measure-metrics.sh --after --dir "$REFACTOR_DIR"
 ```
 
 This should be done AFTER refactoring is complete and all tests pass.
@@ -188,7 +190,7 @@ EOF
 
 # Create placeholder for testing gaps assessment
 TESTING_GAPS="$REFACTOR_DIR/testing-gaps.md"
-TESTING_GAPS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/refactor/testing-gaps-template.md"
+TESTING_GAPS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/refactor/testing-gaps-template.md"
 
 if [ -f "$TESTING_GAPS_TEMPLATE" ]; then
     cp "$TESTING_GAPS_TEMPLATE" "$TESTING_GAPS"
@@ -261,7 +263,7 @@ EOF
 export SPECIFY_REFACTOR="$REFACTOR_ID"
 
 # Capture baseline metrics automatically
-MEASURE_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/refactor/measure-metrics.sh"
+MEASURE_SCRIPT="$REPO_ROOT/.specify/extensions/workflows/templates/refactor/measure-metrics.sh"
 if [ -f "$MEASURE_SCRIPT" ]; then
     # Ensure script is executable
     chmod +x "$MEASURE_SCRIPT"
@@ -283,7 +285,7 @@ if [ -f "$MEASURE_SCRIPT" ]; then
         if ! $JSON_MODE; then
             echo ""
             echo "⚠ Warning: Failed to capture baseline metrics automatically"
-            echo "  Run manually: .specify/extensions/workflows/refactor/measure-metrics.sh --before --dir $REFACTOR_DIR"
+            echo "  Run manually: .specify/extensions/workflows/templates/refactor/measure-metrics.sh --before --dir $REFACTOR_DIR"
             echo ""
         fi
     fi

@@ -1,5 +1,8 @@
 ---
 description: Create baseline documentation for the project, establishing context for all future specs.
+scripts:
+  sh: scripts/bash/create-baseline.sh --json
+  ps: scripts/powershell/create-baseline.ps1 -Json
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -18,7 +21,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 ## Your Task
 
-1. Run the script `.specify/scripts/bash/create-baseline.sh --json` from repo root and parse its JSON output for BASELINE_SPEC, CURRENT_STATE, BASELINE_COMMIT, and HAS_EXISTING_SPECS. All file paths must be absolute.
+1. Run the script `.specify/extensions/workflows/scripts/bash/create-baseline.sh --json` from repo root and parse its JSON output for BASELINE_SPEC, CURRENT_STATE, BASELINE_COMMIT, and HAS_EXISTING_SPECS. All file paths must be absolute.
    **Note:** The script only accepts the `--json` flag and ignores `$ARGUMENTS`.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
@@ -35,7 +38,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 3. **Generate baseline-spec.md**:
 
-   Load `.specify/extensions/workflows/baseline/baseline-spec-template.md` to understand the structure.
+   Load `.specify/extensions/workflows/templates/baseline/baseline-spec-template.md` to understand the structure.
 
    Then comprehensively analyze the codebase (at the baseline commit if applicable) and fill in BASELINE_SPEC with:
 
@@ -62,7 +65,7 @@ This provides essential context for you (the AI agent) when working on future ta
 
 4. **Generate current-state.md**:
 
-   Load `.specify/extensions/workflows/baseline/current-state-template.md` for structure.
+   Load `.specify/extensions/workflows/templates/baseline/current-state-template.md` for structure.
 
    Scan the specs directory and enumerate all changes by type:
 
@@ -85,7 +88,7 @@ This provides essential context for you (the AI agent) when working on future ta
 5. **Report completion**:
 
 ```
-✅ Baseline documentation created
+Baseline documentation created
 
 **Location**: specs/history/
 **Baseline Spec**: [BASELINE_SPEC path]
@@ -96,7 +99,7 @@ This provides essential context for you (the AI agent) when working on future ta
 Note: Baseline represents project state before first spec-kit usage
 {{end if}}
 
-📋 **What Was Documented:**
+**What Was Documented:**
 
 **Baseline Specification**:
 - Project structure: [X] components identified
@@ -113,7 +116,7 @@ Note: Baseline represents project state before first spec-kit usage
 - Unspecified: [X] commits without specs
 {{end if}}
 
-💡 **Using This Context:**
+**Using This Context:**
 
 The baseline documentation will help me (your AI assistant) understand:
 - What the project does and how it's structured
@@ -123,7 +126,7 @@ The baseline documentation will help me (your AI assistant) understand:
 
 This context will improve my suggestions for all future work.
 
-📌 **Next Steps:**
+**Next Steps:**
 1. Review the generated documentation for accuracy
 2. Make any corrections or additions to baseline-spec.md
 3. Use this context when creating new specs with other workflows
