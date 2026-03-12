@@ -244,6 +244,56 @@ EOF
 check_file() { [[ -f "$1" ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 
+# Get the global highest spec number across ALL workflows and feature branches.
+# This mirrors spec-kit v0.2.0's global branch numbering approach to avoid
+# number collisions between feature branches and extension workflow branches.
+get_global_highest_number() {
+    local specs_dir="${1:-$(get_repo_root)/specs}"
+    local highest=0
+
+    # Check all spec directories recursively (features, bugfix/, modify/, etc.)
+    if [[ -d "$specs_dir" ]]; then
+        while IFS= read -r -d '' dir; do
+            local dirname
+            dirname=$(basename "$dir")
+            if [[ "$dirname" =~ ^([0-9]+) ]]; then
+                local number=$((10#${BASH_REMATCH[1]}))
+                if [[ "$number" -gt "$highest" ]]; then
+                    highest=$number
+                fi
+            fi
+        done < <(find "$specs_dir" -mindepth 1 -maxdepth 2 -type d -print0 2>/dev/null)
+    fi
+
+    # Also check all local git branches for NNN- or workflow/NNN- patterns
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+        while IFS= read -r branch; do
+            local clean
+            clean=$(echo "$branch" | sed 's|^[* ]*||; s|^remotes/[^/]*/||')
+            # Match: 001-foo OR bugfix/001-foo OR modify/001^002-foo etc.
+            if [[ "$clean" =~ ^[0-9]{3}- ]]; then
+                local number
+                number=$(echo "$clean" | grep -o '^[0-9]\+')
+                number=$((10#$number))
+                if [[ "$number" -gt "$highest" ]]; then highest=$number; fi
+            elif [[ "$clean" =~ ^[a-z]+/([0-9]+) ]]; then
+                local number=$((10#${BASH_REMATCH[1]}))
+                if [[ "$number" -gt "$highest" ]]; then highest=$number; fi
+            fi
+        done < <(git branch -a 2>/dev/null)
+    fi
+
+    echo "$highest"
+}
+
+# Get the next available spec number globally.
+get_global_next_number() {
+    local specs_dir="${1:-$(get_repo_root)/specs}"
+    local highest
+    highest=$(get_global_highest_number "$specs_dir")
+    echo $((highest + 1))
+}
+
 # Extended branch validation supporting spec-kit-extensions
 check_feature_branch() {
     # Support both parameterized and non-parameterized calls

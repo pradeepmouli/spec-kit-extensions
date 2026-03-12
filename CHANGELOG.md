@@ -7,11 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
-- **CLI Tool** (`specify-extend`) - Currently at v1.5.12
+- **CLI Tool** (`specify-extend`) - Currently at v1.6.0
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [1.6.0] - 2026-03-11
+
+#### 🚀 Added
+
+- **spec-kit v0.2.0 Compatibility** - Full support for spec-kit v0.2.0+ features
+  - 13 new AI agents added to AGENT_CONFIG: `tabnine`, `kimi`, `kiro-cli`, `vibe`, `shai`, `bob`, `agy`, `kilocode`, `roo`, `codebuddy`, `qodercli`, `auggie`, `amp`
+  - Automatic detection for all new agents in `detect_agent()`
+  - Copilot command files now use `.agent.md` extension (matching spec-kit v0.1.13+ behavior)
+  - Codex commands moved to `.codex/prompts/` folder (matching spec-kit structure)
+
+- **Global Branch Numbering** - Extension scripts now use global spec numbering (mirrors spec-kit v0.2.0)
+  - All `create-*.sh` scripts (bugfix, hotfix, enhance, refactor, deprecate) now count across ALL workflow types and feature branches
+  - New `get_global_next_number()` and `get_global_highest_number()` functions in `common.sh`
+  - Prevents number collisions between feature branches (001-foo) and extension branches (bugfix/001-bar)
+
+- **Agent Skills Support** (`--ai-skills`) - Install extension commands as agent skills (mirrors spec-kit's `--ai-skills`)
+  - New `install_extension_skills()` function writes `SKILL.md` per command following [agentskills.io](https://agentskills.io/specification) spec
+  - Skills placed in agent's `{base_folder}/skills/{skill_name}/SKILL.md`
+  - `EXTENSION_SKILL_DESCRIPTIONS` with rich descriptions for all 10 extension commands
+  - Additive installs — never overwrites user-customized skills
+  - `AGENT_SKILLS_DIR_OVERRIDES` for special agents (Codex, Amp → `.agents/skills`)
+  - Affects: `specify_extend.py` (new functions and constants)
+
+- **CLI Alignment with spec-kit** - Parameters now match `specify init` conventions
+  - `--ai` is the new primary agent selector (replacing `--agent`, now hidden/deprecated)
+  - `--ai-skills` flag to install extension commands as agent skills
+  - `--ai-commands-dir` for generic agents (mirrors spec-kit's `--ai-commands-dir`)
+  - `--agent` remains functional but hidden from help output for backward compatibility
+
+#### 📦 Components
+
+- **CLI Tool Version**: v1.6.0
+- **Compatible Spec Kit Version**: v0.2.0+
+- **Extension Templates Version**: v2.5.11
+
+---
 
 ### [1.5.12] - 2026-02-02
 

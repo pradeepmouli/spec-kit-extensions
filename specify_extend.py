@@ -16,14 +16,17 @@ Detects agent configuration and mirrors the installation.
 Usage:
     python specify_extend.py --all
     python specify_extend.py bugfix modify refactor
-    python specify_extend.py --agent claude --all
+    python specify_extend.py --ai claude --all
+    python specify_extend.py --ai claude --all --ai-skills
     python specify_extend.py --dry-run --all
     python specify_extend.py --all --github-integration
+    python specify_extend.py --ai generic --ai-commands-dir .myagent/commands/ --all
 
 Or install globally:
     uv tool install --from specify_extend.py specify-extend
     specify-extend --all
-    specify-extend --all --github-integration
+    specify-extend --ai claude --all
+    specify-extend --ai claude --all --ai-skills
 """
 
 import os
@@ -45,7 +48,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "1.5.12"
+__version__ = "1.6.0"
 
 # Initialize Rich console
 console = Console()
@@ -100,7 +103,7 @@ AGENT_CONFIG = {
     "copilot": {
         "name": "GitHub Copilot",
         "folder": ".github/agents",
-        "file_extension": "md",
+        "file_extension": "agent.md",
         "requires_cli": False,
     },
     "cursor-agent": {
@@ -123,7 +126,7 @@ AGENT_CONFIG = {
     },
     "codex": {
         "name": "Codex CLI",
-        "folder": ".codex/commands",
+        "folder": ".codex/prompts",
         "file_extension": "md",
         "requires_cli": True,
     },
@@ -133,11 +136,95 @@ AGENT_CONFIG = {
         "file_extension": "md",
         "requires_cli": False,
     },
+    "kilocode": {
+        "name": "Kilo Code",
+        "folder": ".kilocode/workflows",
+        "file_extension": "md",
+        "requires_cli": False,
+    },
+    "auggie": {
+        "name": "Auggie CLI",
+        "folder": ".augment/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "codebuddy": {
+        "name": "CodeBuddy",
+        "folder": ".codebuddy/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "qodercli": {
+        "name": "Qoder CLI",
+        "folder": ".qoder/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "roo": {
+        "name": "Roo Code",
+        "folder": ".roo/commands",
+        "file_extension": "md",
+        "requires_cli": False,
+    },
+    "kiro-cli": {
+        "name": "Kiro CLI",
+        "folder": ".kiro/prompts",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "amp": {
+        "name": "Amp",
+        "folder": ".agents/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "shai": {
+        "name": "SHAI",
+        "folder": ".shai/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "tabnine": {
+        "name": "Tabnine CLI",
+        "folder": ".tabnine/agent/commands",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "agy": {
+        "name": "Antigravity",
+        "folder": ".agent/workflows",
+        "file_extension": "md",
+        "requires_cli": False,
+    },
+    "bob": {
+        "name": "IBM Bob",
+        "folder": ".bob/commands",
+        "file_extension": "md",
+        "requires_cli": False,
+    },
+    "vibe": {
+        "name": "Mistral Vibe",
+        "folder": ".vibe/prompts",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
+    "kimi": {
+        "name": "Kimi Code",
+        "folder": ".kimi/skills",
+        "file_extension": "md",
+        "requires_cli": True,
+    },
     "q": {
         "name": "Amazon Q Developer CLI",
         "folder": ".q/commands",
         "file_extension": "md",
         "requires_cli": True,
+    },
+    "generic": {
+        "name": "Generic (bring your own agent)",
+        "folder": None,  # Set dynamically via --ai-commands-dir
+        "file_extension": "md",
+        "requires_cli": False,
     },
     "manual": {
         "name": "Manual/Generic",
@@ -149,6 +236,29 @@ AGENT_CONFIG = {
 
 # Agents that support handoffs in frontmatter
 AGENTS_WITH_HANDOFF_SUPPORT = ["copilot", "opencode", "windsurf"]
+
+# Agent-specific skill directory overrides (mirrors spec-kit's AGENT_SKILLS_DIR_OVERRIDES)
+AGENT_SKILLS_DIR_OVERRIDES: dict[str, str] = {
+    "codex": ".agents/skills",   # Codex uses .agents/skills (same as spec-kit)
+    "amp": ".agents/skills",     # Amp shares .agents/ base folder
+}
+
+# Default skills directory for agents not in AGENT_CONFIG
+DEFAULT_SKILLS_DIR = ".agents/skills"
+
+# Enhanced descriptions for each spec-kit-extensions workflow command (mirrors spec-kit's SKILL_DESCRIPTIONS)
+EXTENSION_SKILL_DESCRIPTIONS = {
+    "bugfix": "Fix bugs with a regression-test-first approach. Creates a bug-report spec, branch, and directory structure. Ensures bugs are documented and prevented from recurring via tests before the fix is implemented.",
+    "hotfix": "Handle production emergencies with an expedited process. Creates a hotfix spec, branch, and post-mortem template. Designed for critical issues requiring immediate deployment with a structured post-incident review.",
+    "enhance": "Make minor enhancements with a streamlined single-doc workflow. Creates an enhancement spec and branch without the full feature planning overhead. Ideal for small improvements that don't require a full spec-plan-tasks cycle.",
+    "modify": "Modify existing features with automatic impact analysis. Creates a modification spec linked to the original feature, capturing what changes, why, and what downstream effects may occur.",
+    "refactor": "Improve code quality with before/after metrics tracking. Creates a refactor spec, behavioral snapshot, and metrics templates to validate that refactoring improved the codebase without regressions.",
+    "deprecate": "Sunset features with a phased 3-step rollout plan. Creates a deprecation spec and migration guide linked to the original feature, ensuring users are notified and migrated gracefully.",
+    "cleanup": "Clean up the codebase with automated validation scripts. Creates a cleanup report and runs validation to identify dead code, unused dependencies, and spec-directory gaps.",
+    "baseline": "Establish a project baseline and track all changes by workflow type. Documents the current system state before major changes begin, creating a reference point for future modifications.",
+    "review": "Review completed work with structured feedback. Provides a systematic review checklist covering implementation quality, test coverage, documentation, and spec compliance.",
+    "phasestoissues": "Create individual GitHub issues for each development phase. Converts spec phases into trackable GitHub issues for better project management integration.",
+}
 
 
 def _github_token(cli_token: str | None = None) -> str | None:
@@ -229,7 +339,21 @@ class Agent(str, Enum):
     opencode = "opencode"
     codex = "codex"
     windsurf = "windsurf"
+    kilocode = "kilocode"
+    auggie = "auggie"
+    codebuddy = "codebuddy"
+    qodercli = "qodercli"
+    roo = "roo"
+    kiro = "kiro-cli"
+    amp = "amp"
+    shai = "shai"
+    tabnine = "tabnine"
+    agy = "agy"
+    bob = "bob"
+    vibe = "vibe"
+    kimi = "kimi"
     q = "q"
+    generic = "generic"
     manual = "manual"
 
 
@@ -503,6 +627,128 @@ def detect_workflow_selection_section(content: str) -> bool:
     return has_sections >= MIN_SECTION_HEADERS and has_workflows >= MIN_WORKFLOW_COMMANDS
 
 
+def _get_extension_skills_dir(repo_root: Path, agent_key: str) -> Path:
+    """Resolve the agent-specific skills directory for extension commands.
+
+    Mirrors spec-kit's _get_skills_dir() logic. Uses AGENT_SKILLS_DIR_OVERRIDES
+    first, then derives from the agent's base folder (parent of commands subdir),
+    falling back to DEFAULT_SKILLS_DIR.
+    """
+    if agent_key in AGENT_SKILLS_DIR_OVERRIDES:
+        return repo_root / AGENT_SKILLS_DIR_OVERRIDES[agent_key]
+
+    agent_config = AGENT_CONFIG.get(agent_key, {})
+    folder = agent_config.get("folder")
+    if folder:
+        # folder is "base/commands_subdir" — go up one level to get base, then /skills
+        base_folder = str(Path(folder).parent)
+        return repo_root / base_folder / "skills"
+
+    return repo_root / DEFAULT_SKILLS_DIR
+
+
+def install_extension_skills(
+    repo_root: Path,
+    source_dir: Path,
+    agent_key: str,
+    dry_run: bool = False,
+) -> bool:
+    """Install extension command files as agent skills (SKILL.md files).
+
+    Mirrors spec-kit's install_ai_skills() — writes one SKILL.md per extension
+    command into the agent's skills directory following the agentskills.io spec.
+    Installation is additive; existing user-customized skills are never overwritten.
+
+    Returns True if at least one skill was installed or already present.
+    """
+    import yaml
+
+    commands_dir = source_dir / "commands"
+    if not commands_dir.exists() or not any(commands_dir.glob("speckit.*.md")):
+        console.print("[yellow]⚠[/yellow] No extension command files found for skills installation")
+        return False
+
+    skills_dir = _get_extension_skills_dir(repo_root, agent_key)
+
+    if dry_run:
+        console.print(f"[blue]ℹ[/blue] [dry-run] Would install extension skills to {skills_dir.relative_to(repo_root)}/")
+        return True
+
+    skills_dir.mkdir(parents=True, exist_ok=True)
+
+    installed = 0
+    skipped = 0
+
+    for cmd_file in sorted(commands_dir.glob("speckit.*.md")):
+        try:
+            content = cmd_file.read_text(encoding="utf-8")
+            frontmatter: dict = {}
+            body = content
+
+            if content.startswith("---"):
+                parts = content.split("---", 2)
+                if len(parts) >= 3:
+                    frontmatter = yaml.safe_load(parts[1]) or {}
+                    body = parts[2].strip()
+
+            # Strip "speckit." prefix to get the base command name (e.g., "bugfix")
+            command_name = cmd_file.stem
+            if command_name.startswith("speckit."):
+                command_name = command_name[len("speckit."):]
+
+            # Skill name convention matches spec-kit: "speckit.{cmd}" for Kimi, "speckit-{cmd}" for others
+            if agent_key == "kimi":
+                skill_name = f"speckit.{command_name}"
+            else:
+                skill_name = f"speckit-{command_name}"
+
+            skill_dir = skills_dir / skill_name
+            skill_dir.mkdir(parents=True, exist_ok=True)
+
+            skill_file = skill_dir / "SKILL.md"
+            if skill_file.exists():
+                skipped += 1
+                continue
+
+            original_desc = frontmatter.get("description", "")
+            enhanced_desc = EXTENSION_SKILL_DESCRIPTIONS.get(
+                command_name, original_desc or f"spec-kit-extensions workflow: {command_name}"
+            )
+
+            frontmatter_data = {
+                "name": skill_name,
+                "description": enhanced_desc,
+                "compatibility": "Requires spec-kit project with .specify/ directory and spec-kit-extensions installed",
+                "metadata": {
+                    "author": "spec-kit-extensions",
+                    "source": f"commands/{cmd_file.name}",
+                },
+            }
+            frontmatter_text = yaml.safe_dump(frontmatter_data, sort_keys=False).strip()
+            skill_content = (
+                f"---\n{frontmatter_text}\n---\n\n"
+                f"# Speckit {command_name.title()} Skill\n\n"
+                f"{body}\n"
+            )
+
+            skill_file.write_text(skill_content, encoding="utf-8")
+            installed += 1
+
+        except Exception as e:
+            console.print(f"[yellow]⚠[/yellow] Failed to install skill for {cmd_file.stem}: {e}")
+
+    if installed > 0 and skipped > 0:
+        console.print(f"[green]✓[/green] Installed {installed} new + {skipped} existing extension skills to {skills_dir.relative_to(repo_root)}/")
+    elif installed > 0:
+        console.print(f"[green]✓[/green] Installed {installed} extension skills to {skills_dir.relative_to(repo_root)}/")
+    elif skipped > 0:
+        console.print(f"[green]✓[/green] {skipped} extension skills already present in {skills_dir.relative_to(repo_root)}/")
+    else:
+        console.print("[yellow]No extension skills were installed[/yellow]")
+
+    return installed > 0 or skipped > 0
+
+
 def detect_agent(repo_root: Path) -> str:
     """Detect which AI agent is configured by examining project structure"""
 
@@ -541,6 +787,58 @@ def detect_agent(repo_root: Path) -> str:
     # Check for Amazon Q
     if (repo_root / ".q" / "commands").exists():
         return "q"
+
+    # Check for Kilo Code
+    if (repo_root / ".kilocode").exists():
+        return "kilocode"
+
+    # Check for Auggie CLI
+    if (repo_root / ".augment" / "commands").exists():
+        return "auggie"
+
+    # Check for CodeBuddy
+    if (repo_root / ".codebuddy" / "commands").exists():
+        return "codebuddy"
+
+    # Check for Qoder CLI
+    if (repo_root / ".qoder" / "commands").exists():
+        return "qodercli"
+
+    # Check for Roo Code
+    if (repo_root / ".roo" / "commands").exists():
+        return "roo"
+
+    # Check for Kiro CLI
+    if (repo_root / ".kiro").exists():
+        return "kiro-cli"
+
+    # Check for Amp
+    if (repo_root / ".agents" / "commands").exists():
+        return "amp"
+
+    # Check for SHAI
+    if (repo_root / ".shai" / "commands").exists():
+        return "shai"
+
+    # Check for Tabnine CLI
+    if (repo_root / ".tabnine" / "agent").exists():
+        return "tabnine"
+
+    # Check for Antigravity (agy)
+    if (repo_root / ".agent" / "workflows").exists():
+        return "agy"
+
+    # Check for IBM Bob
+    if (repo_root / ".bob" / "commands").exists():
+        return "bob"
+
+    # Check for Mistral Vibe
+    if (repo_root / ".vibe" / "prompts").exists():
+        return "vibe"
+
+    # Check for Kimi Code
+    if (repo_root / ".kimi" / "skills").exists():
+        return "kimi"
 
     # Default to manual
     return "manual"
@@ -1349,6 +1647,7 @@ def install_agent_commands(
     dry_run: bool = False,
     link: bool = False,
     install_powershell: bool = False,
+    ai_commands_dir: Optional[str] = None,
 ) -> None:
     """Install agent-specific command files"""
 
@@ -1366,10 +1665,15 @@ def install_agent_commands(
 
     console.print(f"[blue]ℹ[/blue] Installing {agent_name} commands...")
 
-    folder = agent_info["folder"]
-    file_ext = agent_info["file_extension"]
+    # For generic agent, use the user-supplied directory (mirrors spec-kit behavior)
+    if agent == "generic":
+        folder = ai_commands_dir
+    else:
+        folder = agent_info["folder"]
+    file_ext = agent_info["file_extension"] or "md"
 
     if not folder:
+        console.print("[yellow]⚠[/yellow] No command directory configured for this agent")
         return
 
     if link and os.name == "nt":
@@ -2353,10 +2657,26 @@ def main(
         "--all",
         help="Install all available extensions",
     ),
+    ai_assistant: Optional[str] = typer.Option(
+        None,
+        "--ai",
+        help="AI assistant to use: claude, copilot, gemini, cursor-agent, codex, windsurf, qwen, opencode, kiro-cli, tabnine, kimi, vibe, auggie, amp, shai, agy, bob, roo, kilocode, codebuddy, qodercli, or generic (requires --ai-commands-dir)",
+    ),
+    ai_commands_dir: Optional[str] = typer.Option(
+        None,
+        "--ai-commands-dir",
+        help="Directory for agent command files when using --ai generic (e.g. .myagent/commands/)",
+    ),
+    ai_skills: bool = typer.Option(
+        False,
+        "--ai-skills",
+        help="Install extension commands as agent skills (SKILL.md files) following agentskills.io spec. Requires --ai.",
+    ),
     agent: Optional[Agent] = typer.Option(
         None,
         "--agent",
-        help="Force specific agent (claude, copilot, cursor-agent, etc.)",
+        help="[Deprecated: use --ai] Force specific agent",
+        hidden=True,
     ),
     agents: Optional[str] = typer.Option(
         None,
@@ -2486,8 +2806,30 @@ def main(
     # Resolve target agents
     resolved_agents: List[str]
 
-    if agent and agents:
-        console.print("[red]✗[/red] Use either --agent or --agents, not both", style="red bold")
+    # --ai and --agent are mutually exclusive (--agent is deprecated)
+    if ai_assistant and agent:
+        console.print("[red]✗[/red] Use --ai or --agent (deprecated), not both", style="red bold")
+        raise typer.Exit(1)
+
+    # --ai-skills requires --ai
+    if ai_skills and not ai_assistant and not agent:
+        console.print("[red]✗[/red] --ai-skills requires --ai to be specified", style="red bold")
+        raise typer.Exit(1)
+
+    # Merge --ai into a single effective value (--ai is preferred; --agent is deprecated alias)
+    effective_ai = ai_assistant or (agent.value if agent else None)
+
+    # Validate --ai-commands-dir usage (mirrors spec-kit exactly)
+    if effective_ai == "generic" and not ai_commands_dir:
+        console.print("[red]✗[/red] --ai-commands-dir is required when using --ai generic", style="red bold")
+        console.print("[dim]Example: specify-extend --ai generic --ai-commands-dir .myagent/commands/ --all[/dim]")
+        raise typer.Exit(1)
+    if ai_commands_dir and effective_ai != "generic":
+        console.print(f"[red]✗[/red] --ai-commands-dir can only be used with --ai generic (not '{effective_ai}')", style="red bold")
+        raise typer.Exit(1)
+
+    if effective_ai and agents:
+        console.print("[red]✗[/red] Use either --ai/--agent or --agents, not both", style="red bold")
         raise typer.Exit(1)
 
     if agents:
@@ -2505,9 +2847,13 @@ def main(
             raise typer.Exit(1)
         resolved_agents = requested
         console.print(f"[blue]ℹ[/blue] Installing for agents: {', '.join(resolved_agents)}")
-    elif agent:
-        resolved_agents = [agent.value]
-        console.print(f"[blue]ℹ[/blue] Using forced agent: {resolved_agents[0]}")
+    elif effective_ai:
+        if effective_ai not in AGENT_CONFIG:
+            console.print(f"[red]✗[/red] Invalid agent: {effective_ai}", style="red bold")
+            console.print(f"[dim]Available: {', '.join(sorted(AGENT_CONFIG.keys()))}[/dim]")
+            raise typer.Exit(1)
+        resolved_agents = [effective_ai]
+        console.print(f"[blue]ℹ[/blue] Using agent: {effective_ai}")
     else:
         detected_agent = detect_agent(repo_root)
         resolved_agents = [detected_agent]
@@ -2589,6 +2935,7 @@ def main(
                 dry_run,
                 link=link,
                 install_powershell=selected_script == "ps",
+                ai_commands_dir=ai_commands_dir,
             )
 
         # Constitution update is repo-level; use the first agent for formatting conventions
@@ -2596,6 +2943,11 @@ def main(
         patch_common_sh(repo_root, dry_run)
         patch_common_ps1(repo_root, dry_run)
         patch_update_agent_context_sh(repo_root, dry_run)
+
+        # Install extension commands as agent skills if requested (--ai-skills)
+        if ai_skills:
+            for target_agent in resolved_agents:
+                install_extension_skills(repo_root, source_dir, target_agent, dry_run)
 
         # Install GitHub integration if requested
         if github_integration:
