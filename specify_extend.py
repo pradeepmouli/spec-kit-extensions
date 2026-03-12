@@ -2917,7 +2917,9 @@ def main(
     console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
     # Build the specify extension add command
-    specify_cmd = ["specify", "extension", "add", GITHUB_REPO]
+    # Use --from with the GitHub archive URL since we may not be in the community catalog
+    download_url = f"https://github.com/{GITHUB_REPO}/archive/refs/heads/main.zip"
+    specify_cmd = ["specify", "extension", "add", "workflows", "--from", download_url]
     if dry_run:
         specify_cmd.append("--dry-run")
 
@@ -2947,7 +2949,7 @@ def main(
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")
     console.print("━" * 60 + "\n")
 
-    console.print(f"[blue]ℹ[/blue] Installed via: specify extension add {GITHUB_REPO}\n")
+    console.print(f"[blue]ℹ[/blue] Installed via: specify extension add workflows --from {download_url}\n")
 
     # Next steps
     console.print("[bold]Next steps:[/bold]")
