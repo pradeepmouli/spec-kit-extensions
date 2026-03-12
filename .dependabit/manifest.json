@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-12T18:31:49.734Z",
+  "generatedAt": "2026-03-12T18:35:10.834Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,14 +11,121 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "c502e8d8bf9255db561ff7060061605ea44be087"
+    "commit": "dd998c9dae357728e5e99e259ac5373101ddea0d"
   },
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "c03bf678-7cd6-427a-95a4-34d3cdfbded5",
+      "url": "https://github.com/github/spec-kit",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:35:10.834Z",
+      "lastChecked": "2026-03-12T18:35:10.834Z",
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 3,
+          "context": "spec-kit"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "a858ea39-f72d-4d1f-bd10-bad5ae1a8726",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "main",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:35:10.834Z",
+      "lastChecked": "2026-03-12T18:35:10.834Z",
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 92,
+          "context": "specify extension add workflows --from https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "60c78c63-faf4-4b10-ba9d-341971576ca3",
+      "url": "https://github.com/github/spec-kit.git\"`",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:35:10.834Z",
+      "lastChecked": "2026-03-12T18:35:10.834Z",
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 225,
+          "context": "- Install from source: `uv tool install specify-cli --from \"git+https://github.com/github/spec-kit.git\"`"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "1d7c08b8-1483-4c4b-827f-0a02d56c40bf",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions/issues",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "issues",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:35:10.834Z",
+      "lastChecked": "2026-03-12T18:35:10.834Z",
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 284,
+          "context": "GitHub Issues"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ab36e7ae-f1a4-4226-918c-04bd4d6427f8",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions/discussions",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "discussions",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:35:10.834Z",
+      "lastChecked": "2026-03-12T18:35:10.834Z",
+      "referencedIn": [
+        {
+          "file": "README.md",
+          "line": 285,
+          "context": "GitHub Discussions"
+        }
+      ],
+      "changeHistory": []
+    }
+  ],
   "statistics": {
-    "totalDependencies": 0,
-    "byType": {},
-    "byAccessMethod": {},
-    "byDetectionMethod": {},
-    "averageConfidence": 0
+    "totalDependencies": 5,
+    "byType": {
+      "reference-implementation": 5
+    },
+    "byAccessMethod": {
+      "github-api": 5
+    },
+    "byDetectionMethod": {
+      "llm-analysis": 5
+    },
+    "averageConfidence": 0.85
   }
 }
