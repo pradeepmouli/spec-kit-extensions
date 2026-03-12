@@ -117,19 +117,8 @@ fi
 
 FEATURE_NAME=$(basename "$FEATURE_DIR")
 
-# Find highest deprecate number
-HIGHEST=0
-if [ -d "$SPECS_DIR/deprecate" ]; then
-    for dir in "$SPECS_DIR"/deprecate/*/; do
-        [ -d "$dir" ] || continue
-        dirname=$(basename "$dir")
-        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
-        number=$((10#$number))
-        if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
-    done
-fi
-
-NEXT=$((HIGHEST + 1))
+# Find next number using global numbering (spec-kit v0.2.0+)
+NEXT=$(get_global_next_number "$SPECS_DIR")
 DEPRECATE_NUM=$(printf "%03d" "$NEXT")
 
 # Create branch name from feature name
