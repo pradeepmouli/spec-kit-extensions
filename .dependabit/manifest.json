@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-12T03:16:31.979Z",
+  "generatedAt": "2026-03-12T18:14:40.616Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,122 +11,81 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "95fcab905ee4c419f8e7335ebfea97d5604b52d1"
+    "commit": "203046f206952463534c226e9f53778fe1951b68"
   },
   "dependencies": [
     {
-      "id": "66959a5e-01d2-4d01-947d-af7203bc6701",
-      "url": "https://keepachangelog.com/en/1.0.0/",
+      "id": "0b6ff646-1823-4281-8602-dfb3afe467e4",
+      "url": "https://github.com/",
       "type": "schema",
-      "accessMethod": "http",
-      "name": "1.0",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T03:16:29.143Z",
-      "lastChecked": "2026-03-12T03:16:29.143Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 5,
-          "context": "Keep a Changelog"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "7820cf3c-7ed7-4403-91e7-c3aab70ca4c7",
-      "url": "https://semver.org/spec/v2.0.0.html",
-      "type": "schema",
-      "accessMethod": "http",
-      "name": "v2.0.0",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T03:16:30.573Z",
-      "lastChecked": "2026-03-12T03:16:30.573Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 6,
-          "context": "Semantic Versioning"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "21f02aeb-f45b-4e37-9701-e8feab144ce1",
-      "url": "https://agentskills.io/specification",
-      "type": "schema",
-      "accessMethod": "http",
-      "name": "specification",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T03:16:31.979Z",
-      "lastChecked": "2026-03-12T03:16:31.979Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 32,
-          "context": "agentskills.io"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "51da1c56-4885-4f87-bfa6-f5d5d44ae081",
-      "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
-      "type": "reference-implementation",
       "accessMethod": "github-api",
-      "name": "v1.0.0...v2.0",
+      "name": "github.com",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T03:16:31.979Z",
-      "lastChecked": "2026-03-12T03:16:31.979Z",
+      "detectedAt": "2026-03-12T18:14:40.616Z",
+      "lastChecked": "2026-03-12T18:14:40.616Z",
       "referencedIn": [
         {
-          "file": "CHANGELOG.md",
-          "line": 1399,
-          "context": "2.0.0"
+          "file": "commands/phasestoissues.md",
+          "line": 223,
+          "context": "URL: https://github.com/[owner]/[repo]/issues/[number]"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "1a281473-f608-4fa7-9d35-16d695dfa021",
-      "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
-      "type": "reference-implementation",
+      "id": "473e72d7-9ef8-418f-a21d-cc7c52ea9f76",
+      "url": "https://github.com/github/spec-kit",
+      "type": "documentation",
       "accessMethod": "github-api",
-      "name": "v1.0",
+      "name": "spec-kit",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T03:16:31.979Z",
-      "lastChecked": "2026-03-12T03:16:31.979Z",
+      "detectedAt": "2026-03-12T18:14:40.616Z",
+      "lastChecked": "2026-03-12T18:14:40.616Z",
       "referencedIn": [
         {
-          "file": "CHANGELOG.md",
-          "line": 1400,
-          "context": "1.0.0"
+          "file": "templates/phasestoissues/README.md",
+          "line": 234,
+          "context": "Spec-Kit Documentation"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "fc2118d4-f786-49c5-bde8-0f8c4e5d98f4",
+      "url": "https://docs.github.com/en/issues",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "issues",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-12T18:14:40.616Z",
+      "lastChecked": "2026-03-12T18:14:40.616Z",
+      "referencedIn": [
+        {
+          "file": "templates/phasestoissues/README.md",
+          "line": 235,
+          "context": "GitHub Issues Documentation"
         }
       ],
       "changeHistory": []
     }
   ],
   "statistics": {
-    "totalDependencies": 5,
+    "totalDependencies": 3,
     "byType": {
-      "schema": 3,
-      "reference-implementation": 2
+      "schema": 1,
+      "documentation": 2
     },
     "byAccessMethod": {
-      "http": 3,
-      "github-api": 2
+      "github-api": 3
     },
     "byDetectionMethod": {
-      "llm-analysis": 5
+      "llm-analysis": 3
     },
     "averageConfidence": 0.85
   }
