@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-12T18:14:40.616Z",
+  "generatedAt": "2026-03-12T18:31:49.734Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,82 +11,14 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "203046f206952463534c226e9f53778fe1951b68"
+    "commit": "c502e8d8bf9255db561ff7060061605ea44be087"
   },
-  "dependencies": [
-    {
-      "id": "0b6ff646-1823-4281-8602-dfb3afe467e4",
-      "url": "https://github.com/",
-      "type": "schema",
-      "accessMethod": "github-api",
-      "name": "github.com",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T18:14:40.616Z",
-      "lastChecked": "2026-03-12T18:14:40.616Z",
-      "referencedIn": [
-        {
-          "file": "commands/phasestoissues.md",
-          "line": 223,
-          "context": "URL: https://github.com/[owner]/[repo]/issues/[number]"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "473e72d7-9ef8-418f-a21d-cc7c52ea9f76",
-      "url": "https://github.com/github/spec-kit",
-      "type": "documentation",
-      "accessMethod": "github-api",
-      "name": "spec-kit",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T18:14:40.616Z",
-      "lastChecked": "2026-03-12T18:14:40.616Z",
-      "referencedIn": [
-        {
-          "file": "templates/phasestoissues/README.md",
-          "line": 234,
-          "context": "Spec-Kit Documentation"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "fc2118d4-f786-49c5-bde8-0f8c4e5d98f4",
-      "url": "https://docs.github.com/en/issues",
-      "type": "documentation",
-      "accessMethod": "github-api",
-      "name": "issues",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-12T18:14:40.616Z",
-      "lastChecked": "2026-03-12T18:14:40.616Z",
-      "referencedIn": [
-        {
-          "file": "templates/phasestoissues/README.md",
-          "line": 235,
-          "context": "GitHub Issues Documentation"
-        }
-      ],
-      "changeHistory": []
-    }
-  ],
+  "dependencies": [],
   "statistics": {
-    "totalDependencies": 3,
-    "byType": {
-      "schema": 1,
-      "documentation": 2
-    },
-    "byAccessMethod": {
-      "github-api": 3
-    },
-    "byDetectionMethod": {
-      "llm-analysis": 3
-    },
-    "averageConfidence": 0.85
+    "totalDependencies": 0,
+    "byType": {},
+    "byAccessMethod": {},
+    "byDetectionMethod": {},
+    "averageConfidence": 0
   }
 }
