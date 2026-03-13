@@ -1,0 +1,230 @@
+# When an issue is labeled 'spec-ready':
+#   1. Detect issue type (feature, bug, enhancement, refactor, hotfix, deprecate, modify)
+#   2. Append workflow-appropriate instructions to the issue body
+#   3. Assign the configured agent (default: copilot) so it picks up the issue
+#
+# Routing:
+#   - Feature / needs-spec / Phase title  → speckit.specify
+#   - Bug                                 → speckit.workflows.bugfix
+#   - Enhancement                         → speckit.workflows.enhance
+#   - Refactor                            → speckit.workflows.refactor
+#   - Hotfix                              → speckit.workflows.hotfix
+#   - Deprecation                         → speckit.workflows.deprecate
+#   - Modification                        → speckit.workflows.modify
+#
+# Install: specify-extend --github-integration
+
+name: Spec Ready — Route to Workflow
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  route-issue:
+    if: github.event.label.name == 'spec-ready'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Route by issue type, append instructions, assign agent
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name.toLowerCase());
+            const title = issue.title || '';
+            const issueType = issue.issue_type?.name || '';
+
+            // --- Configurable agent (default: copilot) ---
+            const AGENT = process.env.SPEC_READY_AGENT || 'copilot';
+
+            // --- Classify the issue ---
+
+            const isBug =
+              issueType === 'Bug' ||
+              labels.includes('bug');
+
+            const isHotfix =
+              labels.includes('hotfix') ||
+              labels.includes('production') ||
+              labels.includes('critical');
+
+            const isEnhancement =
+              labels.includes('enhancement') ||
+              issueType === 'Enhancement';
+
+            const isRefactor =
+              labels.includes('refactor') ||
+              labels.includes('tech-debt');
+
+            const isDeprecation =
+              labels.includes('deprecation') ||
+              labels.includes('sunset');
+
+            const isModification =
+              labels.includes('modification') ||
+              labels.includes('change-request');
+
+            const isFeature =
+              issueType === 'Feature' ||
+              labels.includes('feature') ||
+              labels.includes('needs-spec') ||
+              title.startsWith('Phase ');
+
+            // Skip unsupported types
+            const isUnsupported =
+              labels.includes('question') ||
+              labels.includes('support') ||
+              labels.includes('documentation') ||
+              issueType === 'Task';
+
+            if (isUnsupported && !isBug && !isHotfix && !isEnhancement && !isRefactor && !isDeprecation && !isModification && !isFeature) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: [
+                  `### Skipped: unsupported issue type`,
+                  ``,
+                  `The \`spec-ready\` label was added, but this issue type is not supported for automated spec workflows.`,
+                  `Supported types: **feature**, **bug**, **hotfix**, **enhancement**, **refactor**, **deprecation**, **modification**.`,
+                ].join('\n'),
+              });
+
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'spec-ready',
+              });
+              return;
+            }
+
+            // --- Route to workflow ---
+
+            let workflow, workflowLabel, workflowCommand;
+
+            if (isHotfix) {
+              workflow = 'hotfix';
+              workflowLabel = 'Hotfix';
+              workflowCommand = '/speckit.workflows.hotfix';
+            } else if (isBug) {
+              workflow = 'bugfix';
+              workflowLabel = 'Bug Fix';
+              workflowCommand = '/speckit.workflows.bugfix';
+            } else if (isRefactor) {
+              workflow = 'refactor';
+              workflowLabel = 'Refactor';
+              workflowCommand = '/speckit.workflows.refactor';
+            } else if (isDeprecation) {
+              workflow = 'deprecate';
+              workflowLabel = 'Deprecation';
+              workflowCommand = '/speckit.workflows.deprecate';
+            } else if (isModification) {
+              workflow = 'modify';
+              workflowLabel = 'Modification';
+              workflowCommand = '/speckit.workflows.modify';
+            } else if (isEnhancement) {
+              workflow = 'enhance';
+              workflowLabel = 'Enhancement';
+              workflowCommand = '/speckit.workflows.enhance';
+            } else {
+              workflow = 'specify';
+              workflowLabel = 'Feature Specification';
+              workflowCommand = '/speckit.specify';
+            }
+
+            // --- Build instructions ---
+
+            const commonSteps = [
+              ``,
+              `### 2. Use the issue context`,
+              `The issue body above contains the full description and context.`,
+              `Pass all of this as input to the workflow.`,
+              ``,
+              `### 3. Run speckit.clarify`,
+              `After the spec is created, run \`/speckit.clarify\` to identify ambiguities and open questions.`,
+              ``,
+              `### 4. Open a PR`,
+              `Create a pull request. Title: \`${workflow}: ${issue.title}\``,
+              ``,
+              `### 5. Post clarification questions to the PR`,
+              `Take every question from \`/speckit.clarify\` and post each as a **separate PR review comment**:`,
+              '```',
+              `**[NEEDS CLARIFICATION]**: <question>`,
+              ``,
+              `**Context**: <relevant spec section or code>`,
+              `**Options**:`,
+              `- A: <option>`,
+              `- B: <option>`,
+              '```',
+              ``,
+              `### 6. Update this issue`,
+              `- Remove label: \`spec-ready\``,
+              `- Add label: \`in-progress\``,
+              `- Comment with the branch name, spec location, and PR link`,
+            ];
+
+            const instructions = [
+              ``,
+              `---`,
+              ``,
+              `## Agent Instructions`,
+              ``,
+              `This is a **${workflowLabel.toLowerCase()}**. When assigned, run the spec-kit workflow:`,
+              ``,
+              `### 1. Run the workflow`,
+              `Execute in the repo:`,
+              '```',
+              `${workflowCommand} ${issue.html_url}`,
+              '```',
+              ``,
+              `This will create a branch, generate specs, and produce implementation tasks.`,
+              ...commonSteps,
+            ].join('\n');
+
+            // --- Append instructions (idempotent) ---
+
+            const currentBody = issue.body || '';
+
+            if (currentBody.includes('## Agent Instructions')) {
+              core.info('Agent instructions already present, skipping append');
+            } else {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: currentBody + instructions,
+              });
+            }
+
+            // --- Assign agent ---
+
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: [AGENT],
+              });
+            } catch (e) {
+              core.warning(`Could not assign ${AGENT}: ${e.message}. You may need to assign manually.`);
+            }
+
+            // --- Comment ---
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: [
+                `### ${workflowLabel} workflow initiated`,
+                ``,
+                `**${AGENT}** has been assigned to handle this via \`${workflowCommand}\`.`,
+                `Instructions have been appended to the issue body.`,
+                ``,
+                `**Manual alternative**: Run \`${workflowCommand} ${issue.html_url}\` in a repo checkout.`,
+              ].join('\n'),
+            });

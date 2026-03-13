@@ -2469,6 +2469,109 @@ def patch_update_agent_context_sh(repo_root: Path, dry_run: bool = False) -> Non
         console.print("  [dim]Would patch update-agent-context.sh COPILOT_FILE path[/dim]")
 
 
+def install_git_hooks(repo_root: Path, dry_run: bool = False) -> None:
+    """Install git hooks that enforce task references in commit messages."""
+    import urllib.request
+
+    git_dir = repo_root / ".git"
+    if not git_dir.exists():
+        console.print("[yellow]⚠[/yellow] Not a git repository, skipping hook installation")
+        return
+
+    hooks_dir = git_dir / "hooks"
+    commit_msg_hook = hooks_dir / "commit-msg"
+
+    # Download the hook from our repo
+    hook_url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/hooks/commit-msg"
+
+    console.print("[blue]ℹ[/blue] Installing commit-msg hook (enforces task references on spec-kit branches)...")
+
+    if dry_run:
+        console.print(f"  [dim]Would download: {hook_url}[/dim]")
+        console.print(f"  [dim]Would install to: {commit_msg_hook}[/dim]")
+        return
+
+    # Check for existing hook
+    if commit_msg_hook.exists():
+        existing = commit_msg_hook.read_text()
+        if "spec-kit-extensions" in existing:
+            console.print("[green]✓[/green] commit-msg hook already installed (spec-kit-extensions)")
+            return
+        else:
+            # Back up existing hook
+            backup = commit_msg_hook.with_suffix(".backup")
+            shutil.copy(commit_msg_hook, backup)
+            console.print(f"[yellow]⚠[/yellow] Existing commit-msg hook backed up to: {backup}")
+
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+
+    # Try local source first (installed extension), then download
+    local_hook = repo_root / ".specify" / "extensions" / "workflows" / "hooks" / "commit-msg"
+    hook_content = None
+
+    if local_hook.exists():
+        hook_content = local_hook.read_text()
+    else:
+        try:
+            req = urllib.request.Request(hook_url)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                hook_content = resp.read().decode("utf-8")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Failed to download hook: {e}")
+            console.print("[dim]You can manually copy hooks/commit-msg to .git/hooks/commit-msg[/dim]")
+            return
+
+    commit_msg_hook.write_text(hook_content)
+    commit_msg_hook.chmod(0o755)
+    console.print("[green]✓[/green] commit-msg hook installed")
+    console.print("  [dim]Commits on spec-kit branches must reference task numbers (e.g., T001)[/dim]")
+    console.print("  [dim]Bypass with: git commit --no-verify[/dim]")
+
+
+def install_spec_ready_workflow(repo_root: Path, dry_run: bool = False) -> None:
+    """Install the spec-ready-notify GitHub Actions workflow."""
+    import urllib.request
+
+    workflows_dir = repo_root / ".github" / "workflows"
+    dest_file = workflows_dir / "spec-ready-notify.yml"
+
+    workflow_url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/.github/workflows/spec-ready-notify.yml"
+
+    console.print("[blue]ℹ[/blue] Installing spec-ready-notify workflow (routes labeled issues to spec-kit workflows)...")
+
+    if dry_run:
+        console.print(f"  [dim]Would download: {workflow_url}[/dim]")
+        console.print(f"  [dim]Would install to: {dest_file}[/dim]")
+        return
+
+    if dest_file.exists():
+        console.print("[green]✓[/green] spec-ready-notify.yml already exists")
+        return
+
+    workflows_dir.mkdir(parents=True, exist_ok=True)
+
+    # Try local source first (installed extension), then download
+    local_workflow = repo_root / ".specify" / "extensions" / "workflows" / ".github" / "workflows" / "spec-ready-notify.yml"
+    workflow_content = None
+
+    if local_workflow.exists():
+        workflow_content = local_workflow.read_text()
+    else:
+        try:
+            req = urllib.request.Request(workflow_url)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                workflow_content = resp.read().decode("utf-8")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Failed to download workflow: {e}")
+            console.print("[dim]You can manually copy .github/workflows/spec-ready-notify.yml[/dim]")
+            return
+
+    dest_file.write_text(workflow_content)
+    console.print("[green]✓[/green] spec-ready-notify.yml installed")
+    console.print("  [dim]Label an issue with 'spec-ready' to route it to the appropriate workflow[/dim]")
+    console.print("  [dim]Set SPEC_READY_AGENT env var to change the assigned agent (default: copilot)[/dim]")
+
+
 def install_github_integration(
     repo_root: Path,
     source_dir: Path,
@@ -2505,6 +2608,13 @@ def install_github_integration(
             "description": "Manual tools to check review status and validate branches",
             "files": {
                 "workflows": ["spec-kit-review-helper.yml"],
+            },
+        },
+        "spec-ready": {
+            "name": "Spec Ready Workflow",
+            "description": "Routes labeled issues to spec-kit workflows (bugfix, enhance, hotfix, etc.)",
+            "files": {
+                "workflows": ["spec-ready-notify.yml"],
             },
         },
         "pr-template": {
@@ -2740,6 +2850,11 @@ def main(
         "--github-integration",
         help="Install optional GitHub workflows, PR template, issue templates, and code review integration",
     ),
+    install_hooks: bool = typer.Option(
+        False,
+        "--hooks",
+        help="Install git hooks (commit-msg) that enforce task references in commit messages on spec-kit branches",
+    ),
     patch_only: bool = typer.Option(
         False,
         "--patch",
@@ -2885,8 +3000,10 @@ def main(
         console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
         console.print(f"  Link mode: {'symlink' if link else 'copy'}")
+        if install_hooks:
+            console.print("  Git hooks: commit-msg (task reference enforcement)")
         if github_integration:
-            console.print(f"  GitHub integration: yes (interactive)" if interactive else "  GitHub integration: yes (all features)")
+            console.print("  GitHub integration: spec-ready-notify workflow")
         raise typer.Exit(0)
 
     # Handle workflow enabling
@@ -2944,6 +3061,14 @@ def main(
     patch_common_sh(repo_root, dry_run)
     patch_common_ps1(repo_root, dry_run)
 
+    # Install git hooks if requested
+    if install_hooks:
+        install_git_hooks(repo_root, dry_run)
+
+    # Install GitHub integration if requested
+    if github_integration:
+        install_spec_ready_workflow(repo_root, dry_run)
+
     # Success message
     console.print("\n" + "━" * 60)
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")
@@ -2956,6 +3081,10 @@ def main(
     console.print("  1. Verify: specify extension list")
     console.print("  2. Try a command: /speckit.workflows.bugfix \"test bug\"")
     console.print("  3. Or use alias: /speckit.bugfix \"test bug\"")
+    if not install_hooks:
+        console.print("  4. Install git hooks: specify-extend --hooks")
+    if not github_integration:
+        console.print("  5. Install CI/CD workflow: specify-extend --github-integration")
     console.print()
 
 
