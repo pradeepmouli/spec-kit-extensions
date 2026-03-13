@@ -1,18 +1,24 @@
 # When an issue is labeled 'spec-ready':
 #   1. Detect issue type (feature, bug, enhancement, refactor, hotfix, deprecate, modify)
-#   2. Append workflow-appropriate instructions to the issue body
-#   3. Assign the configured agent (default: copilot) so it picks up the issue
+#   2. Checkout repo, run the spec-kit create script to create branch + spec structure
+#   3. Push the branch and create a draft PR
+#   4. Append agent instructions to the issue referencing the branch and PR
+#   5. Assign the configured agent to the issue
+#
+# The agent receives a ready-made branch with spec templates — it just needs
+# to write the spec, run /speckit.clarify, and post questions to the PR.
 #
 # Routing:
-#   - Feature / needs-spec / Phase title  → speckit.specify
-#   - Bug                                 → speckit.workflows.bugfix
-#   - Enhancement                         → speckit.workflows.enhance
-#   - Refactor                            → speckit.workflows.refactor
-#   - Hotfix                              → speckit.workflows.hotfix
-#   - Deprecation                         → speckit.workflows.deprecate
-#   - Modification                        → speckit.workflows.modify
+#   - Feature / needs-spec / Phase title  → create-new-feature.sh  → /speckit.specify
+#   - Bug                                 → create-bugfix.sh       → /speckit.workflows.bugfix
+#   - Enhancement                         → create-enhance.sh      → /speckit.workflows.enhance
+#   - Refactor                            → create-refactor.sh     → /speckit.workflows.refactor
+#   - Hotfix                              → create-hotfix.sh       → /speckit.workflows.hotfix
+#   - Deprecation                         → create-deprecate.sh    → /speckit.workflows.deprecate
+#   - Modification                        → create-modification.sh → /speckit.workflows.modify
 #
 # Install: specify-extend --github-integration
+# Configure: Set SPEC_READY_AGENT env var to change assigned agent (default: copilot)
 
 name: Spec Ready — Route to Workflow
 
@@ -21,14 +27,21 @@ on:
     types: [labeled]
 
 permissions:
+  contents: write
   issues: write
+  pull-requests: write
+
+env:
+  SPEC_READY_AGENT: ${{ vars.SPEC_READY_AGENT || 'copilot' }}
 
 jobs:
   route-issue:
     if: github.event.label.name == 'spec-ready'
     runs-on: ubuntu-latest
     steps:
-      - name: Route by issue type, append instructions, assign agent
+      # --- Step 1: Classify the issue ---
+      - name: Classify issue type
+        id: classify
         uses: actions/github-script@v7
         with:
           script: |
@@ -37,143 +50,161 @@ jobs:
             const title = issue.title || '';
             const issueType = issue.issue_type?.name || '';
 
-            // --- Configurable agent (default: copilot) ---
-            const AGENT = process.env.SPEC_READY_AGENT || 'copilot';
+            const isBug = issueType === 'Bug' || labels.includes('bug');
+            const isHotfix = labels.includes('hotfix') || labels.includes('production') || labels.includes('critical');
+            const isEnhancement = labels.includes('enhancement') || issueType === 'Enhancement';
+            const isRefactor = labels.includes('refactor') || labels.includes('tech-debt');
+            const isDeprecation = labels.includes('deprecation') || labels.includes('sunset');
+            const isModification = labels.includes('modification') || labels.includes('change-request');
+            const isFeature = issueType === 'Feature' || labels.includes('feature') || labels.includes('needs-spec') || title.startsWith('Phase ');
 
-            // --- Classify the issue ---
+            const isUnsupported = (labels.includes('question') || labels.includes('support') || labels.includes('documentation') || issueType === 'Task')
+              && !isBug && !isHotfix && !isEnhancement && !isRefactor && !isDeprecation && !isModification && !isFeature;
 
-            const isBug =
-              issueType === 'Bug' ||
-              labels.includes('bug');
-
-            const isHotfix =
-              labels.includes('hotfix') ||
-              labels.includes('production') ||
-              labels.includes('critical');
-
-            const isEnhancement =
-              labels.includes('enhancement') ||
-              issueType === 'Enhancement';
-
-            const isRefactor =
-              labels.includes('refactor') ||
-              labels.includes('tech-debt');
-
-            const isDeprecation =
-              labels.includes('deprecation') ||
-              labels.includes('sunset');
-
-            const isModification =
-              labels.includes('modification') ||
-              labels.includes('change-request');
-
-            const isFeature =
-              issueType === 'Feature' ||
-              labels.includes('feature') ||
-              labels.includes('needs-spec') ||
-              title.startsWith('Phase ');
-
-            // Skip unsupported types
-            const isUnsupported =
-              labels.includes('question') ||
-              labels.includes('support') ||
-              labels.includes('documentation') ||
-              issueType === 'Task';
-
-            if (isUnsupported && !isBug && !isHotfix && !isEnhancement && !isRefactor && !isDeprecation && !isModification && !isFeature) {
+            if (isUnsupported) {
+              core.setOutput('skip', 'true');
               await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                body: [
-                  `### Skipped: unsupported issue type`,
-                  ``,
-                  `The \`spec-ready\` label was added, but this issue type is not supported for automated spec workflows.`,
-                  `Supported types: **feature**, **bug**, **hotfix**, **enhancement**, **refactor**, **deprecation**, **modification**.`,
-                ].join('\n'),
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+                body: `### Skipped: unsupported issue type\n\nThe \`spec-ready\` label was added, but this issue type is not supported.\nSupported: **feature**, **bug**, **hotfix**, **enhancement**, **refactor**, **deprecation**, **modification**.`,
               });
-
               await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                name: 'spec-ready',
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number, name: 'spec-ready',
               });
               return;
             }
 
-            // --- Route to workflow ---
+            // Determine workflow type, create script, and command
+            let workflow, label, command, createScript;
+            if (isHotfix)            { workflow = 'hotfix';   label = 'Hotfix';               command = '/speckit.workflows.hotfix';     createScript = 'create-hotfix.sh'; }
+            else if (isBug)          { workflow = 'bugfix';   label = 'Bug Fix';              command = '/speckit.workflows.bugfix';     createScript = 'create-bugfix.sh'; }
+            else if (isRefactor)     { workflow = 'refactor'; label = 'Refactor';             command = '/speckit.workflows.refactor';   createScript = 'create-refactor.sh'; }
+            else if (isDeprecation)  { workflow = 'deprecate';label = 'Deprecation';          command = '/speckit.workflows.deprecate';  createScript = 'create-deprecate.sh'; }
+            else if (isModification) { workflow = 'modify';   label = 'Modification';         command = '/speckit.workflows.modify';     createScript = 'create-modification.sh'; }
+            else if (isEnhancement)  { workflow = 'enhance';  label = 'Enhancement';          command = '/speckit.workflows.enhance';    createScript = 'create-enhance.sh'; }
+            else                     { workflow = 'feature';  label = 'Feature Specification';command = '/speckit.specify';              createScript = 'create-new-feature.sh'; }
 
-            let workflow, workflowLabel, workflowCommand;
+            core.setOutput('skip', 'false');
+            core.setOutput('workflow', workflow);
+            core.setOutput('label', label);
+            core.setOutput('command', command);
+            core.setOutput('create_script', createScript);
+            core.setOutput('issue_title', issue.title);
+            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('issue_url', issue.html_url);
 
-            if (isHotfix) {
-              workflow = 'hotfix';
-              workflowLabel = 'Hotfix';
-              workflowCommand = '/speckit.workflows.hotfix';
-            } else if (isBug) {
-              workflow = 'bugfix';
-              workflowLabel = 'Bug Fix';
-              workflowCommand = '/speckit.workflows.bugfix';
-            } else if (isRefactor) {
-              workflow = 'refactor';
-              workflowLabel = 'Refactor';
-              workflowCommand = '/speckit.workflows.refactor';
-            } else if (isDeprecation) {
-              workflow = 'deprecate';
-              workflowLabel = 'Deprecation';
-              workflowCommand = '/speckit.workflows.deprecate';
-            } else if (isModification) {
-              workflow = 'modify';
-              workflowLabel = 'Modification';
-              workflowCommand = '/speckit.workflows.modify';
-            } else if (isEnhancement) {
-              workflow = 'enhance';
-              workflowLabel = 'Enhancement';
-              workflowCommand = '/speckit.workflows.enhance';
-            } else {
-              workflow = 'specify';
-              workflowLabel = 'Feature Specification';
-              workflowCommand = '/speckit.specify';
-            }
+      # --- Step 2: Checkout and create the branch ---
+      - name: Checkout repository
+        if: steps.classify.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            // --- Build instructions ---
+      - name: Create branch via spec-kit
+        if: steps.classify.outputs.skip != 'true'
+        id: create
+        env:
+          WORKFLOW: ${{ steps.classify.outputs.workflow }}
+          CREATE_SCRIPT: ${{ steps.classify.outputs.create_script }}
+          ISSUE_TITLE: ${{ steps.classify.outputs.issue_title }}
+        run: |
+          # Determine script location
+          # Extension scripts are in .specify/extensions/workflows/scripts/bash/
+          # Feature script is in .specify/scripts/bash/
+          if [ "$WORKFLOW" = "feature" ]; then
+            SCRIPT=".specify/scripts/bash/${CREATE_SCRIPT}"
+          else
+            SCRIPT=".specify/extensions/workflows/scripts/bash/${CREATE_SCRIPT}"
+          fi
 
-            const commonSteps = [
-              ``,
-              `### 2. Use the issue context`,
-              `The issue body above contains the full description and context.`,
-              `Pass all of this as input to the workflow.`,
-              ``,
-              `### 3. Open a PR`,
-              `Create a pull request with the spec and any implementation work.`,
-              `Title: \`${workflow}: ${issue.title}\``,
-              `Reference this issue in the PR body: \`Closes #${issue.number}\``,
-              ``,
-              `### 4. Run speckit.clarify and post questions to the PR`,
-              `After the spec is created, run \`/speckit.clarify\` to surface ambiguities, missing details, and open questions.`,
-              ``,
-              `**Then post EVERY question as a separate PR review comment** so a human reviewer can respond to each one individually.`,
-              `For each question, post a comment on the most relevant line of \`spec.md\` (or the PR body if no specific line applies):`,
-              ``,
-              '```',
-              `**[NEEDS CLARIFICATION]**: <question>`,
-              ``,
-              `**Context**: <relevant spec section or code>`,
-              `**Impact**: What depends on the answer to this question`,
-              `**Options**:`,
-              `- A: <option and its implications>`,
-              `- B: <option and its implications>`,
-              `**Default**: <which option you'd proceed with if no response>`,
-              '```',
-              ``,
-              `This is critical — the human reviewer needs to see and respond to every ambiguity before implementation proceeds.`,
-              `Do NOT proceed past planning until clarification questions have been posted.`,
-              ``,
-              `### 5. Update this issue`,
-              `- Remove label: \`spec-ready\``,
-              `- Add label: \`in-progress\``,
-              `- Comment with: branch name, spec location, PR link, and number of clarification questions pending`,
-            ];
+          if [ ! -f "$SCRIPT" ]; then
+            echo "::error::Create script not found: $SCRIPT"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          chmod +x "$SCRIPT"
+
+          # Run the create script in JSON mode
+          OUTPUT=$("$SCRIPT" --json "$ISSUE_TITLE" 2>&1) || {
+            echo "::warning::Create script failed: $OUTPUT"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+
+          echo "json=$OUTPUT" >> "$GITHUB_OUTPUT"
+
+          # Extract branch name from JSON output
+          BRANCH_NAME=$(echo "$OUTPUT" | python3 -c "import sys,json; print(json.load(sys.stdin)['BRANCH_NAME'])" 2>/dev/null) || {
+            echo "::warning::Could not parse branch name from: $OUTPUT"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+
+          echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "Branch created: $BRANCH_NAME"
+
+      # --- Step 3: Push the branch ---
+      - name: Push branch
+        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        env:
+          BRANCH: ${{ steps.create.outputs.branch }}
+        run: |
+          git push origin "$BRANCH"
+
+      # --- Step 4: Create draft PR ---
+      - name: Create draft PR
+        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflow = '${{ steps.classify.outputs.workflow }}';
+            const label = '${{ steps.classify.outputs.label }}';
+            const branch = '${{ steps.create.outputs.branch }}';
+            const issueNumber = ${{ steps.classify.outputs.issue_number }};
+            const issueTitle = `${{ steps.classify.outputs.issue_title }}`;
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `${workflow}: ${issueTitle}`,
+              head: branch,
+              base: 'main',
+              draft: true,
+              body: [
+                `## ${label}`,
+                ``,
+                `Closes #${issueNumber}`,
+                ``,
+                `**Branch**: \`${branch}\``,
+                `**Workflow**: \`${workflow}\``,
+                ``,
+                `---`,
+                `*Created automatically by spec-ready workflow. Agent will write the spec, run clarify, and post questions here.*`,
+              ].join('\n'),
+            });
+
+            core.setOutput('pr_number', String(pr.number));
+            core.setOutput('pr_url', pr.html_url);
+
+      # --- Step 5: Update issue with instructions and assign agent ---
+      - name: Update issue and assign agent
+        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const AGENT = process.env.SPEC_READY_AGENT || 'copilot';
+            const workflow = '${{ steps.classify.outputs.workflow }}';
+            const label = '${{ steps.classify.outputs.label }}';
+            const command = '${{ steps.classify.outputs.command }}';
+            const branch = '${{ steps.create.outputs.branch }}';
+            const prNumber = ${{ steps.pr.outputs.pr_number }};
+            const prUrl = '${{ steps.pr.outputs.pr_url }}';
+            const issueUrl = '${{ steps.classify.outputs.issue_url }}';
+
+            // --- Append agent instructions to issue ---
 
             const instructions = [
               ``,
@@ -181,25 +212,53 @@ jobs:
               ``,
               `## Agent Instructions`,
               ``,
-              `This is a **${workflowLabel.toLowerCase()}**. When assigned, run the spec-kit workflow:`,
+              `This is a **${label.toLowerCase()}**. The branch and spec structure are ready.`,
               ``,
-              `### 1. Run the workflow`,
-              `Execute in the repo:`,
+              `| Item | Value |`,
+              `|------|-------|`,
+              `| **Branch** | \`${branch}\` |`,
+              `| **PR** | #${prNumber} |`,
+              `| **Workflow** | \`${command}\` |`,
+              ``,
+              `### 1. Write the spec`,
+              `Check out branch \`${branch}\` and write the spec using the templates already created.`,
+              `Use the issue description above as the primary input.`,
+              ``,
+              `Run:`,
               '```',
-              `${workflowCommand} ${issue.html_url}`,
+              `git checkout ${branch}`,
+              `${command} ${issueUrl}`,
               '```',
               ``,
-              `This will create a branch, generate specs, and produce implementation tasks.`,
-              ...commonSteps,
+              `### 2. Run /speckit.clarify`,
+              `After writing the spec, run \`/speckit.clarify\` to surface ambiguities, missing details, and open questions.`,
+              ``,
+              `### 3. Post ALL clarification questions to PR #${prNumber}`,
+              `**This is critical.** Post EVERY question from clarify as a **separate PR review comment** on PR #${prNumber}.`,
+              `Post each comment on the most relevant line of the spec file.`,
+              ``,
+              `Format each comment as:`,
+              '```',
+              `**[NEEDS CLARIFICATION]**: <question>`,
+              ``,
+              `**Context**: <relevant spec section>`,
+              `**Impact**: What depends on the answer`,
+              `**Options**:`,
+              `- A: <option and implications>`,
+              `- B: <option and implications>`,
+              `**Default**: <which option to proceed with if no response>`,
+              '```',
+              ``,
+              `Do NOT proceed past planning until all clarification questions are posted and reviewed.`,
+              ``,
+              `### 4. Update this issue when done`,
+              `- Remove label: \`spec-ready\``,
+              `- Add label: \`in-progress\``,
+              `- Comment with the number of clarification questions pending on the PR`,
             ].join('\n');
 
-            // --- Append instructions (idempotent) ---
-
             const currentBody = issue.body || '';
-
-            if (currentBody.includes('## Agent Instructions')) {
-              core.info('Agent instructions already present, skipping append');
-            } else {
+            if (!currentBody.includes('## Agent Instructions')) {
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -218,21 +277,98 @@ jobs:
                 assignees: [AGENT],
               });
             } catch (e) {
-              core.warning(`Could not assign ${AGENT}: ${e.message}. You may need to assign manually.`);
+              core.warning(`Could not assign ${AGENT}: ${e.message}`);
             }
 
-            // --- Comment ---
+            // --- Comment on issue ---
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue.number,
               body: [
-                `### ${workflowLabel} workflow initiated`,
+                `### ${label} workflow ready`,
                 ``,
-                `**${AGENT}** has been assigned to handle this via \`${workflowCommand}\`.`,
-                `Instructions have been appended to the issue body.`,
+                `| | |`,
+                `|---|---|`,
+                `| **Branch** | \`${branch}\` |`,
+                `| **PR** | ${prUrl} |`,
+                `| **Agent** | @${AGENT} |`,
+                `| **Command** | \`${command}\` |`,
                 ``,
-                `**Manual alternative**: Run \`${workflowCommand} ${issue.html_url}\` in a repo checkout.`,
+                `The branch and spec structure have been created. **${AGENT}** has been assigned to:`,
+                `1. Write the spec on branch \`${branch}\``,
+                `2. Run \`/speckit.clarify\``,
+                `3. Post all clarification questions as review comments on the PR`,
+                ``,
+                `**Manual alternative**: \`git checkout ${branch} && ${command} ${issueUrl}\``,
               ].join('\n'),
+            });
+
+      # --- Fallback: script failed, use instruction-only mode ---
+      - name: Fallback - append instructions without branch
+        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const AGENT = process.env.SPEC_READY_AGENT || 'copilot';
+            const workflow = '${{ steps.classify.outputs.workflow }}';
+            const label = '${{ steps.classify.outputs.label }}';
+            const command = '${{ steps.classify.outputs.command }}';
+            const issueUrl = '${{ steps.classify.outputs.issue_url }}';
+
+            const instructions = [
+              ``,
+              `---`,
+              ``,
+              `## Agent Instructions`,
+              ``,
+              `This is a **${label.toLowerCase()}**. Branch creation was skipped (create script not available).`,
+              ``,
+              `### 1. Run the workflow`,
+              `Execute in the repo:`,
+              '```',
+              `${command} ${issueUrl}`,
+              '```',
+              `This will create the branch, spec structure, and templates.`,
+              ``,
+              `### 2. Run /speckit.clarify`,
+              `After the spec is created, run \`/speckit.clarify\` to surface ambiguities and open questions.`,
+              ``,
+              `### 3. Open a PR and post ALL clarification questions`,
+              `Create a draft PR, then post EVERY question from clarify as a **separate PR review comment**.`,
+              `Do NOT proceed past planning until questions are posted.`,
+              ``,
+              `### 4. Update this issue`,
+              `- Remove label: \`spec-ready\`, add: \`in-progress\``,
+              `- Comment with branch name, PR link, and number of clarification questions`,
+            ].join('\n');
+
+            const currentBody = issue.body || '';
+            if (!currentBody.includes('## Agent Instructions')) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: currentBody + instructions,
+              });
+            }
+
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: [AGENT],
+              });
+            } catch (e) {
+              core.warning(`Could not assign ${AGENT}: ${e.message}`);
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: `### ${label} workflow initiated\n\n**${AGENT}** has been assigned. Run \`${command} ${issueUrl}\` to start.\n\n*Note: Branch was not pre-created (create script unavailable). The agent will create it.*`,
             });
