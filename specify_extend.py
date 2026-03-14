@@ -48,7 +48,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 # Initialize Rich console
 console = Console()
@@ -97,7 +97,7 @@ AGENT_CONFIG = {
     "gemini": {
         "name": "Gemini CLI",
         "folder": ".gemini/commands",
-        "file_extension": "toml",
+        "file_extension": "md",  # Changed from toml in spec-kit 0.3.0
         "requires_cli": True,
     },
     "copilot": {
@@ -115,7 +115,7 @@ AGENT_CONFIG = {
     "qwen": {
         "name": "Qwen Code",
         "folder": ".qwen/commands",
-        "file_extension": "toml",
+        "file_extension": "md",  # Changed from toml in spec-kit 0.3.0
         "requires_cli": True,
     },
     "opencode": {
@@ -195,6 +195,7 @@ AGENT_CONFIG = {
         "folder": ".agent/workflows",
         "file_extension": "md",
         "requires_cli": False,
+        "deprecated": True,  # Deprecated in spec-kit 0.3.0
     },
     "bob": {
         "name": "IBM Bob",
@@ -749,8 +750,34 @@ def install_extension_skills(
     return installed > 0 or skipped > 0
 
 
+def detect_agent_from_init_options(repo_root: Path) -> Optional[str]:
+    """Read agent from spec-kit's init-options.json (spec-kit 0.3.0+).
+
+    Returns the agent identifier if found, or None for older spec-kit versions.
+    """
+    import json
+
+    init_options = repo_root / ".specify" / "init-options.json"
+    if not init_options.exists():
+        return None
+
+    try:
+        options = json.loads(init_options.read_text())
+        agent = options.get("ai") or options.get("agent")
+        if agent and agent in AGENT_CONFIG:
+            return agent
+    except (json.JSONDecodeError, OSError):
+        pass
+    return None
+
+
 def detect_agent(repo_root: Path) -> str:
     """Detect which AI agent is configured by examining project structure"""
+
+    # Try spec-kit 0.3.0+ init-options.json first (most reliable)
+    from_options = detect_agent_from_init_options(repo_root)
+    if from_options:
+        return from_options
 
     # Check for Claude Code
     if (repo_root / ".claude" / "commands").exists():
@@ -1687,13 +1714,6 @@ def install_agent_commands(
             "falling back to copy so command scripts can reference .ps1 workflows"
         )
         link = False
-
-    # Check if this agent needs TOML files (not yet supported)
-    if file_ext == "toml":
-        console.print(
-            f"[yellow]⚠[/yellow] {agent_name} requires TOML command files (not yet implemented)"
-        )
-        console.print("  [dim]Will install markdown files as fallback[/dim]")
 
     commands_dir = repo_root / folder
 
@@ -2992,6 +3012,15 @@ def main(
         detected_agent = detect_agent(repo_root)
         resolved_agents = [detected_agent]
         console.print(f"[blue]ℹ[/blue] Detected agent: {detected_agent}")
+
+    # Warn about deprecated agents
+    for ra in resolved_agents:
+        agent_cfg = AGENT_CONFIG.get(ra, {})
+        if agent_cfg.get("deprecated"):
+            console.print(
+                f"[yellow]⚠[/yellow] {agent_cfg.get('name', ra)} is deprecated in spec-kit 0.3.0. "
+                "Consider migrating to another agent."
+            )
 
     # Dry run summary
     if dry_run:

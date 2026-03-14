@@ -7,11 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
-- **CLI Tool** (`specify-extend`) - Currently at v1.6.0
+- **CLI Tool** (`specify-extend`) - Currently at v2.2.0
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [2.2.0] - 2026-03-14
+
+#### 🚀 Added
+
+- **spec-kit v0.3.0 Compatibility** - Alignment with spec-kit 0.3.0 features
+  - Read agent from `init-options.json` (spec-kit 0.3.0+) for reliable detection before falling back to directory scanning
+  - New `detect_agent_from_init_options()` function reads `.specify/init-options.json`
+
+#### 🔧 Changed/Improved
+
+- **Qwen Code CLI**: Changed `file_extension` from `toml` to `md` — Qwen migrated to Markdown in spec-kit 0.3.0
+- **Gemini CLI**: Changed `file_extension` from `toml` to `md` — Gemini migrated to Markdown in spec-kit 0.3.0
+- **TOML fallback removed**: Removed TOML fallback warning since no agents use TOML format anymore
+
+#### ⚠️ Deprecated
+
+- **agy (Antigravity)**: Marked as deprecated in AGENT_CONFIG — spec-kit 0.3.0 dropped explicit agy command support. A deprecation warning is now emitted when `--ai agy` is used.
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.2.0
+- **Compatible Spec Kit Version**: v0.2.0+ (tested with v0.3.0)
+- **Extension Templates Version**: v3.1.0
+
+---
 
 ### [1.6.0] - 2026-03-11
 
