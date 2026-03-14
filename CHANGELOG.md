@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.1.0
 - **CLI Tool** (`specify-extend`) - Currently at v2.2.0
 
 ---

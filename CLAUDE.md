@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **spec-kit-extensions** extends GitHub's spec-kit with 7 additional production-tested workflows that cover the complete software development lifecycle beyond just feature development. This is a dual-component project:
 
-1. **Extension Templates** (v2.1.1) - Workflow templates, commands, and bash scripts
+1. **Extension Templates** (v3.1.0) - Workflow templates, commands, and bash scripts
 2. **CLI Tool** (`specify-extend`, v2.2.0) - Python-based installation tool
 
 The project is designed to be **agent-agnostic**, working with Claude Code, GitHub Copilot, Cursor, and any AI coding assistant that supports spec-kit.
