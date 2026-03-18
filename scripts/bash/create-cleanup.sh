@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Cleanup workflow - validates and reorganizes spec-kit artifacts
 # IMPORTANT: This script only moves/renames documentation in specs/, never code files

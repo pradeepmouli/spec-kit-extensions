@@ -102,7 +102,7 @@ specify-extend --patch
 specify extension list
 
 # Should show:
-#   Spec Kit Workflow Extensions (v3.0.0)
+#   Spec Kit Workflow Extensions (v3.2.0)
 #   Commands: 11 | Status: Enabled
 
 # Try a command:
@@ -221,7 +221,7 @@ Creating GitHub issues?
 
 ### spec-kit Versions
 
-- **Required**: spec-kit v0.2.0+ (with extension system support)
+- **Required**: spec-kit v0.3.1+ (with extension system support)
 - Install from source: `uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git"`
 
 ### AI Agents
@@ -240,8 +240,8 @@ Commands are registered by spec-kit's extension system and work with any support
 
 ### Component Versions
 
-- **Extension** (v3.0.0) — Workflows, commands, templates, and scripts
-- **CLI Tool** (v2.0.0) — `specify-extend` installation and patching tool
+- **Extension** (v3.2.0) — Workflows, commands, templates, and scripts
+- **CLI Tool** (v2.2.1) — `specify-extend` installation and patching tool
 
 ## FAQ
 

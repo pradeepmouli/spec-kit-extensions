@@ -6,12 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v2.5.11
-- **CLI Tool** (`specify-extend`) - Currently at v2.2.0
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.2.0
+- **CLI Tool** (`specify-extend`) - Currently at v2.2.1
 
 ---
 
 ## CLI Tool (`specify-extend`)
+
+### [2.2.1] - 2026-03-18
+
+#### 🔧 Changed/Improved
+
+- **Template Tag Discovery** - `download_latest_release()` now recognizes both legacy `templates-v*` tags and the newer `v*` template tags
+  - Keeps older template releases installable while aligning the CLI with catalog metadata that points at `v3.x` archives
+  - Selects the highest semantic template version instead of depending on GitHub tag ordering
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.2.1
+- **Compatible Spec Kit Version**: v0.3.1+
+- **Extension Templates Version**: v3.2.0
+
+---
 
 ### [2.2.0] - 2026-03-14
 
@@ -183,6 +199,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [3.2.0] - 2026-03-18
+
+#### 🚀 Added
+
+- **Workflow Configuration Template** - Added project-level workflow configuration template
+  - New `config/workflows-config.template.yml` for configure-on-install behavior
+  - Supports enhancement task limits plus bugfix and review quality-gate settings
+  - Exposed through `provides.config` in `extension.yml`
+
+- **Review Hooks and Defaults** - Added extension-level hooks and default values in `extension.yml`
+  - `after_tasks`, `after_implement`, and `before_commit` can now invoke the review workflow
+  - Added defaults for enhancement sizing, regression-test expectations, and review checklist behavior
+
+#### 🔧 Changed/Improved
+
+- **spec-kit v0.3.1 Compatibility** - Minimum supported spec-kit version is now `>=0.3.1`
+  - Updated extension metadata in `extension.yml` and `catalog-entry.json`
+
+- **Configurable Enhancement Scope** - The enhancement workflow now resolves task limits from defaults, project config, or environment
+  - `commands/enhance.md` now instructs agents to honor `min_tasks` and `max_tasks`
+  - `scripts/bash/create-enhance.sh` emits resolved `MAX_TASKS` and `MIN_TASKS` values in both human-readable and JSON output
+
+- **Preset-Aware Template Resolution** - Workflow creation scripts now use `resolve_workflow_template()`
+  - Delegates to spec-kit's preset-aware `resolve_template()` when available
+  - Falls back to bundled extension templates for older installations and local development
+
+- **Bash Script Hardening** - All workflow creation scripts now use `set -euo pipefail`
+  - Aligns with spec-kit 0.3.x bash hardening expectations
+
+- **Agent Prefix Coverage** - Added `trae/`, `codex/`, and `opencode/` to the extension branch helper allowlist
+
+#### 📦 Components
+
+- **Extension Templates Version**: v3.2.0
+- **Compatible Spec Kit Version**: v0.3.1+
+- **Compatible specify-extend**: v2.2.1+
+
+---
 
 ### [2.5.11] - 2026-02-02
 

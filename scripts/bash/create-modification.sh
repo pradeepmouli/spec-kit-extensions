@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Source common functions from spec-kit
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -186,7 +186,7 @@ mkdir -p "$MOD_DIR"
 mkdir -p "$MOD_DIR/contracts"
 
 # Copy template
-MODIFY_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/modify/modification-template.md"
+MODIFY_TEMPLATE=$(resolve_workflow_template "modify/modification-template.md" "$REPO_ROOT")
 MOD_SPEC_FILE="$MOD_DIR/modification-spec.md"
 
 if [ -f "$MODIFY_TEMPLATE" ]; then

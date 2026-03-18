@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -142,7 +142,7 @@ DEPRECATE_DIR="$DEPRECATE_SUBDIR/${DEPRECATE_NUM}-${FEATURE_SHORT}"
 mkdir -p "$DEPRECATE_DIR"
 
 # Copy template
-DEPRECATION_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/deprecate/deprecation-template.md"
+DEPRECATION_TEMPLATE=$(resolve_workflow_template "deprecate/deprecation-template.md" "$REPO_ROOT")
 
 DEPRECATION_FILE="$DEPRECATE_DIR/deprecation.md"
 

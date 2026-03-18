@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -110,8 +110,8 @@ HOTFIX_DIR="$HOTFIX_SUBDIR/${HOTFIX_NUM}-${WORDS}"
 mkdir -p "$HOTFIX_DIR"
 
 # Copy templates
-HOTFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/hotfix/hotfix-template.md"
-POSTMORTEM_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/hotfix/post-mortem-template.md"
+HOTFIX_TEMPLATE=$(resolve_workflow_template "hotfix/hotfix-template.md" "$REPO_ROOT")
+POSTMORTEM_TEMPLATE=$(resolve_workflow_template "hotfix/post-mortem-template.md" "$REPO_ROOT")
 
 HOTFIX_FILE="$HOTFIX_DIR/hotfix.md"
 POSTMORTEM_FILE="$HOTFIX_DIR/post-mortem.md"

@@ -112,6 +112,34 @@ get_global_next_number() {
 }
 fi
 
+# --- resolve_workflow_template ---
+# Resolve a workflow template file path using spec-kit's preset priority stack
+# when available (spec-kit >=0.3.0), otherwise falls back to the bundled
+# extension templates directory.
+#
+# Priority order (spec-kit 0.3.0+ preset system):
+#   user overrides → installed presets → this extension → spec-kit core
+#
+# Usage: resolve_workflow_template <template-relative-path> <repo-root>
+# Example: TMPL=$(resolve_workflow_template "enhance/enhancement-template.md" "$REPO_ROOT")
+resolve_workflow_template() {
+    local template_rel="$1"
+    local repo_root="${2:-$(get_repo_root)}"
+    local fallback="${repo_root}/.specify/extensions/workflows/templates/${template_rel}"
+
+    # Delegate to spec-kit's resolve_template() if present (requires >=0.3.0)
+    if declare -f resolve_template > /dev/null 2>&1; then
+        local resolved
+        resolved=$(resolve_template "${template_rel}" "${repo_root}" 2>/dev/null) || true
+        if [[ -n "$resolved" && -f "$resolved" ]]; then
+            echo "$resolved"
+            return 0
+        fi
+    fi
+
+    echo "$fallback"
+}
+
 # --- check_feature_branch ---
 # Extended branch validation supporting spec-kit-extensions branch patterns
 # and AI agent branch patterns.
@@ -146,6 +174,9 @@ check_feature_branch() {
         "windsurf/"
         "gemini/"
         "qwen/"
+        "trae/"         # Added in spec-kit 0.3.1 (#1817)
+        "codex/"
+        "opencode/"
     )
 
     # Check if branch starts with any agent prefix

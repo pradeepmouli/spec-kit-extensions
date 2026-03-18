@@ -48,7 +48,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 # Initialize Rich console
 console = Console()
@@ -927,13 +927,15 @@ def validate_speckit_installation(repo_root: Path) -> bool:
 def download_latest_release(temp_dir: Path, github_token: str = None) -> Optional[Path]:
     """Download the latest template release from GitHub
 
-    Fetches the latest templates-v* tag from the repository, as templates
-    are now versioned separately from the CLI tool.
+    Fetches the latest template tag from the repository.
+
+    Supports both the legacy templates-v* tag scheme and the newer v* tag
+    scheme used by catalog metadata.
     """
 
     with console.status("[bold blue]Downloading latest extensions...") as status:
         try:
-            # Get all tags to find latest templates-v* tag
+            # Get all tags to find the latest template tag.
             url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/tags"
             response = client.get(
                 url,
@@ -952,15 +954,34 @@ def download_latest_release(temp_dir: Path, github_token: str = None) -> Optiona
                 console.print(f"[red]Failed to parse tags JSON:[/red] {je}")
                 return None
 
-            # Find latest templates-v* tag
-            template_tags = [tag for tag in tags_data if tag["name"].startswith("templates-v")]
+            def _parse_template_tag(tag_name: str) -> Optional[Tuple[Tuple[int, int, int, int, str], str]]:
+                """Return a sortable key and normalized version for template tags."""
+                match = re.match(r"^(?:templates-v|v)(\d+)\.(\d+)\.(\d+)(?:-([A-Za-z0-9.-]+))?$", tag_name)
+                if not match:
+                    return None
 
-            if not template_tags:
-                console.print("[red]No template tags found (looking for templates-v* pattern)[/red]")
+                major, minor, patch = (int(match.group(i)) for i in range(1, 4))
+                prerelease = match.group(4) or ""
+                # Stable releases sort after prereleases for the same numeric version.
+                stability = 1 if prerelease == "" else 0
+                return (major, minor, patch, stability, prerelease), f"{major}.{minor}.{patch}{('-' + prerelease) if prerelease else ''}"
+
+            template_candidates = []
+            for tag in tags_data:
+                tag_name = tag["name"]
+                parsed = _parse_template_tag(tag_name)
+                if not parsed:
+                    continue
+
+                sort_key, normalized_version = parsed
+                template_candidates.append((sort_key, tag_name, normalized_version))
+
+            if not template_candidates:
+                console.print("[red]No template tags found (looking for templates-v* or v* pattern)[/red]")
                 return None
 
-            # Get the first one (GitHub returns tags in reverse chronological order)
-            tag_name = template_tags[0]["name"]
+            template_candidates.sort(key=lambda item: item[0], reverse=True)
+            tag_name = template_candidates[0][1]
 
             console.print(f"[blue]ℹ[/blue] Latest template version: {tag_name}")
 

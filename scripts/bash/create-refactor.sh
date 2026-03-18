@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -142,7 +142,7 @@ REFACTOR_DIR="$REFACTOR_SUBDIR/${REFACTOR_NUM}-${WORDS}"
 mkdir -p "$REFACTOR_DIR"
 
 # Copy template
-REFACTOR_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/refactor/refactor-template.md"
+REFACTOR_TEMPLATE=$(resolve_workflow_template "refactor/refactor-template.md" "$REPO_ROOT")
 REFACTOR_SPEC_FILE="$REFACTOR_DIR/refactor-spec.md"
 
 if [ -f "$REFACTOR_TEMPLATE" ]; then
@@ -190,7 +190,7 @@ EOF
 
 # Create placeholder for testing gaps assessment
 TESTING_GAPS="$REFACTOR_DIR/testing-gaps.md"
-TESTING_GAPS_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/refactor/testing-gaps-template.md"
+TESTING_GAPS_TEMPLATE=$(resolve_workflow_template "refactor/testing-gaps-template.md" "$REPO_ROOT")
 
 if [ -f "$TESTING_GAPS_TEMPLATE" ]; then
     cp "$TESTING_GAPS_TEMPLATE" "$TESTING_GAPS"

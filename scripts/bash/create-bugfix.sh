@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Source common functions from spec-kit
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -101,7 +101,7 @@ BUG_DIR="$BUGFIX_SUBDIR/${BUG_NUM}-${WORDS}"
 mkdir -p "$BUG_DIR"
 
 # Copy template
-BUGFIX_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/bugfix/bug-report-template.md"
+BUGFIX_TEMPLATE=$(resolve_workflow_template "bugfix/bug-report-template.md" "$REPO_ROOT")
 BUG_REPORT_FILE="$BUG_DIR/bug-report.md"
 
 if [ -f "$BUGFIX_TEMPLATE" ]; then

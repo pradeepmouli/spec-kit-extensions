@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # Source common functions from spec-kit
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -103,7 +103,7 @@ fi
 
 # Create baseline-spec.md
 BASELINE_SPEC="$HISTORY_DIR/baseline-spec.md"
-BASELINE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/baseline/baseline-spec-template.md"
+BASELINE_TEMPLATE=$(resolve_workflow_template "baseline/baseline-spec-template.md" "$REPO_ROOT")
 
 if [ -f "$BASELINE_TEMPLATE" ]; then
     cp "$BASELINE_TEMPLATE" "$BASELINE_SPEC"
@@ -213,7 +213,7 @@ fi
 
 # Create current-state.md
 CURRENT_STATE="$HISTORY_DIR/current-state.md"
-CURRENT_STATE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/baseline/current-state-template.md"
+CURRENT_STATE_TEMPLATE=$(resolve_workflow_template "baseline/current-state-template.md" "$REPO_ROOT")
 
 if [ -f "$CURRENT_STATE_TEMPLATE" ]; then
     cp "$CURRENT_STATE_TEMPLATE" "$CURRENT_STATE"

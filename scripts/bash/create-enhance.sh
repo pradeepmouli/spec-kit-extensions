@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+# create-enhance.sh — Initialize an enhancement workflow.
+# Spec Kit Workflow Extensions (spec-kit >=0.3.1)
 
-set -e
+set -euo pipefail
 
 # Source common functions from spec-kit
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -57,13 +59,23 @@ ARGS=()
 for arg in "$@"; do
     case "$arg" in
         --json) JSON_MODE=true ;;
-        --help|-h) echo "Usage: $0 [--json] <enhancement_description>"; exit 0 ;;
+        --help|-h)
+            echo "Usage: $0 [--json] <enhancement_description>"
+            echo ""
+            echo "Options:"
+            echo "  --json    Emit JSON output instead of human-readable lines"
+            echo ""
+            echo "Config (highest priority wins):"
+            echo "  SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS env var"
+            echo "  .specify/extensions/workflows/workflows-config.yml  (enhance.max_tasks)"
+            echo "  extension defaults (max_tasks=7, min_tasks=3)"
+            exit 0 ;;
         *) ARGS+=("$arg") ;;
     esac
 done
 
-ENHANCEMENT_DESCRIPTION="${ARGS[*]}"
-if [ -z "$ENHANCEMENT_DESCRIPTION" ]; then
+ENHANCEMENT_DESCRIPTION="${ARGS[*]:-}"
+if [ -z "${ENHANCEMENT_DESCRIPTION}" ]; then
     echo "Usage: $0 [--json] <enhancement_description>" >&2
     exit 1
 fi
@@ -71,6 +83,34 @@ fi
 # Use spec-kit common functions
 REPO_ROOT=$(get_repo_root)
 HAS_GIT=$(has_git && echo "true" || echo "false")
+
+# ── Resolve max_tasks configuration ────────────────────────────────────────
+# Priority: env var > project config file > extension defaults
+DEFAULT_MAX_TASKS=7
+DEFAULT_MIN_TASKS=3
+
+# 1. Extension defaults
+MAX_TASKS="$DEFAULT_MAX_TASKS"
+MIN_TASKS="$DEFAULT_MIN_TASKS"
+
+# 2. Project config file (.specify/extensions/workflows/workflows-config.yml)
+CONFIG_FILE="${REPO_ROOT}/.specify/extensions/workflows/workflows-config.yml"
+if [ -f "${CONFIG_FILE}" ]; then
+    _cfg_max=$(grep -E '^[[:space:]]*max_tasks:[[:space:]]' "${CONFIG_FILE}" | tail -1 | sed 's/.*max_tasks:[[:space:]]*//' | tr -d '[:space:]' || true)
+    _cfg_min=$(grep -E '^[[:space:]]*min_tasks:[[:space:]]' "${CONFIG_FILE}" | tail -1 | sed 's/.*min_tasks:[[:space:]]*//' | tr -d '[:space:]' || true)
+    [[ "${_cfg_max}" =~ ^[0-9]+$ ]] && MAX_TASKS="${_cfg_max}"
+    [[ "${_cfg_min}" =~ ^[0-9]+$ ]] && MIN_TASKS="${_cfg_min}"
+fi
+
+# 3. Environment variable override (SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS)
+if [[ -n "${SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS:-}" ]]; then
+    if [[ "${SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS}" =~ ^[0-9]+$ ]]; then
+        MAX_TASKS="${SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS}"
+    else
+        echo "[enhance] Warning: SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS='${SPECKIT_WORKFLOWS_ENHANCE_MAX_TASKS}' is not a valid integer; ignoring." >&2
+    fi
+fi
+# ───────────────────────────────────────────────────────────────────────────
 
 cd "$REPO_ROOT"
 
@@ -100,7 +140,7 @@ ENHANCE_DIR="$ENHANCE_SUBDIR/${ENHANCE_NUM}-${WORDS}"
 mkdir -p "$ENHANCE_DIR"
 
 # Copy template
-ENHANCE_TEMPLATE="$REPO_ROOT/.specify/extensions/workflows/templates/enhance/enhancement-template.md"
+ENHANCE_TEMPLATE=$(resolve_workflow_template "enhance/enhancement-template.md" "$REPO_ROOT")
 ENHANCEMENT_FILE="$ENHANCE_DIR/enhancement.md"
 
 if [ -f "$ENHANCE_TEMPLATE" ]; then
@@ -120,12 +160,14 @@ ln -sf "enhancement.md" "$ENHANCE_DIR/tasks.md"
 export SPECIFY_ENHANCE="$ENHANCE_ID"
 
 if $JSON_MODE; then
-    printf '{"ENHANCE_ID":"%s","BRANCH_NAME":"%s","ENHANCEMENT_FILE":"%s","ENHANCE_NUM":"%s"}\n' \
-        "$ENHANCE_ID" "$BRANCH_NAME" "$ENHANCEMENT_FILE" "$ENHANCE_NUM"
+    printf '{"ENHANCE_ID":"%s","BRANCH_NAME":"%s","ENHANCEMENT_FILE":"%s","ENHANCE_NUM":"%s","MAX_TASKS":"%s","MIN_TASKS":"%s"}\n' \
+        "${ENHANCE_ID}" "${BRANCH_NAME}" "${ENHANCEMENT_FILE}" "${ENHANCE_NUM}" "${MAX_TASKS}" "${MIN_TASKS}"
 else
-    echo "ENHANCE_ID: $ENHANCE_ID"
-    echo "BRANCH_NAME: $BRANCH_NAME"
-    echo "ENHANCEMENT_FILE: $ENHANCEMENT_FILE"
-    echo "ENHANCE_NUM: $ENHANCE_NUM"
-    echo "SPECIFY_ENHANCE environment variable set to: $ENHANCE_ID"
+    echo "ENHANCE_ID: ${ENHANCE_ID}"
+    echo "BRANCH_NAME: ${BRANCH_NAME}"
+    echo "ENHANCEMENT_FILE: ${ENHANCEMENT_FILE}"
+    echo "ENHANCE_NUM: ${ENHANCE_NUM}"
+    echo "MAX_TASKS: ${MAX_TASKS}"
+    echo "MIN_TASKS: ${MIN_TASKS}"
+    echo "SPECIFY_ENHANCE environment variable set to: ${ENHANCE_ID}"
 fi
