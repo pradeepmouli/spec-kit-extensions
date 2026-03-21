@@ -343,8 +343,8 @@ cat .specify/extensions/README.md | grep "Extension Templates Version"
 ```
 
 **Note**: This project has two independently versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently v2.1.1
-- **CLI Tool** (`specify-extend`) - Currently v1.0.1
+- **Extension Templates** (workflows, commands, scripts) - Currently v3.2.0
+- **CLI Tool** (`specify-extend`) - Currently v2.2.1
 
 ### Update CLI Tool
 

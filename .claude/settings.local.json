@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(specify --version 2>/dev/null || echo \"specify not in PATH\")",
+      "Read(//private/tmp/spec-kit-latest/**)",
+      "Read(//tmp/spec-kit-latest/**)",
+      "Bash(python specify_extend.py --help 2>&1 | head -50)",
+      "Bash(.venv/bin/python specify_extend.py --help 2>&1 | head -60)",
+      "Bash(.venv/bin/python specify_extend.py --version 2>&1 && .venv/bin/python specify_extend.py --ai claude --all --dry-run 2>&1 | head -20)",
+      "Bash(.venv/bin/python specify_extend.py --ai generic --all --dry-run 2>&1 | head -5)",
+      "Bash(.venv/bin/python specify_extend.py --ai claude --ai-commands-dir .myagent/commands --all --dry-run 2>&1 | head -5)",
+      "Bash(.venv/bin/python specify_extend.py --ai generic --ai-commands-dir .myagent/commands --all --dry-run 2>&1 | head -10)",
+      "Bash(.venv/bin/python specify_extend.py --ai claude --all --ai-skills --dry-run 2>&1 | head -10)",
+      "Bash(python -c \"import py_compile; py_compile.compile\\('specify_extend.py', doraise=True\\)\" && echo \"Python syntax OK\")",
+      "Bash(.venv/bin/python specify_extend.py --help 2>&1 | grep -A1 \"patch\")",
+      "Bash(for f:*)",
+      "Bash(find /Users/pmouli/GitHub.nosync/spec-kit -type f \\\\\\( -name \"*.yml\" -o -name \"*.yaml\" \\\\\\) 2>/dev/null | head -20)",
+      "Bash(rm -rf dist/ && .venv/bin/python -m build 2>&1)",
+      "Bash(which uv:*)",
+      "Read(//private/tmp/test-ext-install/**)",
+      "Bash(specify extension:*)",
+      "Bash(uv tool:*)",
+      "Bash(specify --version 2>&1; specify extension add --help 2>&1 | head -20)",
+      "Bash(specify version:*)",
+      "Bash(uv build:*)",
+      "Bash(specify-extend --all)"
+    ]
+  }
+}

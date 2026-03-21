@@ -2,7 +2,7 @@
 
 **Date**: 2026-03-14
 **Spec-Kit Version**: 0.3.0 (released 2026-03-13)
-**Current spec-kit-extensions**: CLI v2.1.0 / Templates v3.1.0
+**Current spec-kit-extensions**: CLI v2.2.1 / Templates v3.2.0
 
 ---
 
@@ -43,7 +43,7 @@ Today, spec-kit-extensions relies on monkey-patching `common.sh` to support exte
 
 ```yaml
 name: spec-kit-extensions
-version: 3.1.0
+version: 3.2.0
 description: 7 production workflows for the complete development lifecycle
 author: pradeepmouli
 requires: ">=0.3.0"

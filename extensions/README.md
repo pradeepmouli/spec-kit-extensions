@@ -73,9 +73,9 @@ These extensions are designed to be:
 
 ## Version
 
-Extension Templates Version: v2.1.1
-CLI Tool Version: v1.1.2
-Compatible with Specify Core: v0.0.18+
+Extension Templates Version: v3.2.0
+CLI Tool Version: v2.2.1
+Compatible with Specify Core: v0.3.1+
 
 ## License
 
