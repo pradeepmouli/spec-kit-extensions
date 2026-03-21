@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-18T21:00:59.475Z",
+  "generatedAt": "2026-03-21T17:59:37.089Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,111 +11,111 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "643432a2ec1c52f7af2206911345d26a94ac6bcd"
+    "commit": "3eee78c9aeebe18e23a8f027b63595b85a537be9"
   },
   "dependencies": [
     {
-      "id": "a0004d27-47f7-4ed5-aab4-35485b1095d6",
-      "url": "https://keepachangelog.com/en/1.0.0/",
-      "type": "schema",
-      "accessMethod": "http",
-      "name": "1.0",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:56.361Z",
-      "lastChecked": "2026-03-18T21:00:56.361Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 5,
-          "context": "Keep a Changelog"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "819c7492-acdd-4900-960f-ffe6d8dbd61e",
-      "url": "https://semver.org/spec/v2.0.0.html",
-      "type": "schema",
-      "accessMethod": "http",
-      "name": "v2.0.0",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:57.941Z",
-      "lastChecked": "2026-03-18T21:00:57.941Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 6,
-          "context": "Semantic Versioning"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "1234895b-27de-4dd2-bc6b-687af3f2c3d9",
-      "url": "https://agentskills.io/specification",
-      "type": "schema",
-      "accessMethod": "http",
-      "name": "specification",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
-      "referencedIn": [
-        {
-          "file": "CHANGELOG.md",
-          "line": 74,
-          "context": "agentskills.io"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "f791cfeb-ddc3-4139-8235-ec2e8ce278d4",
-      "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
+      "id": "492b398c-b088-495e-ac2d-23377cb9448c",
+      "url": "https://github.com/github/spec-kit.git",
       "type": "reference-implementation",
       "accessMethod": "github-api",
-      "name": "v1.0.0...v2.0",
+      "name": "spec-kit",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:31.942Z",
+      "lastChecked": "2026-03-21T17:59:31.942Z",
       "referencedIn": [
         {
-          "file": "CHANGELOG.md",
-          "line": 1480,
-          "context": "2.0.0"
+          "file": "INSTALLATION.md",
+          "line": 11,
+          "context": "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "93590ed4-1977-4e74-9962-e97557f0a9c9",
-      "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
+      "id": "5c29dc82-f315-4a80-a19c-a6b50e72455d",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions/releases/latest",
       "type": "reference-implementation",
       "accessMethod": "github-api",
-      "name": "v1.0",
+      "name": "latest",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:31.942Z",
+      "lastChecked": "2026-03-21T17:59:31.942Z",
       "referencedIn": [
         {
-          "file": "CHANGELOG.md",
-          "line": 1481,
-          "context": "1.0.0"
+          "file": "INSTALLATION.md",
+          "line": 29,
+          "context": "specify extension add --from https://github.com/pradeepmouli/spec-kit-extensions/releases/latest"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "744b897e-844e-4369-9d82-016c0d0f8889",
+      "id": "07c2204d-92d1-4e18-8fc5-e89209cf4500",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions.git",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit-extensions",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-21T17:59:31.942Z",
+      "lastChecked": "2026-03-21T17:59:31.942Z",
+      "referencedIn": [
+        {
+          "file": "INSTALLATION.md",
+          "line": 93,
+          "context": "pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "c01c4f94-30ef-4021-99ba-e6a5f83b18c2",
+      "url": "https://raw.githubusercontent.com/pradeepmouli/spec-kit-extensions/main/scripts/migrate-to-native.sh",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "migrate-to-native",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-21T17:59:35.517Z",
+      "lastChecked": "2026-03-21T17:59:35.517Z",
+      "referencedIn": [
+        {
+          "file": "INSTALLATION.md",
+          "line": 123,
+          "context": "curl -sSL https://raw.githubusercontent.com/pradeepmouli/spec-kit-extensions/main/scripts/migrate-to-native.sh > migrate.sh"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "661193de-0190-4e23-b13b-6424e2625ee7",
+      "url": "https://github.com/",
+      "type": "schema",
+      "accessMethod": "github-api",
+      "name": "github.com",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-03-21T17:59:37.089Z",
+      "lastChecked": "2026-03-21T17:59:37.089Z",
+      "referencedIn": [
+        {
+          "file": "INSTALLATION.md",
+          "line": 169,
+          "context": "1. Download the [latest release](https://github.com/[your-username]/spec-kit-extensions/releases) as ZIP"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "7dfe5b61-bdd4-4b65-8efd-8d8590b2c5d6",
       "url": "https://github.com/github/spec-kit",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -123,110 +123,91 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:37.089Z",
+      "lastChecked": "2026-03-21T17:59:37.089Z",
       "referencedIn": [
         {
-          "file": "README.md",
-          "line": 3,
-          "context": "spec-kit"
+          "file": "INSTALLATION.md",
+          "line": 431,
+          "context": "spec-kit repo"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "33d9f521-b62c-4954-b6b9-786b96ed9eb7",
-      "url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip",
+      "id": "3606f3ff-6e77-4c22-acde-79b3ff0e1991",
+      "url": "https://github.com/github/spec-kit/releases",
       "type": "reference-implementation",
       "accessMethod": "github-api",
-      "name": "main",
+      "name": "releases",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:37.089Z",
+      "lastChecked": "2026-03-21T17:59:37.089Z",
       "referencedIn": [
         {
-          "file": "README.md",
-          "line": 92,
-          "context": "specify extension add workflows --from https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip"
+          "file": "SPEC-KIT-0.3.0-UPGRADE.md",
+          "line": 249,
+          "context": "Spec-Kit Releases"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "8b0561ab-d9d2-4f7e-9e62-d0fff7f4ede3",
-      "url": "https://github.com/github/spec-kit.git\"`",
+      "id": "904db14d-02c3-4ca5-9930-46fa5d33ffda",
+      "url": "https://github.com/github/spec-kit/blob/main/CHANGELOG.md",
       "type": "reference-implementation",
       "accessMethod": "github-api",
-      "name": "spec-kit",
+      "name": "CHANGELOG",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:37.089Z",
+      "lastChecked": "2026-03-21T17:59:37.089Z",
       "referencedIn": [
         {
-          "file": "README.md",
-          "line": 225,
-          "context": "- Install from source: `uv tool install specify-cli --from \"git+https://github.com/github/spec-kit.git\"`"
+          "file": "SPEC-KIT-0.3.0-UPGRADE.md",
+          "line": 250,
+          "context": "Spec-Kit CHANGELOG"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "d1c2e586-295c-4c69-a3b7-d3ba0b0f8712",
-      "url": "https://github.com/pradeepmouli/spec-kit-extensions/issues",
-      "type": "reference-implementation",
+      "id": "dd9b31f4-ba44-49d7-a868-1364f2d49966",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/upgrade.md",
+      "type": "documentation",
       "accessMethod": "github-api",
-      "name": "issues",
+      "name": "upgrade",
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
+      "detectedAt": "2026-03-21T17:59:37.089Z",
+      "lastChecked": "2026-03-21T17:59:37.089Z",
       "referencedIn": [
         {
-          "file": "README.md",
-          "line": 284,
-          "context": "GitHub Issues"
-        }
-      ],
-      "changeHistory": []
-    },
-    {
-      "id": "76f47387-49f2-4ed6-8913-6348c0df8df4",
-      "url": "https://github.com/pradeepmouli/spec-kit-extensions/discussions",
-      "type": "reference-implementation",
-      "accessMethod": "github-api",
-      "name": "discussions",
-      "currentStateHash": "sha256:pending",
-      "detectionMethod": "llm-analysis",
-      "detectionConfidence": 0.85,
-      "detectedAt": "2026-03-18T21:00:59.474Z",
-      "lastChecked": "2026-03-18T21:00:59.474Z",
-      "referencedIn": [
-        {
-          "file": "README.md",
-          "line": 285,
-          "context": "GitHub Discussions"
+          "file": "SPEC-KIT-0.3.0-UPGRADE.md",
+          "line": 251,
+          "context": "Spec-Kit Upgrade Guide"
         }
       ],
       "changeHistory": []
     }
   ],
   "statistics": {
-    "totalDependencies": 10,
+    "totalDependencies": 9,
     "byType": {
-      "schema": 3,
-      "reference-implementation": 7
+      "reference-implementation": 6,
+      "schema": 2,
+      "documentation": 1
     },
     "byAccessMethod": {
-      "http": 3,
-      "github-api": 7
+      "github-api": 8,
+      "http": 1
     },
     "byDetectionMethod": {
-      "llm-analysis": 10
+      "llm-analysis": 9
     },
     "averageConfidence": 0.8499999999999999
   }
