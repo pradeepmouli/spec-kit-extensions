@@ -1,0 +1,224 @@
+# Bidirectional sync: Issue Labels → Project Board
+#
+# When a spec-kit phase label is applied to an issue:
+#   1. Find the issue's project item
+#   2. Update the Status field to match the phase
+#   3. Wire sub-issue relationships from "depends on" references
+
+name: Phase Label → Project Board Sync
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sync-label-to-project:
+    # Skip bot-triggered events to prevent infinite sync loops
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      contains(fromJSON('["spec-in-progress","spec-complete","plan-complete","tasks-complete","implementation-complete"]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update project board status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_SYNC_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const label = context.payload.label.name;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Label → Status mapping
+            const labelToStatus = {
+              'spec-in-progress': 'Specifying',
+              'spec-complete': 'Spec Complete',
+              'plan-complete': 'Plan Complete',
+              'tasks-complete': 'Tasks Complete',
+              'implementation-complete': 'Implementation Complete',
+            };
+
+            const targetStatus = labelToStatus[label];
+            if (!targetStatus) return;
+
+            core.info(`Syncing label "${label}" → project status "${targetStatus}"`);
+
+            // Query the project field info and find this issue's project item
+            // by querying from the issue side (avoids 100-item scan limit)
+            const projectNumber = 1;
+
+            // Step 1: Get project info and Status field options
+            const { organization } = await github.graphql(`
+              query($org: String!, $projectNumber: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $projectNumber) {
+                    id
+                    field(name: "Status") {
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        options { id name }
+                      }
+                    }
+                  }
+                }
+              }
+            `, { org: owner, projectNumber });
+
+            const project = organization.projectV2;
+            const statusField = project.field;
+            const targetOption = statusField.options.find(o => o.name === targetStatus);
+
+            if (!targetOption) {
+              core.error(`Status option "${targetStatus}" not found on project board`);
+              return;
+            }
+
+            // Step 2: Find this issue's project item via the issue's projectItems connection
+            const { node: issueNode } = await github.graphql(`
+              query($issueId: ID!) {
+                node(id: $issueId) {
+                  ... on Issue {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project { id number }
+                      }
+                    }
+                  }
+                }
+              }
+            `, { issueId: issue.node_id });
+
+            const projectItem = issueNode?.projectItems?.nodes?.find(
+              item => item.project.number === projectNumber
+            );
+
+            let itemId;
+            if (!projectItem) {
+              core.warning(`Issue #${issue.number} not found in project board — adding it`);
+              const { addProjectV2ItemById } = await github.graphql(`
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemById(input: {
+                    projectId: $projectId
+                    contentId: $contentId
+                  }) {
+                    item { id }
+                  }
+                }
+              `, {
+                projectId: project.id,
+                contentId: issue.node_id,
+              });
+              itemId = addProjectV2ItemById.item.id;
+            } else {
+              itemId = projectItem.id;
+            }
+
+            // Step 3: Update the status field
+            await github.graphql(`
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId
+                  itemId: $itemId
+                  fieldId: $fieldId
+                  value: { singleSelectOptionId: $optionId }
+                }) {
+                  projectV2Item { id }
+                }
+              }
+            `, {
+              projectId: project.id,
+              itemId: itemId,
+              fieldId: statusField.id,
+              optionId: targetOption.id,
+            });
+
+            core.info(`Updated project status to "${targetStatus}" for issue #${issue.number}`);
+
+  wire-relationships:
+    # Skip bot-triggered events to prevent infinite sync loops
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      contains(fromJSON('["ready-to-spec","spec-in-progress"]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create sub-issue relationships from dependencies
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_SYNC_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const body = issue.body || '';
+
+            // Parse dependency references:
+            //   "depends on #123", "blocked by #456", "requires #789"
+            //   "depends on org/repo#123" for cross-repo
+            const dependencies = [];
+
+            // Same-repo dependencies
+            let match;
+            const sameRepoPattern = /(?:depends on|blocked by|requires|after)\s+#(\d+)/gi;
+            while ((match = sameRepoPattern.exec(body)) !== null) {
+              dependencies.push({ owner, repo, number: parseInt(match[1]) });
+            }
+
+            // Cross-repo dependencies (e.g., "depends on refactory-lang/core#42")
+            const crossRepoPattern = /(?:depends on|blocked by|requires|after)\s+([\w-]+)\/([\w-]+)#(\d+)/gi;
+            while ((match = crossRepoPattern.exec(body)) !== null) {
+              dependencies.push({ owner: match[1], repo: match[2], number: parseInt(match[3]) });
+            }
+
+            if (dependencies.length === 0) {
+              core.info('No dependency references found in issue body');
+              return;
+            }
+
+            core.info(`Found ${dependencies.length} dependency reference(s)`);
+
+            // Create sub-issue relationships (this issue is a child of its dependencies)
+            // Uses the sub-issues GraphQL API (public preview — requires feature flag header)
+            for (const dep of dependencies) {
+              try {
+                // Get the parent issue node ID
+                const { repository } = await github.graphql(`
+                  query($owner: String!, $repo: String!, $number: Int!) {
+                    repository(owner: $owner, name: $repo) {
+                      issue(number: $number) { id number title state }
+                    }
+                  }
+                `, { owner: dep.owner, repo: dep.repo, number: dep.number });
+
+                const parentIssue = repository.issue;
+                core.info(`Dependency: ${dep.owner}/${dep.repo}#${dep.number} (${parentIssue.title}) — ${parentIssue.state}`);
+
+                // Add as sub-issue relationship with the required preview header
+                try {
+                  await github.graphql(`
+                    mutation($parentId: ID!, $childId: ID!) {
+                      addSubIssue(input: {
+                        issueId: $parentId
+                        subIssueId: $childId
+                      }) {
+                        issue { id }
+                      }
+                    }
+                  `, {
+                    parentId: parentIssue.id,
+                    childId: issue.node_id,
+                    headers: { 'GraphQL-Features': 'sub_issues' },
+                  });
+                  core.info(`Created sub-issue relationship: #${dep.number} → #${issue.number}`);
+                } catch (e) {
+                  // May fail if relationship already exists or API not available
+                  core.warning(`Could not create sub-issue relationship: ${e.message}`);
+                }
+              } catch (e) {
+                core.warning(`Could not fetch dependency ${dep.owner}/${dep.repo}#${dep.number}: ${e.message}`);
+              }
+            }

@@ -92,16 +92,106 @@ jobs:
             core.setOutput('issue_number', String(issue.number));
             core.setOutput('issue_url', issue.html_url);
 
+      # --- Step 1b: Verify dependencies are completed ---
+      - name: Check dependencies
+        if: steps.classify.outputs.skip != 'true'
+        id: deps
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_SYNC_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Query the blockedBy relationships via GraphQL API
+            const { node } = await github.graphql(`
+              query($issueId: ID!) {
+                node(id: $issueId) {
+                  ... on Issue {
+                    blockedBy(first: 50) {
+                      nodes {
+                        number
+                        title
+                        state
+                        repository { name owner { login } }
+                        labels(first: 20) { nodes { name } }
+                      }
+                    }
+                  }
+                }
+              }
+            `, { issueId: issue.node_id });
+
+            const blockers = node?.blockedBy?.nodes || [];
+
+            if (blockers.length === 0) {
+              core.setOutput('blocked', 'false');
+              core.info('No blockedBy relationships found');
+              return;
+            }
+
+            core.info(`Found ${blockers.length} blockedBy relationship(s)`);
+
+            const incomplete = [];
+            for (const dep of blockers) {
+              const depLabels = dep.labels.nodes.map(l => l.name);
+              const isComplete = dep.state === 'CLOSED'
+                || depLabels.includes('implementation-complete')
+                || depLabels.includes('done');
+
+              if (!isComplete) {
+                const depOwner = dep.repository.owner.login;
+                const depRepo = dep.repository.name;
+                incomplete.push(`${depOwner}/${depRepo}#${dep.number} (${dep.title})`);
+              }
+            }
+
+            if (incomplete.length > 0) {
+              core.setOutput('blocked', 'true');
+
+              // Apply blocked label
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['blocked'],
+              });
+
+              // Remove ready-to-spec label
+              try {
+                await github.rest.issues.removeLabel({
+                  owner, repo, issue_number: issue.number, name: 'ready-to-spec',
+                });
+              } catch (e) { /* label may not exist */ }
+
+              // Comment with blocking info
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number,
+                body: [
+                  '### Blocked: Dependencies not complete',
+                  '',
+                  'This issue cannot begin spec work until the following dependencies are resolved:',
+                  '',
+                  ...incomplete.map(d => `- [ ] ${d}`),
+                  '',
+                  'Once all dependencies are complete, re-apply the `ready-to-spec` label to proceed.',
+                ].join('\n'),
+              });
+
+              core.warning(`Blocked by ${incomplete.length} incomplete dependencies`);
+            } else {
+              core.setOutput('blocked', 'false');
+              core.info(`All ${blockers.length} dependencies are complete`);
+            }
+
       # --- Step 2: Checkout and create the branch ---
       - name: Checkout repository
-        if: steps.classify.outputs.skip != 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
       - name: Create branch via spec-kit
-        if: steps.classify.outputs.skip != 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true'
         id: create
         env:
           WORKFLOW: ${{ steps.classify.outputs.workflow }}
@@ -148,7 +238,7 @@ jobs:
 
       # --- Step 3: Commit scaffolding and push ---
       - name: Commit and push branch
-        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true' && steps.create.outputs.skip != 'true'
         env:
           BRANCH: ${{ steps.create.outputs.branch }}
           ISSUE_TITLE: ${{ steps.classify.outputs.issue_title }}
@@ -162,7 +252,7 @@ jobs:
 
       # --- Step 4: Link branch to issue ---
       - name: Link branch to issue
-        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true' && steps.create.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -201,7 +291,7 @@ jobs:
 
       # --- Step 5: Update issue with branch info and instructions ---
       - name: Update issue and comment
-        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip != 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true' && steps.create.outputs.skip != 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -291,7 +381,7 @@ jobs:
 
       # --- Fallback: script failed, use instruction-only mode ---
       - name: Fallback - append instructions without branch
-        if: steps.classify.outputs.skip != 'true' && steps.create.outputs.skip == 'true'
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true' && steps.create.outputs.skip == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -345,3 +435,29 @@ jobs:
               issue_number: issue.number,
               body: `### ${label} — ready for Copilot\n\nAssign **Copilot** to this issue to start. The spec templates are ready.\n\n**Manual alternative**: Run \`${command} ${issueUrl}\``,
             });
+
+      # --- Step 6: Update project board status to "Specifying" ---
+      - name: Update project status
+        if: steps.classify.outputs.skip != 'true' && steps.deps.outputs.blocked != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_SYNC_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Apply spec-in-progress label (triggers project-phase-sync)
+            await github.rest.issues.addLabels({
+              owner, repo, issue_number: issue.number,
+              labels: ['spec-in-progress'],
+            });
+
+            // Remove ready-to-spec label
+            try {
+              await github.rest.issues.removeLabel({
+                owner, repo, issue_number: issue.number, name: 'ready-to-spec',
+              });
+            } catch (e) { /* may already be removed */ }
+
+            core.info('Transitioned to spec-in-progress');

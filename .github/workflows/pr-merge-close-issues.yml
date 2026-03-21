@@ -1,0 +1,94 @@
+# Close linked issues and update project status when PRs are merged
+#
+# When a PR is merged:
+#   1. Query closingIssuesReferences to find linked issues
+#   2. Close each linked issue
+#   3. Apply 'implementation-complete' label (triggers project status sync)
+
+name: PR Merge → Close Linked Issues
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  close-linked-issues:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close linked issues and update status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_SYNC_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Query linked issues via closingIssuesReferences
+            const { node } = await github.graphql(`
+              query($prId: ID!) {
+                node(id: $prId) {
+                  ... on PullRequest {
+                    closingIssuesReferences(first: 20) {
+                      nodes {
+                        number
+                        title
+                        state
+                        repository { name owner { login } }
+                      }
+                    }
+                  }
+                }
+              }
+            `, { prId: pr.node_id });
+
+            const linkedIssues = node?.closingIssuesReferences?.nodes || [];
+
+            if (linkedIssues.length === 0) {
+              core.info('No linked issues found on this PR');
+              return;
+            }
+
+            core.info(`Found ${linkedIssues.length} linked issue(s)`);
+
+            for (const issue of linkedIssues) {
+              const issueOwner = issue.repository.owner.login;
+              const issueRepo = issue.repository.name;
+
+              core.info(`Processing ${issueOwner}/${issueRepo}#${issue.number}: ${issue.title} (${issue.state})`);
+
+              // Apply implementation-complete label (triggers project board sync)
+              try {
+                await github.rest.issues.addLabels({
+                  owner: issueOwner, repo: issueRepo,
+                  issue_number: issue.number,
+                  labels: ['implementation-complete'],
+                });
+                core.info(`Applied 'implementation-complete' label`);
+              } catch (e) {
+                core.warning(`Could not apply label: ${e.message}`);
+              }
+
+              // Close the issue if still open
+              if (issue.state === 'OPEN') {
+                try {
+                  await github.rest.issues.update({
+                    owner: issueOwner, repo: issueRepo,
+                    issue_number: issue.number,
+                    state: 'closed',
+                    state_reason: 'completed',
+                  });
+                  core.info(`Closed issue #${issue.number}`);
+                } catch (e) {
+                  core.warning(`Could not close issue: ${e.message}`);
+                }
+              }
+            }
+
+            core.info('Done — linked issues closed and labeled');
