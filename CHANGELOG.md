@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v3.2.0
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.2.1
 - **CLI Tool** (`specify-extend`) - Currently at v2.2.1
 
 ---
@@ -199,6 +199,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [3.2.1] - 2026-03-21
+
+#### 🚀 Added
+
+- **Native Issue Sync Lifecycle Hooks** - Added linked issue synchronization across native spec-kit lifecycle boundaries
+  - Added hook handlers for `before_specify`, `after_specify`, `before_plan`, `after_plan`, `before_tasks`, `after_tasks`, `before_implement`, and `after_implement`
+  - Registered dedicated issue sync commands under the `speckit.issuesync.*` namespace
+  - Added `scripts/bash/update-linked-issue.sh` with linked issue resolution (PR references, feature docs, branch fallback)
+  - Supports optional GitHub label bootstrapping and optional status comments via configuration
+
+- **Issue Sync Configuration Template**
+  - Added `config/issue-sync.template.env` for per-event label/status mapping and repository overrides
+  - Added `issue_sync` defaults and documentation guidance in workflow config templates
+
+- **Project Automation Workflows**
+  - Added GitHub Actions for project phase sync and PR merge issue closure automation
+  - Updated spec-ready notification flow to align with project automation changes
+
+#### 🔧 Changed/Improved
+
+- **Extension Hook Organization** - Hook-only commands are now separated from workflow commands by namespace
+  - Moved issue sync hook command registrations from `speckit.workflows.*` to `speckit.issuesync.*`
+  - Preserves clear boundary between workflow creation commands and lifecycle synchronization commands
+
+- **Documentation Refresh**
+  - Updated README install/structure notes and hook behavior documentation for issue sync support
+  - Refreshed installation/extension docs and local housekeeping updates
+
+#### 📦 Components
+
+- **Extension Templates Version**: v3.2.1
+- **Compatible Spec Kit Version**: v0.3.1+
+- **Compatible specify-extend**: v2.2.1+
+
+---
 
 ### [3.2.0] - 2026-03-18
 

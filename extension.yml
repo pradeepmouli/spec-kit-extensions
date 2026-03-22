@@ -61,25 +61,89 @@ provides:
       file: "commands/incorporate.md"
       description: "Incorporate documents into workflows"
       aliases: ["speckit.incorporate"]
+    - name: "speckit.issuesync.before-specify"
+      file: "commands/issue-sync-before-specify.md"
+      description: "Sync linked issue before specify"
+    - name: "speckit.issuesync.after-specify"
+      file: "commands/issue-sync-after-specify.md"
+      description: "Sync linked issue after specify"
+    - name: "speckit.issuesync.before-plan"
+      file: "commands/issue-sync-before-plan.md"
+      description: "Sync linked issue before plan"
+    - name: "speckit.issuesync.after-plan"
+      file: "commands/issue-sync-after-plan.md"
+      description: "Sync linked issue after plan"
+    - name: "speckit.issuesync.before-tasks"
+      file: "commands/issue-sync-before-tasks.md"
+      description: "Sync linked issue before tasks"
+    - name: "speckit.issuesync.after-tasks"
+      file: "commands/issue-sync-after-tasks.md"
+      description: "Sync linked issue after tasks"
+    - name: "speckit.issuesync.before-implement"
+      file: "commands/issue-sync-before-implement.md"
+      description: "Sync linked issue before implement"
+    - name: "speckit.issuesync.after-implement"
+      file: "commands/issue-sync-after-implement.md"
+      description: "Sync linked issue after implement"
 
   config:
     - name: "workflows-config.yml"
       template: "config/workflows-config.template.yml"
       description: "Configure workflow behaviour (task limits, quality gates, etc.)"
       required: false
+    - name: "issue-sync.env"
+      template: "config/issue-sync.template.env"
+      description: "Configure linked-issue hook status/label mappings"
+      required: false
 
 hooks:
-  after_tasks:
-    command: "speckit.workflows.review"
+  before_specify:
+    command: "speckit.issuesync.before-specify"
     optional: true
-    prompt: "Run code review quality gates?"
-    description: "Review workflow before implementation begins"
+    prompt: "Sync linked issue before specify?"
+    description: "Update linked issue for workflow boundary before_specify"
+    condition: null
+  after_specify:
+    command: "speckit.issuesync.after-specify"
+    optional: true
+    prompt: "Sync linked issue after specify?"
+    description: "Update linked issue for workflow boundary after_specify"
+    condition: null
+  before_plan:
+    command: "speckit.issuesync.before-plan"
+    optional: true
+    prompt: "Sync linked issue before plan?"
+    description: "Update linked issue for workflow boundary before_plan"
+    condition: null
+  after_plan:
+    command: "speckit.issuesync.after-plan"
+    optional: true
+    prompt: "Sync linked issue after plan?"
+    description: "Update linked issue for workflow boundary after_plan"
+    condition: null
+  before_tasks:
+    command: "speckit.issuesync.before-tasks"
+    optional: true
+    prompt: "Sync linked issue before tasks?"
+    description: "Update linked issue for workflow boundary before_tasks"
+    condition: null
+  after_tasks:
+    command: "speckit.issuesync.after-tasks"
+    optional: true
+    prompt: "Sync linked issue after tasks?"
+    description: "Update linked issue for workflow boundary after_tasks"
+    condition: null
+  before_implement:
+    command: "speckit.issuesync.before-implement"
+    optional: true
+    prompt: "Sync linked issue before implement?"
+    description: "Update linked issue for workflow boundary before_implement"
     condition: null
   after_implement:
-    command: "speckit.workflows.review"
+    command: "speckit.issuesync.after-implement"
     optional: true
-    prompt: "Run final code review before committing?"
-    description: "Review implementation before commit"
+    prompt: "Sync linked issue after implement?"
+    description: "Update linked issue for workflow boundary after_implement"
     condition: null
   before_commit:
     command: "speckit.workflows.review"
@@ -97,6 +161,9 @@ defaults:
   review:
     min_checklist_items: 5
     gate_commit: true
+  issue_sync:
+    bootstrap_labels: true
+    add_comment: false
 
 tags:
   - "workflows"
