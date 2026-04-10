@@ -74,6 +74,12 @@ COMMAND_EXTENSIONS = ["review", "incorporate"]
 # All available extensions for validation and documentation
 AVAILABLE_EXTENSIONS = WORKFLOW_EXTENSIONS + COMMAND_EXTENSIONS
 
+# Soft-deprecation map for legacy workflows that now have stronger community options.
+DEPRECATED_EXTENSIONS = {
+    "review": "Use community review-plus (spec-kit-review) for multi-agent PR analysis.",
+    "cleanup": "Use community cleanup-plus (spec-kit-cleanup) for post-implement quality gating and tech-debt generation.",
+}
+
 # Detection thresholds for workflow selection content
 MIN_SECTION_HEADERS = 2  # Minimum section headers to detect existing workflow content
 MIN_WORKFLOW_COMMANDS = 3  # Minimum workflow commands to detect existing workflow content
@@ -240,12 +246,131 @@ AGENTS_WITH_HANDOFF_SUPPORT = ["copilot", "opencode", "windsurf"]
 
 # Agent-specific skill directory overrides (mirrors spec-kit's AGENT_SKILLS_DIR_OVERRIDES)
 AGENT_SKILLS_DIR_OVERRIDES: dict[str, str] = {
+    "kimi": ".agents/skills",    # Kimi unified to shared .agents/skills layout
     "codex": ".agents/skills",   # Codex uses .agents/skills (same as spec-kit)
     "amp": ".agents/skills",     # Amp shares .agents/ base folder
 }
 
 # Default skills directory for agents not in AGENT_CONFIG
 DEFAULT_SKILLS_DIR = ".agents/skills"
+
+# Curated companion extensions that can be installed by specify-extend.
+COMMUNITY_EXTENSIONS = {
+    "git-core": {
+        "id": "git",
+        "name": "Git Branching Workflow (Core)",
+        "url": None,
+        "purpose": "Install Spec Kit core git extension for branch creation/validation hooks",
+        "relationship": "core-companion",
+    },
+    "worktree": {
+        "id": "worktree",
+        "name": "Worktree Isolation",
+        "url": "https://github.com/Quratulain-bilal/spec-kit-worktree/archive/refs/heads/main.zip",
+        "purpose": "Spawn isolated git worktrees for parallel feature development",
+        "relationship": "complementary",
+    },
+    "branch-convention": {
+        "id": "branch-convention",
+        "name": "Branch Convention",
+        "url": "https://github.com/Quratulain-bilal/spec-kit-branch-convention/archive/refs/heads/main.zip",
+        "purpose": "Configurable branch and folder naming conventions",
+        "relationship": "complementary",
+    },
+    "spec-refine": {
+        "id": "spec-refine",
+        "name": "Spec Refine",
+        "url": "https://github.com/Quratulain-bilal/spec-kit-refine/archive/refs/heads/main.zip",
+        "purpose": "Update specs in place and propagate changes to plan/tasks",
+        "relationship": "complementary",
+    },
+    "verify-tasks": {
+        "id": "verify-tasks",
+        "name": "Verify Tasks",
+        "url": "https://github.com/datastone-inc/spec-kit-verify-tasks/archive/refs/heads/main.zip",
+        "purpose": "Detect phantom completed tasks with no implementation",
+        "relationship": "quality-gate",
+    },
+    "security-review": {
+        "id": "security-review",
+        "name": "Security Review",
+        "url": "https://github.com/DyanGalih/spec-kit-security-review/archive/refs/heads/main.zip",
+        "purpose": "Run AI-powered security audit as a post-implementation gate",
+        "relationship": "quality-gate",
+    },
+    "review-plus": {
+        "id": "review",
+        "name": "Review Extension",
+        "url": "https://github.com/ismaelJimenez/spec-kit-review/archive/refs/heads/main.zip",
+        "purpose": "Run coordinated multi-agent code review with specialized analyzers",
+        "relationship": "overlap-replacement",
+    },
+    "review": {
+        "id": "review",
+        "name": "Review Extension",
+        "url": "https://github.com/ismaelJimenez/spec-kit-review/archive/refs/tags/v1.0.1.zip",
+        "purpose": "Run coordinated multi-agent code review with specialized analyzers",
+        "relationship": "quality-gate",
+    },
+    "spec-sync": {
+        "id": "sync",
+        "name": "Spec Sync",
+        "url": "https://github.com/bgervin/spec-kit-sync/archive/refs/tags/v0.1.0.zip",
+        "purpose": "Detect and resolve drift between specs and implementation",
+        "relationship": "complementary",
+    },
+    "doctor": {
+        "id": "doctor",
+        "name": "Project Health Check",
+        "url": "https://github.com/KhawarHabibKhan/spec-kit-doctor/archive/refs/tags/v1.0.0.zip",
+        "purpose": "Diagnose project health across structure, scripts, extensions, and git",
+        "relationship": "quality-gate",
+    },
+    "superb": {
+        "id": "superb",
+        "name": "Superpowers Bridge",
+        "url": "https://github.com/RbBtSn0w/spec-kit-extensions/releases/download/superpowers-bridge-v1.0.0/superpowers-bridge.zip",
+        "purpose": "Hook-based workflow guardrails (TDD and verification) plus debugging/review utilities",
+        "relationship": "quality-gate",
+    },
+    "cleanup-plus": {
+        "id": "cleanup",
+        "name": "Cleanup Extension",
+        "url": "https://github.com/dsrednicki/spec-kit-cleanup/archive/refs/heads/main.zip",
+        "purpose": "Run post-implementation cleanup with issue severity tiers and debt task creation",
+        "relationship": "overlap-replacement",
+    },
+    "verify": {
+        "id": "verify",
+        "name": "Verify Extension",
+        "url": "https://github.com/ismaelJimenez/spec-kit-verify/archive/refs/heads/main.zip",
+        "purpose": "Validate implementation against spec/plan/tasks as a read-only quality gate",
+        "relationship": "quality-gate",
+    },
+    "bugfix-artifacts": {
+        "id": "bugfix",
+        "name": "Bugfix Artifact Patch Extension",
+        "url": "https://github.com/Quratulain-bilal/spec-kit-bugfix/archive/refs/heads/main.zip",
+        "purpose": "Capture bugs and surgically patch spec/plan/tasks with traceable bug reports",
+        "relationship": "overlap-replacement",
+    },
+}
+
+RECOMMENDED_COMMUNITY_EXTENSIONS = [
+    "git-core",
+    "worktree",
+    "branch-convention",
+    "spec-sync",
+    "review",
+    "doctor",
+    "superb",
+    "spec-refine",
+    "verify-tasks",
+    "security-review",
+]
+
+# Default profile installed when --with-community is omitted.
+DEFAULT_COMMUNITY_EXTENSIONS = RECOMMENDED_COMMUNITY_EXTENSIONS
 
 # Enhanced descriptions for each spec-kit-extensions workflow command (mirrors spec-kit's SKILL_DESCRIPTIONS)
 EXTENSION_SKILL_DESCRIPTIONS = {
@@ -422,6 +547,73 @@ def roman_to_int(roman: str) -> int:
         prev_value = value
 
     return total
+
+
+def parse_community_extension_selection(selection: Optional[str]) -> List[str]:
+    """Parse --with-community value into curated extension keys.
+
+    Supports:
+    - "recommended" (curated set)
+    - "all" (all curated entries)
+    - "none" (disable companion installs)
+    - comma-separated keys (e.g., "worktree,spec-refine")
+    """
+    if not selection:
+        return []
+
+    normalized = selection.strip().lower()
+    if normalized == "none":
+        return []
+    if normalized == "recommended":
+        return RECOMMENDED_COMMUNITY_EXTENSIONS.copy()
+    if normalized == "all":
+        return sorted(COMMUNITY_EXTENSIONS.keys())
+
+    keys = [k.strip() for k in normalized.split(",") if k.strip()]
+    invalid = [k for k in keys if k not in COMMUNITY_EXTENSIONS]
+    if invalid:
+        raise ValueError(f"Invalid community extension key(s): {', '.join(invalid)}")
+    return keys
+
+
+def install_community_extensions(
+    repo_root: Path,
+    selected_keys: List[str],
+    dry_run: bool = False,
+) -> None:
+    """Install selected curated community extensions via native spec-kit command."""
+    if not selected_keys:
+        return
+
+    console.print("\n[bold]Installing curated community extensions:[/bold]")
+    installed_count = 0
+    failed: List[str] = []
+
+    for key in selected_keys:
+        meta = COMMUNITY_EXTENSIONS[key]
+        cmd = ["specify", "extension", "add", meta["id"]]
+        if meta.get("url"):
+            cmd.extend(["--from", meta["url"]])
+        console.print(f"[blue]ℹ[/blue] {meta['name']}: {' '.join(cmd)}")
+
+        if dry_run:
+            console.print(f"  [dim]Would install {meta['name']}[/dim]")
+            continue
+
+        result = subprocess.run(cmd, cwd=str(repo_root), capture_output=True, text=True)
+        if result.returncode == 0:
+            installed_count += 1
+            console.print(f"[green]✓[/green] Installed {meta['name']}")
+        else:
+            failed.append(meta["name"])
+            console.print(f"[yellow]⚠[/yellow] Failed to install {meta['name']}")
+            if result.stderr:
+                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+
+    if not dry_run:
+        console.print(f"[blue]ℹ[/blue] Community extensions installed: {installed_count}/{len(selected_keys)}")
+        if failed:
+            console.print(f"[yellow]⚠[/yellow] Not installed: {', '.join(failed)}")
 
 
 def int_to_roman(num: int) -> str:
@@ -670,6 +862,9 @@ def install_extension_skills(
         return False
 
     skills_dir = _get_extension_skills_dir(repo_root, agent_key)
+    # Kimi v0.4.3+ uses shared .agents/skills with hyphenated skill names,
+    # but older installs may still discover legacy dotted skills under .kimi/skills.
+    legacy_kimi_skills_dir = repo_root / ".kimi" / "skills"
 
     if dry_run:
         console.print(f"[blue]ℹ[/blue] [dry-run] Would install extension skills to {skills_dir.relative_to(repo_root)}/")
@@ -697,17 +892,21 @@ def install_extension_skills(
             if command_name.startswith("speckit."):
                 command_name = command_name[len("speckit."):]
 
-            # Skill name convention matches spec-kit: "speckit.{cmd}" for Kimi, "speckit-{cmd}" for others
-            if agent_key == "kimi":
-                skill_name = f"speckit.{command_name}"
-            else:
-                skill_name = f"speckit-{command_name}"
+            # Canonical skill naming uses hyphenated names across agents.
+            skill_name = f"speckit-{command_name}"
 
             skill_dir = skills_dir / skill_name
             skill_dir.mkdir(parents=True, exist_ok=True)
 
             skill_file = skill_dir / "SKILL.md"
             if skill_file.exists():
+                if agent_key == "kimi":
+                    legacy_skill_name = f"speckit.{command_name}"
+                    legacy_skill_dir = legacy_kimi_skills_dir / legacy_skill_name
+                    legacy_skill_file = legacy_skill_dir / "SKILL.md"
+                    if not legacy_skill_file.exists():
+                        legacy_skill_dir.mkdir(parents=True, exist_ok=True)
+                        legacy_skill_file.write_text(skill_file.read_text(encoding="utf-8"), encoding="utf-8")
                 skipped += 1
                 continue
 
@@ -734,6 +933,16 @@ def install_extension_skills(
 
             skill_file.write_text(skill_content, encoding="utf-8")
             installed += 1
+
+            # Automatic compatibility shim for legacy Kimi skill discovery.
+            # Creates a dotted alias only when missing, never overwriting user customizations.
+            if agent_key == "kimi":
+                legacy_skill_name = f"speckit.{command_name}"
+                legacy_skill_dir = legacy_kimi_skills_dir / legacy_skill_name
+                legacy_skill_file = legacy_skill_dir / "SKILL.md"
+                if not legacy_skill_file.exists():
+                    legacy_skill_dir.mkdir(parents=True, exist_ok=True)
+                    legacy_skill_file.write_text(skill_content, encoding="utf-8")
 
         except Exception as e:
             console.print(f"[yellow]⚠[/yellow] Failed to install skill for {cmd_file.stem}: {e}")
@@ -2401,7 +2610,7 @@ function {func_name} {{
         '^baseline/[0-9]{3}-',
         '^bugfix/[0-9]{3}-',
         '^enhance/[0-9]{3}-',
-        '^modify/[0-9]{3}\^[0-9]{3}-',
+        '^modify/[0-9]{3}\\^[0-9]{3}-',
         '^refactor/[0-9]{3}-',
         '^hotfix/[0-9]{3}-',
         '^deprecate/[0-9]{3}-',
@@ -2861,6 +3070,16 @@ def main(
         "--list",
         help="List available extensions",
     ),
+    list_community: bool = typer.Option(
+        False,
+        "--list-community",
+        help="List curated community extensions that can be installed via this CLI",
+    ),
+    with_community: Optional[str] = typer.Option(
+        None,
+        "--with-community",
+        help="Companion extension profile: recommended | all | none | comma-separated keys",
+    ),
     llm_enhance: bool = typer.Option(
         True,
         "--llm-enhance/--no-llm-enhance",
@@ -2924,14 +3143,49 @@ def main(
             "hotfix": ("Emergency production fixes with expedited process", "Post-mortem required within 48 hours"),
             "deprecate": ("Planned feature sunset with 3-phase rollout", "Follow 3-phase sunset process"),
             "cleanup": ("Validate and reorganize spec-kit artifacts", "Maintain consistent structure"),
+            "review": ("Review completed implementation work", "Run structured validation before merge"),
+            "phasestoissues": ("Create GitHub issues for each development phase", "Maintain phase-level traceability"),
+            "incorporate": ("Incorporate documents into workflows", "Keep artifact references synchronized"),
         }
 
         for ext, (desc, gate) in extension_info.items():
-            console.print(f"  [cyan]{ext:12}[/cyan] - {desc}")
+            deprecated_note = ""
+            if ext in DEPRECATED_EXTENSIONS:
+                deprecated_note = " [yellow](deprecated)[/yellow]"
+            console.print(f"  [cyan]{ext:12}[/cyan]{deprecated_note} - {desc}")
             console.print(f"               [dim]Quality Gate: {gate}[/dim]\n")
+
+        if DEPRECATED_EXTENSIONS:
+            console.print("[yellow]Deprecated recommendations:[/yellow]")
+            for ext, reason in DEPRECATED_EXTENSIONS.items():
+                console.print(f"  [dim]- {ext}: {reason}[/dim]")
+            console.print()
 
         console.print("[dim]Use: specify-extend [extension names...] or specify-extend --all[/dim]")
         raise typer.Exit(0)
+
+    # Handle --list-community
+    if list_community:
+        console.print("\n[bold]Curated Community Extensions:[/bold]\n")
+        for key in sorted(COMMUNITY_EXTENSIONS.keys()):
+            ext = COMMUNITY_EXTENSIONS[key]
+            console.print(f"  [cyan]{key:18}[/cyan] - {ext['name']}")
+            console.print(f"                     [dim]{ext['purpose']}[/dim]")
+            console.print(f"                     [dim]Type: {ext['relationship']}[/dim]\n")
+        console.print("[dim]Use: --with-community recommended[/dim]")
+        console.print("[dim]Use: --with-community worktree,spec-refine[/dim]")
+        raise typer.Exit(0)
+
+    # Resolve companion extension selection.
+    # Default behavior installs the curated default profile unless explicitly disabled.
+    selected_community_extensions: List[str] = DEFAULT_COMMUNITY_EXTENSIONS.copy()
+    if with_community is not None:
+        try:
+            selected_community_extensions = parse_community_extension_selection(with_community)
+        except ValueError as ve:
+            console.print(f"[red]✗[/red] {ve}", style="red bold")
+            console.print("[dim]Use --list-community to view valid keys[/dim]")
+            raise typer.Exit(1)
 
     # Handle --patch (patch-only mode for use after 'specify extension add')
     if patch_only:
@@ -2970,6 +3224,14 @@ def main(
         console.print("  [dim]specify-extend --all[/dim]")
         console.print("  [dim]specify-extend bugfix modify refactor[/dim]")
         raise typer.Exit(1)
+
+    # Warn when users install soft-deprecated extensions.
+    selected_deprecated = [e for e in extensions_to_install if e in DEPRECATED_EXTENSIONS]
+    if selected_deprecated:
+        console.print("[yellow]⚠[/yellow] Selected extensions are soft-deprecated:")
+        for ext in selected_deprecated:
+            console.print(f"  [dim]- {ext}: {DEPRECATED_EXTENSIONS[ext]}[/dim]")
+        console.print("[dim]Install community alternatives with: --with-community review-plus,cleanup-plus[/dim]\n")
 
     # Get repository root
     repo_root = get_repo_root()
@@ -3049,6 +3311,10 @@ def main(
         console.print(f"  Repository: {repo_root}")
         console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
+        if selected_community_extensions:
+            console.print(f"  Community extensions: {', '.join(selected_community_extensions)}")
+        else:
+            console.print("  Community extensions: none")
         console.print(f"  Link mode: {'symlink' if link else 'copy'}")
         if install_hooks:
             console.print("  Git hooks: commit-msg (task reference enforcement)")
@@ -3119,6 +3385,9 @@ def main(
     if github_integration:
         install_spec_ready_workflow(repo_root, dry_run)
 
+    # Install curated companion community extensions if requested
+    install_community_extensions(repo_root, selected_community_extensions, dry_run)
+
     # Success message
     console.print("\n" + "━" * 60)
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")
@@ -3135,6 +3404,11 @@ def main(
         console.print("  4. Install git hooks: specify-extend --hooks")
     if not github_integration:
         console.print("  5. Install CI/CD workflow: specify-extend --github-integration")
+    if selected_community_extensions:
+        console.print("  6. Customize companions: specify-extend --with-community all --all")
+        console.print("  7. Disable companions: specify-extend --with-community none --all")
+    else:
+        console.print("  6. Enable companions: specify-extend --with-community recommended --all")
     console.print()
 
 

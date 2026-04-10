@@ -95,6 +95,45 @@ specify extension add workflows --from https://github.com/pradeepmouli/spec-kit-
 specify-extend --patch
 ```
 
+### Optional Companion Extensions
+
+You can optionally have `specify-extend` install curated community extensions that complement this workflow pack.
+
+```bash
+# See curated companions
+specify-extend --list-community
+
+# Install this extension + recommended companions
+specify-extend --all --with-community recommended
+
+# Install this extension + specific companions
+specify-extend --all --with-community worktree,spec-refine
+
+# Preview without changes
+specify-extend --all --with-community recommended --dry-run
+```
+
+Supported selectors for `--with-community`:
+
+- `recommended` — installs a curated default set
+- `all` — installs every curated community extension
+- Comma-separated keys — installs only selected companions
+
+Replacement keys for overlapping workflows:
+
+- `review-plus` — community replacement candidate for `/speckit.review`
+- `cleanup-plus` — community replacement candidate for `/speckit.cleanup`
+- `bugfix-artifacts` — community bugfix workflow focused on in-place artifact patching
+
+Deprecation note:
+
+- `review` and `cleanup` in this extension are soft-deprecated and remain installable for compatibility.
+- Prefer companion installs (`review-plus`, `cleanup-plus`) for new projects.
+
+### Why The CLI Still Patches Branch Validation
+
+Spec Kit core branch validation still accepts numeric/timestamp feature branches by default. This extension introduces typed workflow branches (`bugfix/`, `hotfix/`, `refactor/`, etc.), so `specify-extend` patches branch validation until Spec Kit natively supports extension-registered branch patterns.
+
 ### Verify Installation
 
 ```bash
@@ -203,7 +242,7 @@ Creating GitHub issues?
 
 ### Native Hook Issue Sync
 
-The extension now supports native lifecycle hook syncing for linked GitHub issues at:
+The extension runs mandatory lifecycle hook syncing for linked GitHub issues at:
 
 - `before_specify`, `after_specify`
 - `before_plan`, `after_plan`
@@ -246,6 +285,7 @@ Use `issue-sync.env` to customize per-event mappings (`SPECKIT_ISSUE_SYNC_LABEL_
 ### spec-kit Versions
 
 - **Required**: spec-kit v0.3.1+ (with extension system support)
+- **Tested**: spec-kit v0.5.1 and v0.6.0
 - Install from source: `uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git"`
 
 ### AI Agents
