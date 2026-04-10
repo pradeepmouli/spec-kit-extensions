@@ -367,6 +367,7 @@ RECOMMENDED_COMMUNITY_EXTENSIONS = [
     "spec-refine",
     "verify-tasks",
     "security-review",
+    "verify",
 ]
 
 # Default profile installed when --with-community is omitted.
