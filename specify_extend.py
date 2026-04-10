@@ -48,7 +48,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.3.0"
+__version__ = "2.3.1"
 
 # Initialize Rich console
 console = Console()
