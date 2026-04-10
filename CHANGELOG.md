@@ -9,9 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.2.1
 - **CLI Tool** (`specify-extend`) - Currently at v2.2.1
 
----
-
 ## CLI Tool (`specify-extend`)
+
+### [Unreleased]
+
+#### 🚀 Added
+
+- **Curated community companion installs**
+  - New `--list-community` option to view curated companion extensions
+  - New `--with-community` option to install `recommended`, `all`, or selected companion keys
+  - Companion installs run via native spec-kit command: `specify extension add <id> --from <url>`
+
+#### 🔧 Changed/Improved
+
+- **Kimi skills compatibility shim (spec-kit 0.4.3+)**
+  - Canonical Kimi skills now install to shared `.agents/skills` with hyphenated names
+  - Automatic legacy alias shim writes dotted skill names under `.kimi/skills` when missing
+- **Issue sync lifecycle hooks are mandatory**
+  - Hook events `before_*`/`after_*` for specify/plan/tasks/implement are now non-optional in `extension.yml`
+
+#### 📦 Compatibility
+
+- **Tested Spec Kit Versions**: v0.5.1, v0.6.0
+
 
 ### [2.2.1] - 2026-03-18
 

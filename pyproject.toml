@@ -4,7 +4,8 @@ version = "2.2.1"
 description = "Installation tool for spec-kit-extensions that works alongside specify init"
 requires-python = ">=3.11"
 dependencies = [
-    "typer",
+    "typer>=0.24.0",
+    "click>=8.2.1",
     "rich",
     "httpx",
     "pyyaml",

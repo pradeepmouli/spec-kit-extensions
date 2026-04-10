@@ -61,6 +61,10 @@ provides:
       file: "commands/incorporate.md"
       description: "Incorporate documents into workflows"
       aliases: ["speckit.incorporate"]
+    - name: "speckit.ultraplan"
+      file: "commands/ultraplan.md"
+      description: "Generate a deeply-reasoned task breakdown using extended analysis (opt-in)"
+      optional: true
     - name: "speckit.issuesync.before-specify"
       file: "commands/issue-sync-before-specify.md"
       description: "Sync linked issue before specify"
@@ -97,52 +101,58 @@ provides:
       required: false
 
 hooks:
+  after_plan_ultraplan:
+    command: "speckit.ultraplan"
+    optional: true
+    prompt: "Run ultraplan to generate a deep task breakdown from spec.md and plan.md?"
+    description: "Deep task breakdown using extended analysis — opt-in replacement for speckit.tasks"
+    condition: null
   before_specify:
     command: "speckit.issuesync.before-specify"
-    optional: true
-    prompt: "Sync linked issue before specify?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary before_specify"
     condition: null
   after_specify:
     command: "speckit.issuesync.after-specify"
-    optional: true
-    prompt: "Sync linked issue after specify?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary after_specify"
     condition: null
   before_plan:
     command: "speckit.issuesync.before-plan"
-    optional: true
-    prompt: "Sync linked issue before plan?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary before_plan"
     condition: null
   after_plan:
     command: "speckit.issuesync.after-plan"
-    optional: true
-    prompt: "Sync linked issue after plan?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary after_plan"
     condition: null
   before_tasks:
     command: "speckit.issuesync.before-tasks"
-    optional: true
-    prompt: "Sync linked issue before tasks?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary before_tasks"
     condition: null
   after_tasks:
     command: "speckit.issuesync.after-tasks"
-    optional: true
-    prompt: "Sync linked issue after tasks?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary after_tasks"
     condition: null
   before_implement:
     command: "speckit.issuesync.before-implement"
-    optional: true
-    prompt: "Sync linked issue before implement?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary before_implement"
     condition: null
   after_implement:
     command: "speckit.issuesync.after-implement"
-    optional: true
-    prompt: "Sync linked issue after implement?"
+    optional: false
+    prompt: null
     description: "Update linked issue for workflow boundary after_implement"
     condition: null
   before_commit:
