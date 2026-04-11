@@ -61,8 +61,8 @@ provides:
       file: "commands/incorporate.md"
       description: "Incorporate documents into workflows"
       aliases: ["speckit.incorporate"]
-    - name: "speckit.ultraplan"
-      file: "commands/ultraplan.md"
+    - name: "speckit.ultraplan.tasks"
+      file: "commands/ultraplan-tasks.md"
       description: "Generate a deeply-reasoned task breakdown using extended analysis (opt-in)"
       optional: true
     - name: "speckit.issuesync.before-specify"
@@ -102,7 +102,7 @@ provides:
 
 hooks:
   after_plan_ultraplan:
-    command: "speckit.ultraplan"
+    command: "speckit.ultraplan.tasks"
     optional: true
     prompt: "Run ultraplan to generate a deep task breakdown from spec.md and plan.md?"
     description: "Deep task breakdown using extended analysis — opt-in replacement for speckit.tasks"
