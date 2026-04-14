@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-11T18:48:05.851Z",
+  "generatedAt": "2026-04-14T21:06:38.538Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,14 +11,123 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "c49f18a24e12d921e533fdb838f85a21d66f95c5"
+    "commit": "c8f207b0df01e380a22fabc87091a00d027cb266"
   },
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "7c8490c7-b850-4cbf-9b7a-53132461a928",
+      "url": "https://keepachangelog.com/en/1.0.0/",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "1.0",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-14T21:06:33.769Z",
+      "lastChecked": "2026-04-14T21:06:33.769Z",
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 5,
+          "context": "Keep a Changelog"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "c94bc4a1-0a0e-4443-9c5e-1f64e6c86e6e",
+      "url": "https://semver.org/spec/v2.0.0.html",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "v2.0.0",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-14T21:06:36.160Z",
+      "lastChecked": "2026-04-14T21:06:36.160Z",
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 6,
+          "context": "Semantic Versioning"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "2a57bbb3-3676-4ff6-a8ea-edbd85c3d0ce",
+      "url": "https://agentskills.io/specification",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "specification",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-14T21:06:38.537Z",
+      "lastChecked": "2026-04-14T21:06:38.537Z",
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 104,
+          "context": "agentskills.io"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "4c7bd60d-8603-4e7f-bca8-7175efcdf0db",
+      "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "v1.0.0...v2.0",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-14T21:06:38.537Z",
+      "lastChecked": "2026-04-14T21:06:38.537Z",
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 1546,
+          "context": "2.0.0"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ee88fa85-894d-4355-8a7e-83242d35fc60",
+      "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "v1.0",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-14T21:06:38.537Z",
+      "lastChecked": "2026-04-14T21:06:38.537Z",
+      "referencedIn": [
+        {
+          "file": "CHANGELOG.md",
+          "line": 1547,
+          "context": "1.0.0"
+        }
+      ],
+      "changeHistory": []
+    }
+  ],
   "statistics": {
-    "totalDependencies": 0,
-    "byType": {},
-    "byAccessMethod": {},
-    "byDetectionMethod": {},
-    "averageConfidence": 0
+    "totalDependencies": 5,
+    "byType": {
+      "schema": 3,
+      "reference-implementation": 2
+    },
+    "byAccessMethod": {
+      "http": 3,
+      "github-api": 2
+    },
+    "byDetectionMethod": {
+      "llm-analysis": 5
+    },
+    "averageConfidence": 0.85
   }
 }
