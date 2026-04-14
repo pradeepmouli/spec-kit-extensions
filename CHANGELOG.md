@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## CLI Tool (`specify-extend`)
 
+### [2.4.0] - 2025-07-xx
+
+#### 🧹 Removed (dead code cleanup)
+
+- Removed `install_agent_commands()` — superseded by spec-kit native `specify extension add` delegation
+- Removed `install_extension_skills()` and `_get_extension_skills_dir()` — spec-kit `CommandRegistrar` handles skill installation
+- Removed all `_convert_handoffs_*` helper functions (8 functions, ~370 lines) — agent-specific handoff conversion delegated to spec-kit
+- Removed `AGENTS_WITH_HANDOFF_SUPPORT`, `AGENT_SKILLS_DIR_OVERRIDES`, `DEFAULT_SKILLS_DIR`, `EXTENSION_SKILL_DESCRIPTIONS` constants
+- Removed `--ai-skills` CLI flag — spec-kit handles skills installation natively via `CommandRegistrar`
+
 ### [Unreleased]
 
 #### 🚀 Added
