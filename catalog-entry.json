@@ -4,11 +4,11 @@
     "workflows": {
       "name": "Spec Kit Workflow Extensions",
       "id": "workflows",
-      "version": "3.4.0",
+      "version": "3.4.1",
       "description": "11 production-tested workflows covering the complete software development lifecycle beyond feature development.",
       "author": "pradeepmouli",
       "license": "MIT",
-      "download_url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/v3.4.0.zip",
+      "download_url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/tags/v3.4.1.zip",
       "repository": "https://github.com/pradeepmouli/spec-kit-extensions",
       "homepage": "https://github.com/pradeepmouli/spec-kit-extensions",
       "requires": {

@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "workflows"
   name: "Spec Kit Workflow Extensions"
-  version: "3.4.0"
+  version: "3.4.1"
   description: "11 production-tested workflows covering the complete software development lifecycle beyond feature development."
   author: "pradeepmouli"
   repository: "https://github.com/pradeepmouli/spec-kit-extensions"

@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.0
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.1
 - **CLI Tool** (`specify-extend`) - Currently at v2.5.1
 
 ## CLI Tool (`specify-extend`)
@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **CLI Tool Version**: v2.5.1
 - **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
-- **Extension Templates Version**: v3.4.0
+- **Extension Templates Version**: v3.4.1
 
 ### [2.5.0] - 2026-04-15
 
@@ -272,6 +272,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [3.4.1] - 2026-04-15
+
+#### 🔧 Changed/Improved
+
+- **Release metadata sync after CLI 2.5.1**
+  - Bumped `extension.yml`, `catalog-entry.json`, and current-version docs to keep published extension metadata aligned with the latest tagged archive
+- **Bundled install guidance assets refreshed in the release archive**
+  - Includes the new standalone shared bootstrap skill and updated shared install guidance references that now ship with the repository archive
+
+#### 📦 Components
+
+- **Extension Templates Version**: v3.4.1
+- **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
+- **Compatible specify-extend**: v2.5.1+
+
+---
 
 ### [3.4.0] - 2026-04-15
 
