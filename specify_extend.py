@@ -46,7 +46,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.4.0"
+__version__ = "2.5.0"
 
 # Initialize Rich console
 console = Console()
@@ -1987,9 +1987,10 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
 
         # Check if already patched AND up-to-date
         if "check_feature_branch_old()" in content:
-            # Check if patch includes all workflow patterns (enhance, cleanup, baseline) AND agent prefixes
+            # Check if patch includes all workflow patterns AND delegates standard validation to upstream logic
             if ('"^enhance/[0-9]{3}-"' in content and '"^cleanup/[0-9]{3}-"' in content and
-                '"^baseline/[0-9]{3}-"' in content and '"claude/"' in content):
+                '"^baseline/[0-9]{3}-"' in content and '"claude/"' in content and
+                'check_feature_branch_old "$branch" "$has_git_repo"' in content):
                 console.print("[blue]ℹ[/blue] common.sh already patched with latest patterns")
                 return
             else:
@@ -2008,8 +2009,9 @@ def patch_common_sh(repo_root: Path, dry_run: bool = False) -> None:
                     content = re.sub(pattern, '', content, flags=re.DOTALL)
                     console.print("  [dim]Removed old patched function[/dim]")
 
-        # New function to append at the end
-        # Supports both parameterized and non-parameterized signatures
+        # New function to append at the end.
+        # It preserves upstream behavior for standard branches by delegating back to
+        # the shipped implementation after allowing extension-specific branch names.
         new_function = '''
 # Extended branch validation supporting spec-kit-extensions
 check_feature_branch() {
@@ -2017,24 +2019,18 @@ check_feature_branch() {
     local branch="${1:-}"
     local has_git_repo="${2:-}"
 
-    # If branch not provided as parameter, get current branch
-    if [[ -z "$branch" ]]; then
-        if git rev-parse --git-dir > /dev/null 2>&1; then
-            branch=$(git branch --show-current)
-            has_git_repo="true"
-        else
-            return 0
-        fi
+    # If branch not provided as parameter, try to resolve it from Git.
+    if [[ -z "$branch" ]] && git rev-parse --git-dir > /dev/null 2>&1; then
+        branch=$(git branch --show-current)
+        has_git_repo="true"
     fi
 
-    # For non-git repos, skip validation if explicitly specified
-    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
-        echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
-        return 0
-    fi
+    # If upstream logic is available, preserve it for all standard branches.
+    # This wrapper only short-circuits extra branch patterns introduced by
+    # spec-kit-extensions and delegates everything else back to spec-kit.
 
-    # AI agent branch patterns - allow any branch created by AI agents
-    # These branches bypass validation as agents manage their own branch naming
+    # AI agent branch patterns - allow any branch created by AI agents.
+    # These branches bypass validation as agents manage their own branch naming.
     local agent_prefixes=(
         "claude/"
         "copilot/"
@@ -2070,6 +2066,27 @@ check_feature_branch() {
             return 0
         fi
     done
+
+    if declare -f check_feature_branch_old > /dev/null 2>&1; then
+        check_feature_branch_old "$branch" "$has_git_repo"
+        return $?
+    fi
+
+    # Fallback behavior if the upstream function cannot be found.
+    if [[ -z "$branch" ]]; then
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            branch=$(git branch --show-current)
+            has_git_repo="true"
+        else
+            return 0
+        fi
+    fi
+
+    # For non-git repos, skip validation if explicitly specified
+    if [[ "$has_git_repo" != "true" && -n "$has_git_repo" ]]; then
+        echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
+        return 0
+    fi
 
     # Check standard spec-kit pattern (###-)
     if [[ "$branch" =~ ^[0-9]{3}- ]]; then

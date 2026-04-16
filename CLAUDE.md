@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **spec-kit-extensions** extends GitHub's spec-kit with 7 additional production-tested workflows that cover the complete software development lifecycle beyond just feature development. This is a dual-component project:
 
-1. **Extension Templates** (v3.2.0) - Workflow templates, commands, and bash scripts
-2. **CLI Tool** (`specify-extend`, v2.2.1) - Python-based installation tool
+1. **Extension Templates** (v3.3.2) - Workflow templates, commands, and bash scripts
+2. **CLI Tool** (`specify-extend`, v2.5.0) - Python-based installation tool
 
 The project is designed to be **agent-agnostic**, working with Claude Code, GitHub Copilot, Cursor, and any AI coding assistant that supports spec-kit.
 
@@ -38,8 +38,8 @@ specify-extend --all
 
 **IMPORTANT**: This project has TWO version numbers that must be kept in sync:
 
-1. **CLI version** in `pyproject.toml` (`version = "2.2.1"`)
-2. **CLI version** in `specify_extend.py` (`__version__ = "2.2.1"`)
+1. **CLI version** in `pyproject.toml` (`version = "2.5.0"`)
+2. **CLI version** in `specify_extend.py` (`__version__ = "2.5.0"`)
 3. **Extension templates version** documented in `CHANGELOG.md`
 
 When updating versions:
@@ -57,8 +57,8 @@ git commit -m "Description"
 git push
 
 # Create tags for releases
-git tag -a v2.2.1 -m "Release version 2.2.1"
-git push origin v2.2.1
+git tag -a cli-v2.5.0 -m "Release version 2.5.0"
+git push origin cli-v2.5.0
 ```
 
 ## Architecture
@@ -291,7 +291,7 @@ When a new AI agent needs support, see [AGENTS.md](AGENTS.md) for comprehensive 
 1. Update version in `pyproject.toml` and `specify_extend.py`
 2. Update `CHANGELOG.md` with changes
 3. Test installation: `python -m build && pip install dist/*.whl`
-4. Create git tag: `git tag -a v2.2.1 -m "Release 2.2.1"`
+4. Create git tag: `git tag -a cli-v2.5.0 -m "Release 2.5.0"`
 5. Push: `git push && git push --tags`
 6. GitHub Actions will create release automatically
 7. Verify release appears on GitHub

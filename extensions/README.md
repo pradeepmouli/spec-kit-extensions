@@ -73,8 +73,8 @@ These extensions are designed to be:
 
 ## Version
 
-Extension Templates Version: v3.2.0
-CLI Tool Version: v2.2.1
+Extension Templates Version: v3.3.2
+CLI Tool Version: v2.5.0
 Compatible with Specify Core: v0.3.1+
 
 ## License

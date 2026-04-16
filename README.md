@@ -202,7 +202,7 @@ Spec Kit core branch validation still accepts numeric/timestamp feature branches
 specify extension list
 
 # Should show:
-#   Spec Kit Workflow Extensions (v3.2.0)
+#   Spec Kit Workflow Extensions (v3.3.2)
 #   Commands: 19 | Status: Enabled
 
 # Try a command:
@@ -396,8 +396,8 @@ Commands are registered by spec-kit's extension system and work with any support
 
 ### Component Versions
 
-- **Extension** (v3.2.0) — Workflows, commands, templates, and scripts
-- **CLI Tool** (v2.2.1) — `specify-extend` installation and patching tool
+- **Extension** (v3.3.2) — Workflows, commands, templates, and scripts
+- **CLI Tool** (v2.5.0) — `specify-extend` installation and patching tool
 
 ## FAQ
 

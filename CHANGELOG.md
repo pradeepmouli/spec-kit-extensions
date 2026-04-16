@@ -6,12 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v3.2.1
-- **CLI Tool** (`specify-extend`) - Currently at v2.2.1
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.3.2
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.0
 
 ## CLI Tool (`specify-extend`)
 
-### [2.4.0] - 2025-07-xx
+### [Unreleased]
+
+### [2.5.0] - 2026-04-15
 
 #### 🧹 Removed (dead code cleanup)
 
@@ -39,12 +41,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Kimi skills compatibility shim (spec-kit 0.4.3+)**
   - Canonical Kimi skills now install to shared `.agents/skills` with hyphenated names
   - Automatic legacy alias shim writes dotted skill names under `.kimi/skills` when missing
+- **Upstream integration reconciliation is now opt-in by flag usage**
+  - `specify integration install` is only validated and invoked when the user explicitly passes `--ai` or `--agents`
+  - Restores the previous contract for plain `specify-extend --all` installs against older compatible spec-kit CLIs
+- **`common.sh` patch now wraps upstream validation instead of replacing it**
+  - The injected `check_feature_branch()` allows extension branch prefixes first, then delegates standard validation back to spec-kit's shipped implementation via `check_feature_branch_old`
+  - Reduces risk of drifting from upstream `common.sh` behavior as spec-kit evolves
 - **Issue sync lifecycle hooks are mandatory**
   - Hook events `before_*`/`after_*` for specify/plan/tasks/implement are now non-optional in `extension.yml`
 - **Canonical extension command namespaces for spec-kit 0.7.0**
   - Renamed noncanonical primary command ids in `extension.yml` under the `speckit.workflows.*` namespace
   - Preserved legacy `speckit.issuesync.*` and `speckit.ultraplan.tasks` names as aliases for backward compatibility
   - Updated hook references to point at canonical command ids expected by newer spec-kit validation
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.5.0
+- **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
+- **Extension Templates Version**: v3.3.2
 
 #### 📦 Compatibility
 

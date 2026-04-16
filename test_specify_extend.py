@@ -469,6 +469,41 @@ def test_stage_local_extension_source_excludes_generated_state():
     print("✓ Test passed: local dev staging excludes generated state")
 
 
+def test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it():
+    """Test common.sh patching preserves the upstream function and delegates to it."""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_root = Path(temp_dir)
+        common_sh = repo_root / ".specify" / "scripts" / "bash" / "common.sh"
+        common_sh.parent.mkdir(parents=True, exist_ok=True)
+        common_sh.write_text(
+            """#!/bin/bash
+check_feature_branch() {
+    local branch=\"$1\"
+    local has_git_repo=\"$2\" 
+    if [[ \"$has_git_repo\" != \"true\" ]]; then
+        return 0
+    fi
+    if [[ ! \"$branch\" =~ ^[0-9]{3}- ]]; then
+        return 1
+    fi
+    return 0
+}
+"""
+        )
+
+        specify_extend.patch_common_sh(repo_root, dry_run=False)
+
+        patched = common_sh.read_text()
+        assert "check_feature_branch_old()" in patched, "Expected upstream function to be renamed"
+        assert 'check_feature_branch_old "$branch" "$has_git_repo"' in patched, (
+            "Expected wrapper to delegate back to upstream logic"
+        )
+        assert "# Extended branch validation supporting spec-kit-extensions" in patched
+
+    print("✓ Test passed: common.sh patch wraps upstream logic instead of replacing it")
+
+
 if __name__ == "__main__":
     print("Running specify_extend tests...\n")
 
@@ -494,6 +529,7 @@ if __name__ == "__main__":
         test_install_agent_integrations_invokes_specify_integration_install()
         test_install_agent_integrations_dry_run_skips_subprocess()
         test_stage_local_extension_source_excludes_generated_state()
+        test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it()
 
         print("\n✅ All tests passed!")
         sys.exit(0)
