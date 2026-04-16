@@ -6,7 +6,7 @@
 - Installs the workflows extension from either the published archive or a local development source
 - Optionally installs curated companion extensions, workflow packages, hooks, and GitHub integration assets
 
-**Version**: 2.5.0 (CLI tool is versioned separately from extension templates)
+**Version**: 2.5.1 (CLI tool is versioned separately from extension templates)
 
 ## Installation
 

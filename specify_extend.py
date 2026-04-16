@@ -46,7 +46,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.5.0"
+__version__ = "2.5.1"
 
 # Initialize Rich console
 console = Console()
@@ -733,6 +733,59 @@ def build_extension_install_command(
     if dry_run:
         cmd.append("--dry-run")
     return cmd
+
+
+def is_workflows_extension_installed(repo_root: Path) -> bool:
+    """Return True when the workflows extension is already present in the repo."""
+    return (repo_root / ".specify" / "extensions" / "workflows" / "extension.yml").exists()
+
+
+def install_extension_bundle_compat(
+    repo_root: Path,
+    source_root: Path,
+    workflows_to_enable: set,
+    dry_run: bool = False,
+) -> None:
+    """Install or upgrade the workflows extension by copying the current bundle layout.
+
+    This compatibility path is used when native `specify extension add` cannot be used,
+    most importantly for in-place upgrades of an already-installed workflows extension.
+    """
+    console.print("[blue]ℹ[/blue] Installing workflows extension via compatibility copier")
+
+    destination_root = repo_root / ".specify" / "extensions" / "workflows"
+    bundle_items = ["extension.yml", "commands", "config", "scripts", "templates"]
+
+    if dry_run:
+        console.print(f"  [dim]Would replace {destination_root} from {source_root}[/dim]")
+        update_enabled_conf(repo_root, workflows_to_enable, dry_run=True)
+        return
+
+    destination_root.parent.mkdir(parents=True, exist_ok=True)
+
+    if destination_root.exists():
+        if destination_root.is_symlink() or destination_root.is_file():
+            destination_root.unlink()
+        else:
+            shutil.rmtree(destination_root)
+
+    destination_root.mkdir(parents=True, exist_ok=True)
+
+    for item_name in bundle_items:
+        source_path = source_root / item_name
+        if not source_path.exists():
+            raise FileNotFoundError(
+                f"Compatibility install source is missing required bundle item: {source_path}"
+            )
+
+        destination_path = destination_root / item_name
+        if source_path.is_dir():
+            shutil.copytree(source_path, destination_path)
+        else:
+            shutil.copy2(source_path, destination_path)
+
+    update_enabled_conf(repo_root, workflows_to_enable, dry_run=False)
+    console.print("[green]✓[/green] Workflows extension installed via compatibility copier")
 
 
 def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
@@ -3036,6 +3089,7 @@ def main(
     workflow_source_root: Optional[Path] = None
     staged_source_temp: Optional[tempfile.TemporaryDirectory] = None
     install_description = f"specify extension add workflows --from {download_url}"
+    existing_workflows_install = is_workflows_extension_installed(repo_root)
 
     if extension_source is not None:
         specified_source = Path(extension_source).expanduser()
@@ -3064,26 +3118,44 @@ def main(
         dry_run=dry_run,
     )
 
-    console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
+    compatibility_source_root = workflow_source_root or Path(__file__).resolve().parent
+
+    if existing_workflows_install:
+        console.print(
+            "[blue]ℹ[/blue] Existing workflows extension detected; upgrading in place via compatibility installer"
+        )
+    else:
+        console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
 
     try:
         if explicit_agent_selection:
             install_agent_integrations(repo_root, resolved_agents, dry_run=dry_run)
 
-        if not dry_run:
-            result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
-            if result.returncode != 0:
-                console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
-                if result.stderr:
-                    console.print(f"  [dim]{result.stderr.strip()}[/dim]")
-                if result.stdout:
-                    console.print(f"  [dim]{result.stdout.strip()}[/dim]")
-                raise typer.Exit(1)
-            if result.stdout:
-                console.print(result.stdout.strip())
-            console.print("[green]✓[/green] Extension installed via spec-kit native system")
+        if existing_workflows_install:
+            install_extension_bundle_compat(
+                repo_root,
+                compatibility_source_root,
+                workflows_to_enable,
+                dry_run=dry_run,
+            )
         else:
-            console.print("  [dim]Would run: specify extension add[/dim]")
+            if not dry_run:
+                result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
+                if result.returncode != 0:
+                    console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
+                    if result.stderr:
+                        console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+                    if result.stdout:
+                        console.print(f"  [dim]{result.stdout.strip()}[/dim]")
+                    raise typer.Exit(1)
+                if result.stdout:
+                    console.print(result.stdout.strip())
+                console.print("[green]✓[/green] Extension installed via spec-kit native system")
+            else:
+                console.print("  [dim]Would run: specify extension add[/dim]")
+
+        if not existing_workflows_install:
+            update_enabled_conf(repo_root, workflows_to_enable, dry_run)
 
         # Patch common.sh for extension branch pattern support
         patch_common_sh(repo_root, dry_run)

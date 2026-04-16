@@ -449,6 +449,10 @@ spec-kit-extensions keeps shared skill content in a repository source tree:
 - [skill-creator skill](../.agents/skills/skill-creator/SKILL.md)
 - [Skills Best Practices](../.agents/skills/skill-creator/references/workflows.md)
 
+**Bundled shared skill examples:**
+- [spec-kit bootstrap/install skill](../.agents/skills/spec-kit-extensions-bootstrap/SKILL.md)
+- [general spec-kit workflow skill](../.agents/skills/spec-kit.md)
+
 ---
 
 ## Handoff Support Matrix

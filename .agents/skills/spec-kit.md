@@ -35,6 +35,8 @@ Reviewing completed work?
 
 ## Installation
 
+For install or upgrade tasks focused specifically on `spec-kit-extensions`, prefer the dedicated `spec-kit-extensions-bootstrap` skill.
+
 ```bash
 # Install spec-kit CLI
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
@@ -42,13 +44,22 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 # Initialize in project
 specify init . --ai claude
 
-# Install extensions
-pip install specify-extend
+# Install or upgrade extensions
+pip install -U specify-extend
 specify-extend --all
 
 # With GitHub integration (optional)
 specify-extend --all --github-integration
+
+# With multiple agents reconciled first
+specify-extend --agents claude,copilot --all
 ```
+
+Notes:
+
+- Use `specify-extend --all` for both first install and upgrade.
+- Do not rely on manually re-running `specify extension add workflows ...` to upgrade an existing workflows extension.
+- If native install is used manually, follow it with `specify-extend --patch`.
 
 ## Core Commands Reference
 
@@ -286,10 +297,13 @@ specify check                       # Check tools
 
 # spec-kit-extensions CLI
 specify-extend --all                # Install all
+specify-extend --agents claude,copilot --all
 specify-extend --dry-run            # Preview
 specify-extend bugfix modify        # Install specific
 specify-extend --github-integration # Add GitHub features
 specify-extend --llm-enhance        # AI-assisted constitution merge
+specify-extend --with-workflows recommended
+specify-extend --with-community recommended
 ```
 
 ## Environment Variables

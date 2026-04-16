@@ -469,6 +469,66 @@ def test_stage_local_extension_source_excludes_generated_state():
     print("✓ Test passed: local dev staging excludes generated state")
 
 
+def test_is_workflows_extension_installed_detects_existing_install():
+    """Test detection of an already-installed workflows extension."""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_root = Path(temp_dir)
+        assert specify_extend.is_workflows_extension_installed(repo_root) is False
+
+        extension_file = repo_root / ".specify" / "extensions" / "workflows" / "extension.yml"
+        extension_file.parent.mkdir(parents=True, exist_ok=True)
+        extension_file.write_text('id: "workflows"\n')
+
+        assert specify_extend.is_workflows_extension_installed(repo_root) is True
+
+    print("✓ Test passed: existing workflows install is detected")
+
+
+def test_install_extension_bundle_compat_copies_current_bundle_layout():
+    """Test compatibility install copies the bundled extension layout into .specify/extensions/workflows."""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_root = Path(temp_dir)
+        repo_root = temp_root / "repo"
+        source_root = temp_root / "source"
+        repo_root.mkdir()
+        source_root.mkdir()
+
+        (source_root / "extension.yml").write_text('id: "workflows"\n')
+        (source_root / "commands").mkdir()
+        (source_root / "commands" / "bugfix.md").write_text("bugfix\n")
+        (source_root / "config").mkdir()
+        (source_root / "config" / "workflows-config.template.yml").write_text("config\n")
+        (source_root / "scripts").mkdir()
+        (source_root / "scripts" / "bash").mkdir()
+        (source_root / "scripts" / "bash" / "create-bugfix.sh").write_text("#!/bin/bash\n")
+        (source_root / "templates").mkdir()
+        (source_root / "templates" / "bugfix").mkdir()
+        (source_root / "templates" / "bugfix" / "README.md").write_text("template\n")
+
+        specify_extend.install_extension_bundle_compat(
+            repo_root,
+            source_root,
+            {"bugfix", "review"},
+            dry_run=False,
+        )
+
+        destination_root = repo_root / ".specify" / "extensions" / "workflows"
+        assert (destination_root / "extension.yml").exists()
+        assert (destination_root / "commands" / "bugfix.md").exists()
+        assert (destination_root / "config" / "workflows-config.template.yml").exists()
+        assert (destination_root / "scripts" / "bash" / "create-bugfix.sh").exists()
+        assert (destination_root / "templates" / "bugfix" / "README.md").exists()
+
+        enabled_conf = repo_root / ".specify" / "extensions" / "enabled.conf"
+        enabled_text = enabled_conf.read_text()
+        assert "bugfix" in enabled_text
+        assert "review" in enabled_text
+
+    print("✓ Test passed: compatibility bundle installer copies current layout")
+
+
 def test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it():
     """Test common.sh patching preserves the upstream function and delegates to it."""
 
@@ -529,6 +589,8 @@ if __name__ == "__main__":
         test_install_agent_integrations_invokes_specify_integration_install()
         test_install_agent_integrations_dry_run_skips_subprocess()
         test_stage_local_extension_source_excludes_generated_state()
+        test_is_workflows_extension_installed_detects_existing_install()
+        test_install_extension_bundle_compat_copies_current_bundle_layout()
         test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it()
 
         print("\n✅ All tests passed!")

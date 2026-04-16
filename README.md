@@ -397,7 +397,7 @@ Commands are registered by spec-kit's extension system and work with any support
 ### Component Versions
 
 - **Extension** (v3.4.0) — Workflows, commands, templates, and scripts
-- **CLI Tool** (v2.5.0) — `specify-extend` installation and patching tool
+- **CLI Tool** (v2.5.1) — `specify-extend` installation and patching tool
 
 ## FAQ
 

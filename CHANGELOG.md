@@ -7,11 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.0
-- **CLI Tool** (`specify-extend`) - Currently at v2.5.0
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.1
 
 ## CLI Tool (`specify-extend`)
 
 ### [Unreleased]
+
+### [2.5.1] - 2026-04-15
+
+#### 🚀 Added
+
+- **Standalone bootstrap skill for agent-guided installation**
+  - Added a bundled shared skill that tells agents how to install, upgrade, and repair `spec-kit-extensions`
+  - Documents the supported path of using `specify-extend --all` instead of raw `specify extension add` for upgrades
+
+#### 🔧 Changed/Improved
+
+- **Existing extension upgrades now use compatibility install logic**
+  - `specify-extend --all` now detects an existing `.specify/extensions/workflows/extension.yml` install and refreshes the bundled extension in place
+  - Avoids failing upgrade attempts that re-ran `specify extension add` against an already-installed extension
+- **Bootstrap guidance refreshed in shared skills/docs**
+  - Updated the shared `spec-kit` skill to point install/upgrade tasks to the dedicated bootstrap flow
+  - Documented bundled shared skills in the agent tool matrix
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.5.1
+- **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
+- **Extension Templates Version**: v3.4.0
 
 ### [2.5.0] - 2026-04-15
 
@@ -101,11 +124,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### 📦 Components
 
-- **CLI Tool Version**: v2.2.0
+- **CLI Tool Version**: v2.5.0
 - **Compatible Spec Kit Version**: v0.2.0+ (tested with v0.3.0)
 - **Extension Templates Version**: v3.1.0
-
----
 
 ### [1.6.0] - 2026-03-11
 
