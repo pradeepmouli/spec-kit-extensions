@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 **Note**: This project has two versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently at v3.3.2
+- **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.0
 - **CLI Tool** (`specify-extend`) - Currently at v2.5.0
 
 ## CLI Tool (`specify-extend`)
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **CLI Tool Version**: v2.5.0
 - **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
-- **Extension Templates Version**: v3.3.2
+- **Extension Templates Version**: v3.4.0
 
 #### 📦 Compatibility
 
@@ -251,6 +251,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Extension Templates
+
+### [3.4.0] - 2026-04-15
+
+#### 🚀 Added
+
+- **Standalone workflow-engine assets for spec-kit 0.7.0+**
+  - Added bundled lifecycle workflow definitions for `bugfix`, `enhance`, `modify`, `refactor`, `hotfix`, and `deprecate`
+  - Added workflow READMEs plus a top-level `workflows/README.md` explaining direct `specify workflow run` usage
+
+#### 🔧 Changed/Improved
+
+- **Canonical command namespaces for spec-kit 0.7.0**
+  - Promoted `speckit.workflows.ultraplan-tasks` and `speckit.workflows.issue-sync-*` as canonical command ids in `extension.yml`
+  - Preserved legacy aliases for backward compatibility
+  - Updated hook registrations to point at the canonical names expected by newer spec-kit validation
+- **Documentation refresh for workflow packages and installs**
+  - Updated install docs and README examples to describe workflow package support, issue-sync boundaries, and current version metadata
+
+#### 📦 Components
+
+- **Extension Templates Version**: v3.4.0
+- **Compatible Spec Kit Version**: v0.3.1+ (tested with v0.7.0)
+- **Compatible specify-extend**: v2.5.0+
+
+---
 
 ### [3.2.1] - 2026-03-21
 
