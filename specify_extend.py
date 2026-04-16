@@ -90,6 +90,22 @@ NUMERIC_SECTION_PATTERN = r'^###\s+(\d+)\.'
 HEADER_PREFIX_LENGTH = 3  # Length of '## ' prefix
 SECTION_SEPARATOR = '\n\n'  # Separator between constitution sections
 
+# Names and patterns excluded when staging a local dev install source.
+DEV_SOURCE_IGNORE = (
+    ".git",
+    ".specify",
+    ".venv",
+    ".venv2",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".DS_Store",
+    "build",
+    "dist",
+    "*.pyc",
+)
+
 # Agent configuration based on spec-kit AGENTS.md
 AGENT_CONFIG = {
     "claude": {
@@ -305,6 +321,20 @@ COMMUNITY_EXTENSIONS = {
         "purpose": "Detect and resolve drift between specs and implementation",
         "relationship": "complementary",
     },
+    "optimize": {
+        "id": "optimize",
+        "name": "Optimize Extension",
+        "url": "https://github.com/sakitA/spec-kit-optimize/archive/refs/tags/v1.0.0.zip",
+        "purpose": "Audit and optimize AI governance for context efficiency and token budget usage",
+        "relationship": "complementary",
+    },
+    "github-issues": {
+        "id": "github-issues",
+        "name": "GitHub Issues Integration",
+        "url": "https://github.com/Fatima367/spec-kit-github-issues/archive/refs/tags/v1.0.0.zip",
+        "purpose": "Import GitHub issues into spec artifacts and maintain bidirectional issue traceability",
+        "relationship": "integration",
+    },
     "doctor": {
         "id": "doctor",
         "name": "Project Health Check",
@@ -358,6 +388,62 @@ RECOMMENDED_COMMUNITY_EXTENSIONS = [
 
 # Default profile installed when --with-community is omitted.
 DEFAULT_COMMUNITY_EXTENSIONS = RECOMMENDED_COMMUNITY_EXTENSIONS
+
+
+# Curated standalone workflow packages that can be installed by specify-extend.
+WORKFLOW_PACKAGES = {
+    "bugfix-lifecycle": {
+        "id": "bugfix-lifecycle",
+        "name": "Bugfix Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/bugfix-lifecycle/workflow.yml",
+        "purpose": "Run the bugfix extension command as a gated lifecycle workflow with review checkpoints.",
+        "relationship": "lifecycle-workflow",
+    },
+    "enhance-lifecycle": {
+        "id": "enhance-lifecycle",
+        "name": "Enhance Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/enhance-lifecycle/workflow.yml",
+        "purpose": "Run the enhance extension command as a lightweight lifecycle workflow with a review gate before implementation.",
+        "relationship": "lifecycle-workflow",
+    },
+    "modify-lifecycle": {
+        "id": "modify-lifecycle",
+        "name": "Modify Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/modify-lifecycle/workflow.yml",
+        "purpose": "Run the modify extension command as a gated lifecycle workflow with impact-analysis review.",
+        "relationship": "lifecycle-workflow",
+    },
+    "refactor-lifecycle": {
+        "id": "refactor-lifecycle",
+        "name": "Refactor Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/refactor-lifecycle/workflow.yml",
+        "purpose": "Run the refactor extension command as a gated lifecycle workflow with safety reviews.",
+        "relationship": "lifecycle-workflow",
+    },
+    "hotfix-lifecycle": {
+        "id": "hotfix-lifecycle",
+        "name": "Hotfix Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/hotfix-lifecycle/workflow.yml",
+        "purpose": "Run the hotfix extension command as an expedited lifecycle workflow with incident and deployment checkpoints.",
+        "relationship": "lifecycle-workflow",
+    },
+    "deprecate-lifecycle": {
+        "id": "deprecate-lifecycle",
+        "name": "Deprecate Lifecycle",
+        "url": f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/workflows/deprecate-lifecycle/workflow.yml",
+        "purpose": "Run the deprecate extension command as a gated lifecycle workflow with phased approval checkpoints.",
+        "relationship": "lifecycle-workflow",
+    },
+}
+
+RECOMMENDED_WORKFLOW_PACKAGES = [
+    "bugfix-lifecycle",
+    "enhance-lifecycle",
+    "modify-lifecycle",
+    "refactor-lifecycle",
+    "hotfix-lifecycle",
+    "deprecate-lifecycle",
+]
 
 
 
@@ -550,6 +636,26 @@ def parse_community_extension_selection(selection: Optional[str]) -> List[str]:
     return keys
 
 
+def parse_workflow_package_selection(selection: Optional[str]) -> List[str]:
+    """Parse --with-workflows value into curated workflow package keys."""
+    if not selection:
+        return []
+
+    normalized = selection.strip().lower()
+    if normalized == "none":
+        return []
+    if normalized == "recommended":
+        return RECOMMENDED_WORKFLOW_PACKAGES.copy()
+    if normalized == "all":
+        return sorted(WORKFLOW_PACKAGES.keys())
+
+    keys = [k.strip() for k in normalized.split(",") if k.strip()]
+    invalid = [k for k in keys if k not in WORKFLOW_PACKAGES]
+    if invalid:
+        raise ValueError(f"Invalid workflow package key(s): {', '.join(invalid)}")
+    return keys
+
+
 def install_community_extensions(
     repo_root: Path,
     selected_keys: List[str],
@@ -586,6 +692,193 @@ def install_community_extensions(
 
     if not dry_run:
         console.print(f"[blue]ℹ[/blue] Community extensions installed: {installed_count}/{len(selected_keys)}")
+        if failed:
+            console.print(f"[yellow]⚠[/yellow] Not installed: {', '.join(failed)}")
+
+
+def validate_local_extension_source(source_root: Path) -> None:
+    """Validate a local extension source directory before using it for --dev installs."""
+    if not source_root.exists() or not source_root.is_dir():
+        raise ValueError(f"Local extension source not found: {source_root}")
+    if not (source_root / "extension.yml").exists():
+        raise ValueError(
+            f"Local extension source must contain extension.yml: {source_root}"
+        )
+
+
+def stage_local_extension_source(source_root: Path) -> Tuple[tempfile.TemporaryDirectory, Path]:
+    """Create a sanitized temporary copy of a local extension source for safe --dev installs."""
+    validate_local_extension_source(source_root)
+
+    temp_dir = tempfile.TemporaryDirectory(prefix="specify-extend-source-")
+    staged_root = Path(temp_dir.name) / source_root.name
+    shutil.copytree(
+        source_root,
+        staged_root,
+        ignore=shutil.ignore_patterns(*DEV_SOURCE_IGNORE),
+    )
+    return temp_dir, staged_root
+
+
+def build_extension_install_command(
+    remote_url: str,
+    local_dev_source: Optional[Path] = None,
+    dry_run: bool = False,
+) -> List[str]:
+    """Build the native spec-kit extension install command."""
+    if local_dev_source is not None:
+        cmd = ["specify", "extension", "add", str(local_dev_source), "--dev"]
+    else:
+        cmd = ["specify", "extension", "add", "workflows", "--from", remote_url]
+    if dry_run:
+        cmd.append("--dry-run")
+    return cmd
+
+
+def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
+    """Build the upstream spec-kit integration install command for an agent."""
+    cmd = ["specify", "integration", "install", agent_key]
+    if dry_run:
+        cmd.append("--dry-run")
+    return cmd
+
+
+def should_reconcile_integrations(ai_value: Optional[str], agents_value: Optional[str]) -> bool:
+    """Return True only when the user explicitly requested integration reconciliation."""
+    return bool(ai_value or agents_value)
+
+
+def validate_integration_support(repo_root: Path) -> bool:
+    """Verify that the installed specify CLI supports integration management."""
+    try:
+        result = subprocess.run(
+            ["specify", "integration", "--help"],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        console.print("[red]✗[/red] specify CLI not found in PATH", style="red bold")
+        return False
+
+    if result.returncode != 0:
+        console.print(
+            "[red]✗[/red] Installed specify CLI does not support integration commands.",
+            style="red bold",
+        )
+        console.print("[dim]Agent reconciliation requires a newer spec-kit Specify CLI.[/dim]")
+        return False
+    return True
+
+
+def install_agent_integrations(
+    repo_root: Path,
+    selected_agents: List[str],
+    dry_run: bool = False,
+) -> None:
+    """Install upstream spec-kit integrations for requested agents before extension install."""
+    if not selected_agents:
+        return
+
+    console.print("\n[bold]Reconciling upstream spec-kit integrations:[/bold]")
+    installed_count = 0
+    failed: List[str] = []
+
+    for agent_key in selected_agents:
+        cmd = build_integration_install_command(agent_key, dry_run=dry_run)
+        agent_name = AGENT_CONFIG.get(agent_key, {}).get("name", agent_key)
+        console.print(f"[blue]ℹ[/blue] {agent_name}: {' '.join(cmd)}")
+
+        if dry_run:
+            console.print(f"  [dim]Would install upstream integration for {agent_name}[/dim]")
+            continue
+
+        result = subprocess.run(cmd, cwd=str(repo_root), capture_output=True, text=True)
+        if result.returncode == 0:
+            installed_count += 1
+            console.print(f"[green]✓[/green] Installed upstream integration for {agent_name}")
+        else:
+            failed.append(agent_name)
+            console.print(f"[yellow]⚠[/yellow] Failed to install upstream integration for {agent_name}")
+            if result.stderr:
+                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+            elif result.stdout:
+                console.print(f"  [dim]{result.stdout.strip()}[/dim]")
+
+    if not dry_run:
+        console.print(f"[blue]ℹ[/blue] Upstream integrations installed: {installed_count}/{len(selected_agents)}")
+        if failed:
+            raise typer.Exit(1)
+
+
+def validate_workflow_support(repo_root: Path) -> bool:
+    """Verify that the installed specify CLI supports workflow management."""
+    try:
+        result = subprocess.run(
+            ["specify", "workflow", "--help"],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        console.print("[red]✗[/red] specify CLI not found in PATH", style="red bold")
+        return False
+
+    if result.returncode != 0:
+        console.print(
+            "[red]✗[/red] Installed specify CLI does not support workflow commands.",
+            style="red bold",
+        )
+        console.print("[dim]Workflow package installs require spec-kit 0.7.0+.[/dim]")
+        return False
+    return True
+
+
+def install_workflow_packages(
+    repo_root: Path,
+    selected_keys: List[str],
+    dry_run: bool = False,
+    workflow_source_root: Optional[Path] = None,
+) -> None:
+    """Install selected curated workflow packages via native spec-kit command."""
+    if not selected_keys:
+        return
+
+    console.print("\n[bold]Installing curated workflow packages:[/bold]")
+    installed_count = 0
+    failed: List[str] = []
+
+    for key in selected_keys:
+        meta = WORKFLOW_PACKAGES[key]
+        install_target = meta["url"]
+        if workflow_source_root is not None:
+            local_workflow = workflow_source_root / "workflows" / key / "workflow.yml"
+            if not local_workflow.exists():
+                failed.append(meta["name"])
+                console.print(f"[yellow]⚠[/yellow] Missing local workflow file for {meta['name']}")
+                console.print(f"  [dim]{local_workflow}[/dim]")
+                continue
+            install_target = str(local_workflow)
+
+        cmd = ["specify", "workflow", "add", install_target]
+        console.print(f"[blue]ℹ[/blue] {meta['name']}: {' '.join(cmd)}")
+
+        if dry_run:
+            console.print(f"  [dim]Would install {meta['name']}[/dim]")
+            continue
+
+        result = subprocess.run(cmd, cwd=str(repo_root), capture_output=True, text=True)
+        if result.returncode == 0:
+            installed_count += 1
+            console.print(f"[green]✓[/green] Installed {meta['name']}")
+        else:
+            failed.append(meta["name"])
+            console.print(f"[yellow]⚠[/yellow] Failed to install {meta['name']}")
+            if result.stderr:
+                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+
+    if not dry_run:
+        console.print(f"[blue]ℹ[/blue] Workflow packages installed: {installed_count}/{len(selected_keys)}")
         if failed:
             console.print(f"[yellow]⚠[/yellow] Not installed: {', '.join(failed)}")
 
@@ -2403,10 +2696,25 @@ def main(
         "--list-community",
         help="List curated community extensions that can be installed via this CLI",
     ),
+    list_workflows: bool = typer.Option(
+        False,
+        "--list-workflows",
+        help="List curated workflow packages that can be installed via this CLI",
+    ),
     with_community: Optional[str] = typer.Option(
         None,
         "--with-community",
         help="Companion extension profile: recommended | all | none | comma-separated keys",
+    ),
+    with_workflows: Optional[str] = typer.Option(
+        None,
+        "--with-workflows",
+        help="Workflow package profile: recommended | all | none | comma-separated keys",
+    ),
+    extension_source: Optional[str] = typer.Option(
+        None,
+        "--extension-source",
+        help="Install from a local extension source directory using a sanitized --dev copy instead of the GitHub archive",
     ),
     llm_enhance: bool = typer.Option(
         True,
@@ -2504,6 +2812,18 @@ def main(
         console.print("[dim]Use: --with-community worktree,spec-refine[/dim]")
         raise typer.Exit(0)
 
+    # Handle --list-workflows
+    if list_workflows:
+        console.print("\n[bold]Curated Workflow Packages:[/bold]\n")
+        for key in sorted(WORKFLOW_PACKAGES.keys()):
+            workflow = WORKFLOW_PACKAGES[key]
+            console.print(f"  [cyan]{key:18}[/cyan] - {workflow['name']}")
+            console.print(f"                     [dim]{workflow['purpose']}[/dim]")
+            console.print(f"                     [dim]Type: {workflow['relationship']}[/dim]\n")
+        console.print("[dim]Use: --with-workflows recommended[/dim]")
+        console.print("[dim]Use: --with-workflows bugfix-lifecycle,refactor-lifecycle[/dim]")
+        raise typer.Exit(0)
+
     # Resolve companion extension selection.
     # Default behavior installs the curated default profile unless explicitly disabled.
     selected_community_extensions: List[str] = DEFAULT_COMMUNITY_EXTENSIONS.copy()
@@ -2513,6 +2833,15 @@ def main(
         except ValueError as ve:
             console.print(f"[red]✗[/red] {ve}", style="red bold")
             console.print("[dim]Use --list-community to view valid keys[/dim]")
+            raise typer.Exit(1)
+
+    selected_workflow_packages: List[str] = []
+    if with_workflows is not None:
+        try:
+            selected_workflow_packages = parse_workflow_package_selection(with_workflows)
+        except ValueError as ve:
+            console.print(f"[red]✗[/red] {ve}", style="red bold")
+            console.print("[dim]Use --list-workflows to view valid keys[/dim]")
             raise typer.Exit(1)
 
     # Handle --patch (patch-only mode for use after 'specify extension add')
@@ -2634,6 +2963,10 @@ def main(
         console.print(f"  Repository: {repo_root}")
         console.print(f"  Agents: {', '.join(resolved_agents)}")
         console.print(f"  Extensions: {', '.join(extensions_to_install)}")
+        if selected_workflow_packages:
+            console.print(f"  Workflow packages: {', '.join(selected_workflow_packages)}")
+        else:
+            console.print("  Workflow packages: none")
         if selected_community_extensions:
             console.print(f"  Community extensions: {', '.join(selected_community_extensions)}")
         else:
@@ -2668,70 +3001,128 @@ def main(
         # Non-interactive: enable what's being installed + keep current
         workflows_to_enable = currently_enabled | set(extensions_to_install)
 
+    explicit_agent_selection = should_reconcile_integrations(effective_ai, agents)
+
+    if selected_workflow_packages and not dry_run:
+        if not validate_workflow_support(repo_root):
+            raise typer.Exit(1)
+
+    if explicit_agent_selection and not validate_integration_support(repo_root):
+        raise typer.Exit(1)
+
     # Install via spec-kit native extension system
     console.print(f"\n[bold]Installing extensions via spec-kit:[/bold] {', '.join(extensions_to_install)}")
     console.print(f"[bold]Configured for:[/bold] {', '.join(resolved_agents)}\n")
 
-    # Build the specify extension add command
-    # Use --from with the GitHub archive URL since we may not be in the community catalog
     download_url = f"https://github.com/{GITHUB_REPO}/archive/refs/heads/main.zip"
-    specify_cmd = ["specify", "extension", "add", "workflows", "--from", download_url]
-    if dry_run:
-        specify_cmd.append("--dry-run")
+    specified_source: Optional[Path] = None
+    workflow_source_root: Optional[Path] = None
+    staged_source_temp: Optional[tempfile.TemporaryDirectory] = None
+    install_description = f"specify extension add workflows --from {download_url}"
+
+    if extension_source is not None:
+        specified_source = Path(extension_source).expanduser()
+        if not specified_source.is_absolute():
+            specified_source = (Path.cwd() / specified_source).resolve()
+        try:
+            validate_local_extension_source(specified_source)
+        except ValueError as exc:
+            console.print(f"[red]✗[/red] {exc}", style="red bold")
+            raise typer.Exit(1)
+
+        if dry_run:
+            workflow_source_root = specified_source
+            console.print(
+                f"[blue]ℹ[/blue] Dry run: would stage a sanitized local dev source from {specified_source}"
+            )
+        else:
+            staged_source_temp, workflow_source_root = stage_local_extension_source(specified_source)
+            console.print(f"[blue]ℹ[/blue] Using sanitized local extension source from {specified_source}")
+
+        install_description = f"specify extension add {specified_source} --dev"
+
+    specify_cmd = build_extension_install_command(
+        download_url,
+        local_dev_source=workflow_source_root,
+        dry_run=dry_run,
+    )
 
     console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
 
-    if not dry_run:
-        result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
-        if result.returncode != 0:
-            console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
-            if result.stderr:
-                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+    try:
+        if explicit_agent_selection:
+            install_agent_integrations(repo_root, resolved_agents, dry_run=dry_run)
+
+        if not dry_run:
+            result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
+            if result.returncode != 0:
+                console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
+                if result.stderr:
+                    console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+                if result.stdout:
+                    console.print(f"  [dim]{result.stdout.strip()}[/dim]")
+                raise typer.Exit(1)
             if result.stdout:
-                console.print(f"  [dim]{result.stdout.strip()}[/dim]")
-            raise typer.Exit(1)
-        if result.stdout:
-            console.print(result.stdout.strip())
-        console.print("[green]✓[/green] Extension installed via spec-kit native system")
-    else:
-        console.print("  [dim]Would run: specify extension add[/dim]")
+                console.print(result.stdout.strip())
+            console.print("[green]✓[/green] Extension installed via spec-kit native system")
+        else:
+            console.print("  [dim]Would run: specify extension add[/dim]")
 
-    # Patch common.sh for extension branch pattern support
-    patch_common_sh(repo_root, dry_run)
-    patch_common_ps1(repo_root, dry_run)
+        # Patch common.sh for extension branch pattern support
+        patch_common_sh(repo_root, dry_run)
+        patch_common_ps1(repo_root, dry_run)
 
-    # Install git hooks if requested
-    if install_hooks:
-        install_git_hooks(repo_root, dry_run)
+        # Install git hooks if requested
+        if install_hooks:
+            install_git_hooks(repo_root, dry_run)
 
-    # Install GitHub integration if requested
-    if github_integration:
-        install_spec_ready_workflow(repo_root, dry_run)
+        # Install GitHub integration if requested
+        if github_integration:
+            install_spec_ready_workflow(repo_root, dry_run)
 
-    # Install curated companion community extensions if requested
-    install_community_extensions(repo_root, selected_community_extensions, dry_run)
+        # Install curated standalone workflow packages if requested
+        install_workflow_packages(
+            repo_root,
+            selected_workflow_packages,
+            dry_run,
+            workflow_source_root=workflow_source_root,
+        )
+
+        # Install curated companion community extensions if requested
+        install_community_extensions(repo_root, selected_community_extensions, dry_run)
+    finally:
+        if staged_source_temp is not None:
+            staged_source_temp.cleanup()
 
     # Success message
     console.print("\n" + "━" * 60)
     console.print("[bold green]✓ spec-kit-extensions installed successfully![/bold green]")
     console.print("━" * 60 + "\n")
 
-    console.print(f"[blue]ℹ[/blue] Installed via: specify extension add workflows --from {download_url}\n")
+    console.print(f"[blue]ℹ[/blue] Installed via: {install_description}\n")
 
     # Next steps
     console.print("[bold]Next steps:[/bold]")
     console.print("  1. Verify: specify extension list")
     console.print("  2. Try a command: /speckit.workflows.bugfix \"test bug\"")
     console.print("  3. Or use alias: /speckit.bugfix \"test bug\"")
-    if not install_hooks:
-        console.print("  4. Install git hooks: specify-extend --hooks")
-    if not github_integration:
-        console.print("  5. Install CI/CD workflow: specify-extend --github-integration")
-    if selected_community_extensions:
-        console.print("  6. Customize companions: specify-extend --with-community all --all")
-        console.print("  7. Disable companions: specify-extend --with-community none --all")
+    if selected_workflow_packages:
+        console.print("  4. Verify workflows: specify workflow list")
+        console.print("  5. Try a lifecycle flow: specify workflow run bugfix-lifecycle --input request=\"test bug\" --input integration=copilot")
+        next_step_index = 6
     else:
-        console.print("  6. Enable companions: specify-extend --with-community recommended --all")
+        next_step_index = 4
+    if not install_hooks:
+        console.print(f"  {next_step_index}. Install git hooks: specify-extend --hooks")
+        next_step_index += 1
+    if not github_integration:
+        console.print(f"  {next_step_index}. Install CI/CD workflow: specify-extend --github-integration")
+        next_step_index += 1
+    if selected_community_extensions:
+        console.print(f"  {next_step_index}. Customize companions: specify-extend --with-community all --all")
+        console.print(f"  {next_step_index + 1}. Disable companions: specify-extend --with-community none --all")
+    else:
+        console.print(f"  {next_step_index}. Enable companions: specify-extend --with-community recommended --all")
     console.print()
 
 

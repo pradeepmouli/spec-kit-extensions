@@ -184,12 +184,16 @@ Spec-kit 0.3.0 deprecated explicit `agy` support. We should:
 
 ---
 
-### 2.7 AI Skills Propagation Alignment (LOW EFFORT)
+### 2.7 AI Skills Propagation Alignment (RESOLVED IN LATER CLI)
 
-Spec-kit 0.3.0 propagates AI skills when `--ai-skills` is used during init. Our `--ai-skills` flag (added in v1.6.0) already installs `SKILL.md` files. We should verify:
-- Our skill format matches spec-kit 0.3.0's expectations
-- Skills are placed in the correct directories for the preset system
-- Our `EXTENSION_SKILL_DESCRIPTIONS` align with any new conventions
+This note is now historical.
+
+Later CLI work removed the local `--ai-skills` implementation and the repo-local skill fan-out installer. Skill registration is now delegated to native spec-kit handling.
+
+What still matters:
+- Verify repository skill sources in `.agents/skills/` remain compatible with current upstream spec-kit expectations
+- Do not reintroduce repo-local `.github/skills/` or `.claude/skills/` fan-out unless upstream behavior requires it
+- Prefer documenting observed upstream integration behavior over maintaining parallel local installers
 
 ---
 

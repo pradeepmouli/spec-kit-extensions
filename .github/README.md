@@ -290,28 +290,30 @@ Each template includes:
 
 ## AI Agent Integration
 
-### GitHub Copilot Instructions
+### GitHub Copilot Configuration
 
-**File**: `.github/copilot-instructions.md`
+**Files**:
 
-Provides GitHub Copilot with:
-- Spec-kit workflow types and commands
-- Review requirements and enforcement rules
-- Directory structure patterns
-- Best practices for each workflow type
-- Common patterns and examples
-- Reminders to always review before merge
+- `.github/copilot-instructions.md`
+- `.github/copilot.yml.example`
+
+GitHub Copilot support is split across:
+
+- Repository-wide instructions in `.github/copilot-instructions.md`
+- Optional PR review configuration in `.github/copilot.yml.example`
+- Project-level command agents and prompts generated in user repositories when spec-kit/specify-extend installs Copilot integration
 
 **Key features**:
-- Instructs Copilot on proper workflow usage
-- Emphasizes review requirement before merging
-- Provides examples for common tasks
-- Explains branch patterns and directory structure
+
+- Gives Copilot explicit workflow entry points through agents and prompts
+- Preserves repository-wide workflow guidance and review requirements
+- Supports PR review configuration separately from command execution
+- Keeps Copilot aligned with current spec-kit command and review patterns
 
 ### Other AI Agents
 
 These configurations are agent-agnostic and work with:
-- **GitHub Copilot** - Uses `.github/copilot-instructions.md`
+- **GitHub Copilot** - Uses `.github/copilot-instructions.md` here, plus generated `.github/agents/` and `.github/prompts/` in installed target projects
 - **Claude Code** - Can read workflow files and issue templates
 - **Cursor** - Can use issue templates and workflow patterns
 - **Any spec-kit compatible agent**
@@ -342,8 +344,10 @@ To add GitHub workflows and templates to your project:
 4. **Copy GitHub Copilot configuration** (optional, for Copilot users):
    ```bash
    cp path/to/spec-kit-extensions/.github/copilot-instructions.md .github/
-   cp path/to/spec-kit-extensions/.github/copilot.yml .github/
+   cp path/to/spec-kit-extensions/.github/copilot.yml.example .github/copilot.yml
    ```
+
+   Workflow command agents and prompt files are generated in the target project by the spec-kit/specify-extend installation flow; they are not copied from this repository's `.github/` directory.
 
 5. **Copy CODEOWNERS template** (optional, for teams):
    ```bash
@@ -469,7 +473,14 @@ Create new `.yml` file in `.github/ISSUE_TEMPLATE/` following the existing forma
 
 ### Customizing Copilot Instructions
 
-Edit `.github/copilot-instructions.md`:
+Edit the Copilot configuration that matches what you want to change:
+
+- `.github/copilot-instructions.md` for repository-wide instructions
+- `.github/copilot.yml` if you enable PR review configuration from the example file
+
+If you are customizing a target project after installation, you may also edit generated `.github/agents/*.agent.md` and `.github/prompts/*.prompt.md` files there.
+
+Typical customizations:
 
 - Add project-specific workflow patterns
 - Customize review requirements

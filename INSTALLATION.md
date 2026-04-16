@@ -1,435 +1,295 @@
 # Installation Guide
 
-This guide covers installing **spec-kit-extensions** for different scenarios.
+This guide covers the supported ways to install `spec-kit-extensions` in a spec-kit project.
 
 ## Prerequisites
 
 Before installing, ensure you have:
 
-- ✅ **spec-kit v0.1.0+** installed (for native extension support)
+- `spec-kit` installed from source with extension support
   ```bash
   uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
   ```
-- ✅ **Git** repository initialized
-- ✅ **AI coding agent** (Claude Code, GitHub Copilot, etc.) - optional but recommended
+- A Git repository initialized for your project
+- An AI coding agent configured with `specify init --ai ...` if you want agent-specific commands installed automatically
 
-## Quick Install (Native Extension - Recommended)
+## Recommended Install
 
-**For spec-kit v0.1.0+, use the native extension system:**
+The recommended path is to use `specify-extend`. It installs the workflows extension through native spec-kit commands, reconciles requested agent integrations, and patches spec-kit's branch validation so typed workflow branches such as `bugfix/...` and `refactor/...` work correctly.
 
 ```bash
-# 1. In your project, initialize spec-kit (if not already done)
+# 1. Initialize spec-kit in your project
 cd your-project
-specify init .
+specify init --here --ai claude
 
-# 2. Install the extension
-specify extension add spec-kit-workflows
-
-# Or directly from GitHub
-specify extension add --from https://github.com/pradeepmouli/spec-kit-extensions/releases/latest
-
-# 3. Verify installation
-specify extension list
-# Should show: spec-kit-workflows (v2.3.0)
-
-# 4. Test a workflow
-/speckit.workflows.bugfix --help
-```
-
-**What it does:**
-- ✅ Automatically detects your AI agent and installs appropriate commands
-- ✅ Sets up all 8 workflows + 2 command extensions
-- ✅ Configures quality gates via hooks
-- ✅ Provides branch validation
-- ✅ No file patching required!
-
-### Configuration
-
-Customize the extension after installation:
-
-```bash
-# Edit configuration
-vim .specify/extensions/spec-kit-workflows/config.yml
-```
-
-Example configuration:
-```yaml
-workflows:
-  baseline: true
-  bugfix: true
-  enhance: true
-  modify: true
-  refactor: true
-  hotfix: true
-  deprecate: false  # disable if not needed
-  cleanup: false    # disable if not needed
-
-branch_validation:
-  enabled: true
-
-constitution:
-  auto_update: true
-```
-
-## Legacy Installation (for spec-kit < 0.0.93)
-
-**If you're using an older spec-kit version, use the legacy `specify-extend` CLI tool:**
-
-```bash
-# 1. In your project, initialize spec-kit (if not already done)
-cd your-project
-specify init .
-
-# 2. Install specify-extend (choose one method)
-
-# Method A: Install with pip from PyPI
+# 2. Install the CLI tool
 pip install specify-extend
+# or run it without a persistent install:
+# uvx specify-extend --all
+
+# 3. Install this extension pack
 specify-extend --all
 
-# Method B: Use with uvx (no installation)
-uvx specify-extend --all
+# 4. Verify installation
+specify extension list
+```
 
-# Method C: Install from GitHub (for latest unreleased features)
-pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
-specify-extend --all
+What this does:
 
-# 3. Optional: PowerShell workflows
-specify-extend --all --script ps
+- Detects or reconciles your target agent integrations
+- Installs the workflows extension through native `specify extension add`
+- Installs workflow scripts and command files for the active agent(s)
+- Updates constitution and enabled workflow state
+- Patches `common.sh` for extension branch patterns
 
-# 4. Optional: Multiple agents in same repo
+## Common Variants
+
+### Multiple agents
+
+```bash
 specify-extend --agents claude,copilot,cursor-agent --all
-
-# 5. Optional: GitHub integration features
-specify-extend --all --github-integration
 ```
 
-**What it does:**
-- ✅ Downloads latest extensions from GitHub releases
-- ✅ Automatically detects your AI agent
-- ✅ Installs appropriate extensions and commands
-- ✅ Updates constitution with quality gates
-- ✅ Patches spec-kit's `common.sh` for branch patterns
+### Local development source
 
-See [specify-extend documentation](docs/specify-extend.md) for advanced usage.
-
-## Migration from Legacy to Native
-
-**If you have an existing legacy installation and want to upgrade:**
-
-See [MIGRATION.md](MIGRATION.md) for a complete migration guide, or use the automated migration script:
+Use this when validating local, unpushed changes from a checkout of this repository.
 
 ```bash
-# Download and run migration script
-curl -sSL https://raw.githubusercontent.com/pradeepmouli/spec-kit-extensions/main/scripts/migrate-to-native.sh > migrate.sh
-chmod +x migrate.sh
-./migrate.sh
-
-# Then install native extension
-specify extension add spec-kit-workflows
+specify-extend --all --extension-source ../spec-kit-extensions
 ```
 
-## Manual Installation Methods
+`specify-extend` stages a sanitized temporary copy of that checkout and installs it via native `specify extension add --dev`, which avoids copying generated `.specify` state back into the install.
 
-If you prefer manual installation or need more control:
-
-### Method 2: Git Submodule (For Teams)
-
-**Use this if:** You want to track updates to extensions or share across multiple projects
+### Curated companion extensions
 
 ```bash
-# 1. Add as submodule
-cd your-project
-git submodule add https://github.com/pradeepmouli/spec-kit-extensions.git .specify/extension-source
-
-# 2. Create symlinks to extension files
-ln -s ..extension-source/extensions .specify/extensions
-ln -s ../../.specify/extension-source/scripts/bash/* .specify/scripts/bash/
-# Optional: PowerShell scripts (only if you want PowerShell workflows)
-ln -s ../../.specify/extension-source/scripts/powershell/* .specify/scripts/powershell/
-mkdir -p .claude/commands
-ln -s ../../.specify/extension-source/commands/* .claude/commands/
-
-# 3. Merge constitution
-cat .specify/extension-source/docs/constitution-template.md >> .specify/memory/constitution.md
-
-# 4. Initialize submodule
-git submodule update --init --recursive
-
-# 5. Verify installation
-/bugfix --help
-
-# To update extensions later:
-git submodule update --remote .specify/extension-source
+specify-extend --list-community
+specify-extend --all --with-community recommended
 ```
 
-### Method 4: Manual Installation (Without Git)
+### Curated workflow packages
 
-**Use this if:** You want to manually download and install
+```bash
+specify-extend --list-workflows
+specify-extend --all --with-workflows recommended
+```
 
-1. Download the [latest release](https://github.com/[your-username]/spec-kit-extensions/releases) as ZIP
-2. Extract to temporary directory
-3. Follow steps from **Method 2** starting at step 2
+### PowerShell scripts
+
+```bash
+specify-extend --all --script ps
+```
+
+### Git hooks and GitHub integration
+
+```bash
+specify-extend --all --hooks --github-integration
+```
+
+## Native Install Without The CLI
+
+This path is supported, but it does not patch spec-kit's branch validation on its own. Use it only if you explicitly want native extension installation behavior and are prepared to patch branch handling separately.
+
+```bash
+# Install the workflows extension directly
+specify extension add workflows --from https://github.com/MartyBonacci/spec-kit-extensions/archive/refs/heads/main.zip
+
+# Then patch branch validation for typed workflow branches
+specify-extend --patch
+```
 
 ## Verification
 
 After installation, verify everything works:
 
-### Test Claude Code Commands
-
 ```bash
-# Test each command (should show usage)
-/speckit.workflows.bugfix --help
-/speckit.workflows.modify --help
-/speckit.workflows.refactor --help
-/speckit.workflows.hotfix --help
-/speckit.workflows.deprecate --help
+# Extension should be listed
+specify extension list
+
+# A workflow command should resolve
+/speckit.workflows.bugfix "test bug"
+
+# Alias should also resolve
+/speckit.bugfix "test bug"
 ```
 
-### Test Bash Scripts
+You can also verify installed files directly:
 
 ```bash
-# Should list available features
-.specify/scripts/bash/create-modification.sh --list-features
-
-# Should show help
-.specify/scripts/bash/create-bugfix.sh --help
-```
-
-### Check File Structure
-
-```bash
-# Verify extensions directory
 ls .specify/extensions/
-# Should show: README.md, QUICKSTART.md, enabled.conf, workflows/
-
-# Verify scripts
 ls .specify/scripts/bash/create-*.sh
-# Should show: create-bugfix.sh, create-modification.sh, etc.
-ls .specify/scripts/powershell/create-*.ps1
-# Should show: create-bugfix.ps1, create-modification.ps1, etc.
-
-# Verify commands (if using Claude Code)
-ls .claude/commands/*.md
-# Should show: speckit.bugfix.md, speckit.modify.md, speckit.refactor.md, speckit.hotfix.md, speckit.deprecate.md
+ls .specify/scripts/powershell/create-*.ps1 2>/dev/null || true
+ls .claude/commands/*.md 2>/dev/null || true
+ls .github/agents/*.agent.md 2>/dev/null || true
+ls .github/prompts/*.prompt.md 2>/dev/null || true
 ```
+
+## Installed Layout
+
+After a standard install, your project will contain the extension under `.specify/extensions/workflows/` plus agent-specific command assets.
+
+Typical layout:
+
+```text
+your-project/
+├── .specify/
+│   ├── extensions/
+│   │   └── workflows/
+│   │       ├── extension.yml
+│   │       ├── commands/
+│   │       ├── scripts/
+│   │       └── templates/
+│   ├── scripts/
+│   │   ├── bash/
+│   │   └── powershell/
+│   └── memory/
+│       └── constitution.md
+├── .claude/commands/
+├── .github/agents/
+└── .github/prompts/
+```
+
+The exact agent-specific directories depend on the configured agent:
+
+- Claude Code installs command files under `.claude/commands/`
+- GitHub Copilot installs agent and prompt files under `.github/agents/` and `.github/prompts/`
+- Cursor installs command files under `.cursor/commands/`
+- Gemini CLI and Qwen install Markdown command files under their command directories
 
 ## Configuration
 
-### Enable/Disable Workflows
+### Enable or disable workflows
 
-Edit `.specify/extensions/enabled.conf` to control which workflows are available:
+Edit `.specify/extensions/enabled.conf` to control which workflows are active.
 
 ```bash
-# Enable a workflow (uncomment)
 bugfix
-
-# Disable a workflow (comment out)
 # refactor
 ```
 
-### Customize Templates
+### Customize templates
 
-Workflow templates are in `.specify/extensions/workflows/{workflow-name}/`:
-
-```bash
-# Example: Customize bugfix template
-nano .specify/extensions/workflows/bugfix/bug-report-template.md
-```
-
-### Update Constitution
-
-The constitution defines quality gates for each workflow. Review and customize:
+Workflow templates live under `.specify/extensions/workflows/templates/` in installed projects.
 
 ```bash
-nano .specify/memory/constitution.md
+nano .specify/extensions/workflows/templates/bugfix/bug-report-template.md
 ```
 
-Look for **Section VI: Workflow Selection and Quality Gates**
+### Review constitution updates
+
+`specify-extend` updates `.specify/memory/constitution.md` with extension quality gates. Review that file if your project has a customized constitution.
 
 ## Troubleshooting
 
-### "Command not found" Error
+### `No .specify directory found`
 
-**Problem**: `/bugfix` or other commands don't work
+Initialize spec-kit first:
 
-**Solution**:
-1. Verify commands are in `.claude/commands/`:
-   ```bash
-   ls .claude/commands/*.md
-   ```
-2. If using Claude Code, restart the agent
-3. If files are missing, re-run installation step 5
+```bash
+specify init --here --ai claude
+```
 
-### "Permission denied" When Running Scripts
+### Agent commands were not installed where I expected
 
-**Problem**: Scripts won't execute
+Force the target agent explicitly:
 
-**Solution**:
+```bash
+specify-extend --ai claude --all
+specify-extend --ai copilot --all
+specify-extend --ai cursor-agent --all
+```
+
+For multi-agent repos, use:
+
+```bash
+specify-extend --agents claude,copilot --all
+```
+
+### Local extension source validation failed
+
+`--extension-source` must point at the repository root containing `extension.yml`, `commands/`, `scripts/`, and `templates/`.
+
+```bash
+specify-extend --all --extension-source /path/to/spec-kit-extensions
+```
+
+### Scripts are not executable
+
 ```bash
 chmod +x .specify/scripts/bash/create-*.sh
 ```
 
-### "Feature directory not found" Error
+### Native install worked, but workflow branches are rejected
 
-**Problem**: `/modify` can't find parent feature
-
-**Solution**:
-1. Ensure you're in the repository root
-2. Verify parent feature exists:
-   ```bash
-   ls specs/ | grep "^014-"
-   ```
-3. Use correct feature number in command
-
-### Wrong Branch Created
-
-**Problem**: Branch names don't match expected pattern
-
-**Solution**:
-1. Delete incorrect branch:
-   ```bash
-   git branch -D incorrect-branch-name
-   ```
-2. Re-run command with correct syntax (check command documentation)
-
-### Extensions Don't Work with My AI Agent
-
-**Problem**: Using Copilot/Cursor/other agent and commands don't work
-
-**Solution**:
-
-Each AI agent requires different setup. See **[AI-AGENTS.md](AI-AGENTS.md)** for detailed setup guides for:
-- GitHub Copilot (with example `.github/copilot-instructions.md`)
-- Cursor (with example `.cursorrules`)
-- Windsurf (with project rules)
-- Gemini CLI and other CLI tools
-- Universal fallback for any agent
-
-**Quick fixes**:
-
-**For GitHub Copilot**:
-1. Create `.github/copilot-instructions.md`
-2. Add content from `.claude/commands/speckit.*.md`
-3. Format as Copilot instructions
-4. See [AI-AGENTS.md](AI-AGENTS.md#2-github-copilot) for complete example
-
-**For Cursor**:
-1. Create `.cursorrules` file
-2. Add command definitions as rules
-3. See [AI-AGENTS.md](AI-AGENTS.md#3-cursor) for complete example
-
-**For Manual Use (any agent)**:
-- Run bash scripts directly (PowerShell scripts are optional):
-  ```bash
-  .specify/scripts/bash/create-bugfix.sh "bug description"
-  ```
-  ```powershell
-  # Optional: if PowerShell scripts are installed
-  .specify/scripts/powershell/create-bugfix.ps1 "bug description"
-  ```
-- Then ask your AI agent to implement following the generated files
-- See [AI-AGENTS.md](AI-AGENTS.md#7-universal-fallback-any-ai-agent) for details
-
-## Updating Extensions
-
-### Check Current Versions
+Patch spec-kit's branch validation:
 
 ```bash
-# Check CLI tool version
+specify-extend --patch
+```
+
+### Commands do not work for my AI agent
+
+See [AI-AGENTS.md](AI-AGENTS.md) for agent-specific expectations and setup details. In current installs:
+
+- GitHub Copilot uses `.github/agents/` and `.github/prompts/`
+- Cursor uses `.cursor/commands/`
+- Manual fallback is always available by running the generated scripts directly
+
+## Updating
+
+Check current versions:
+
+```bash
 specify-extend --version
-
-# Check template version
-cat .specify/extensions/README.md | grep "Extension Templates Version"
+grep -n "version:" .specify/extensions/workflows/extension.yml
 ```
 
-**Note**: This project has two independently versioned components:
-- **Extension Templates** (workflows, commands, scripts) - Currently v3.2.0
-- **CLI Tool** (`specify-extend`) - Currently v2.2.1
+This project has two independently versioned parts:
 
-### Update CLI Tool
+- Extension templates and workflow pack
+- The `specify-extend` CLI
+
+To update using the published source:
 
 ```bash
-# Update from PyPI
 pip install --upgrade specify-extend
-
-# Or with uvx (always uses latest)
-uvx specify-extend --all
-```
-
-### Update Templates
-
-```bash
-# Use specify-extend to update templates
 specify-extend --all
-
-# This will download the latest template version from GitHub releases
 ```
 
-### Update from Git (Manual Method)
+To update from a local checkout:
 
 ```bash
-# Pull latest version
-cd /tmp
-git clone https://github.com/[your-username]/spec-kit-extensions.git
-cd your-project
-
-# Backup your customizations
-cp .specify/extensions/enabled.conf /tmp/enabled.conf.backup
-
-# Update files
-cp -r /tmp/spec-kit-extensions/extensions/* .specify/extensions/
-cp /tmp/spec-kit-extensions/scripts/create-*.sh .specify/scripts/bash/
-
-# Restore customizations
-cp /tmp/enabled.conf.backup .specify/extensions/enabled.conf
-
-# Clean up
-rm -rf /tmp/spec-kit-extensions
+specify-extend --all --extension-source /path/to/spec-kit-extensions
 ```
 
-### Update from Submodule (Method 3)
+## Uninstalling
+
+To remove the extension from a project:
 
 ```bash
-git submodule update --remote .specify/extension-source
-git add .specify/extension-source
-git commit -m "Update spec-kit-extensions to latest version"
-```
-
-## Uninstallation
-
-To remove extensions:
-
-```bash
-# Remove extension files
 rm -rf .specify/extensions/
-rm .specify/scripts/bash/create-{bugfix,modification,refactor,hotfix,deprecate}.sh
-rm .claude/commands/speckit.{bugfix,modify,refactor,hotfix,deprecate}.md
-
-# Remove constitution sections (manual - search for "Section VI")
-nano .specify/memory/constitution.md
-
-# Remove workflow specs (if desired)
-rm -rf specs/bugfix
-rm -rf specs/refactor
-rm -rf specs/hotfix
-rm -rf specs/deprecate
+rm -f .specify/scripts/bash/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.sh
+rm -f .specify/scripts/powershell/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.ps1
+rm -f .claude/commands/speckit.*.md
+rm -f .github/agents/speckit.*.agent.md
+rm -f .github/prompts/speckit.*.prompt.md
+rm -f .cursor/commands/speckit.*.md
 ```
+
+Then manually review `.specify/memory/constitution.md` if you want to remove previously added workflow quality-gate text.
 
 ## Next Steps
 
-After successful installation:
+After installation:
 
-1. **Read the Quick Start**: [QUICKSTART.md](extensions/QUICKSTART.md) - 5-minute tutorial
-2. **Try a Workflow**: Pick a real bug or refactor and use the appropriate workflow
-3. **Read Examples**: [EXAMPLES.md](EXAMPLES.md) - See real-world usage from Tweeter project
-4. **Customize**: Adjust templates and enabled workflows for your team's needs
+1. Read [extensions/QUICKSTART.md](extensions/QUICKSTART.md)
+2. Try a real workflow such as `/speckit.workflows.bugfix` or `/speckit.workflows.enhance`
+3. Review [AI-AGENTS.md](AI-AGENTS.md) if you are working in a multi-agent setup
+4. Review [docs/specify-extend.md](docs/specify-extend.md) for advanced CLI usage
 
 ## Getting Help
 
-- **Installation Issues**: [Open an issue](https://github.com/[your-username]/spec-kit-extensions/issues/new?template=installation.md)
-- **General Questions**: [Start a discussion](https://github.com/[your-username]/spec-kit-extensions/discussions)
-- **spec-kit Issues**: [spec-kit repo](https://github.com/github/spec-kit)
-
----
-
-**Installation complete?** → [Quick Start Guide](extensions/QUICKSTART.md)
+- Installation and usage guidance: [README.md](README.md)
+- Agent-specific guidance: [AI-AGENTS.md](AI-AGENTS.md)
+- Advanced CLI reference: [docs/specify-extend.md](docs/specify-extend.md)
+- Core spec-kit issues: https://github.com/github/spec-kit

@@ -83,8 +83,15 @@ specify-extend --all
 ```
 
 `specify-extend --all` is the **recommended installation method** until spec-kit natively supports alternate feature branch patterns (bugfix/, hotfix/, etc.). It:
-1. Downloads and installs the extension via `specify extension add`
-2. Patches spec-kit's `common.sh` to recognize extension branch patterns
+1. Reconciles the requested AI agents via upstream `specify integration install`
+2. Downloads and installs the extension via `specify extension add`
+3. Patches spec-kit's `common.sh` to recognize extension branch patterns
+
+If you want to align multiple agents before installing the workflow pack, you can do that in one step:
+
+```bash
+specify-extend --agents claude,copilot --all
+```
 
 **Alternative: Native spec-kit install** (advanced — does not patch branch patterns):
 ```bash
@@ -125,7 +132,61 @@ Replacement keys for overlapping workflows:
 - `cleanup-plus` — community replacement candidate for `/speckit.cleanup`
 - `bugfix-artifacts` — community bugfix workflow focused on in-place artifact patching
 
+GitHub issue companion note:
+
+- `github-issues` complements, but does not replace, this extension's native issue-sync hooks.
+- Use `github-issues` for issue import, spec linkage, and manual spec-to-issue synchronization.
+- Use native issue sync for lifecycle status/label updates at workflow boundaries (`before_*` / `after_*`).
+
 Deprecation note:
+
+### Optional Workflow Packages
+
+For spec-kit `0.7.0+`, you can also have `specify-extend` install curated standalone workflow-engine packages alongside the extension.
+
+```bash
+# See curated workflow packages
+specify-extend --list-workflows
+
+# Install this extension + recommended workflow packages
+specify-extend --all --with-workflows recommended
+
+# Install this extension + specific workflow packages
+specify-extend --all --with-workflows bugfix-lifecycle,enhance-lifecycle
+
+# Preview without changes
+specify-extend --all --with-workflows recommended --dry-run
+```
+
+Supported selectors for `--with-workflows`:
+
+- `recommended` — installs the curated default workflow set
+- `all` — installs every curated workflow package
+- `none` — skips workflow package installation
+- Comma-separated keys — installs only selected workflow packages
+
+Current curated workflow packages:
+
+- `bugfix-lifecycle`
+- `enhance-lifecycle`
+- `modify-lifecycle`
+- `refactor-lifecycle`
+- `hotfix-lifecycle`
+- `deprecate-lifecycle`
+
+Local development install mode:
+
+```bash
+# Install the extension from your local checkout instead of GitHub
+specify-extend --all --extension-source ../spec-kit-extensions
+
+# Combine local extension install with local workflow package files
+specify-extend --all --extension-source ../spec-kit-extensions --with-workflows recommended
+```
+
+When `--extension-source` is used, `specify-extend` stages a sanitized temporary copy of that checkout before running `specify extension add --dev`. This avoids recursive copies of generated `.specify` state while still letting you validate unpushed local changes.
+
+When `--ai` or `--agents` is provided, `specify-extend` first runs upstream `specify integration install` for those agent keys before installing this extension. That keeps base Spec Kit integration state aligned with the requested targets.
 
 - `review` and `cleanup` in this extension are soft-deprecated and remain installable for compatibility.
 - Prefer companion installs (`review-plus`, `cleanup-plus`) for new projects.
@@ -263,6 +324,11 @@ Configuration files installed with the extension:
 
 Use `issue-sync.env` to customize per-event mappings (`SPECKIT_ISSUE_SYNC_LABEL_*` and `SPECKIT_ISSUE_SYNC_STATUS_*`).
 
+If you also install the optional `github-issues` companion, treat responsibilities separately:
+
+- `github-issues` owns importing issues into specs and syncing spec content when source issues change.
+- Native issue sync owns workflow-phase signaling on the linked issue (labels, status text, optional comments).
+
 ## Workflow Cheat Sheet
 
 | Workflow | Command | Alias | Key Feature |
@@ -280,12 +346,38 @@ Use `issue-sync.env` to customize per-event mappings (`SPECKIT_ISSUE_SYNC_LABEL_
 | **Phases→Issues** | `/speckit.workflows.phasestoissues` | `/speckit.phasestoissues` | GitHub integration |
 | **Incorporate** | `/speckit.workflows.incorporate` | `/speckit.incorporate` | Doc integration |
 
+## Workflow Engine Assets
+
+For spec-kit `0.7.0+`, this repo also includes standalone workflow-engine definitions under [workflows](workflows/README.md).
+
+- [workflows/bugfix-lifecycle/workflow.yml](workflows/bugfix-lifecycle/workflow.yml)
+- [workflows/enhance-lifecycle/workflow.yml](workflows/enhance-lifecycle/workflow.yml)
+- [workflows/modify-lifecycle/workflow.yml](workflows/modify-lifecycle/workflow.yml)
+- [workflows/refactor-lifecycle/workflow.yml](workflows/refactor-lifecycle/workflow.yml)
+- [workflows/hotfix-lifecycle/workflow.yml](workflows/hotfix-lifecycle/workflow.yml)
+- [workflows/deprecate-lifecycle/workflow.yml](workflows/deprecate-lifecycle/workflow.yml)
+
+These workflows orchestrate the existing extension commands with explicit review gates and an optional implement step.
+
+They are additive:
+
+- Keep using `/speckit.workflows.*` commands for direct manual flow.
+- Use `specify workflow run .../workflow.yml` when you want explicit gates and resume support.
+- Install them directly with `specify workflow add ...` or via `specify-extend --with-workflows ...`.
+- Install the extension first; upstream extension installs still do not auto-install workflow assets.
+
+Example:
+
+```bash
+specify workflow run workflows/bugfix-lifecycle/workflow.yml --input request="login button broken on mobile" --input integration=copilot
+```
+
 ## Compatibility
 
 ### spec-kit Versions
 
 - **Required**: spec-kit v0.3.1+ (with extension system support)
-- **Tested**: spec-kit v0.5.1 and v0.6.0
+- **Tested**: spec-kit v0.5.1, v0.6.0, and v0.7.0
 - Install from source: `uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git"`
 
 ### AI Agents

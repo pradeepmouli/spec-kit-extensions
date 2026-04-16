@@ -1,11 +1,12 @@
 # specify-extend: Installation Tool
 
-`specify-extend` is a Python CLI tool that works alongside GitHub's [spec-kit](https://github.com/github/spec-kit) to seamlessly install spec-kit-extensions. It automatically:
-- Downloads the latest extensions from GitHub releases
+`specify-extend` is a Python CLI tool that works alongside GitHub's [spec-kit](https://github.com/github/spec-kit) to install and reconcile spec-kit-extensions in an existing spec-kit project. It automatically:
 - Detects your existing spec-kit installation and agent configuration
-- Installs extensions matching your setup
+- Reconciles requested agents through native spec-kit integrations when needed
+- Installs the workflows extension from either the published archive or a local development source
+- Optionally installs curated companion extensions, workflow packages, hooks, and GitHub integration assets
 
-**Version**: v1.1.1 (CLI tool is versioned separately from extension templates)
+**Version**: 2.4.0 (CLI tool is versioned separately from extension templates)
 
 ## Installation
 
@@ -17,7 +18,7 @@ pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git
 uvx --from git+https://github.com/pradeepmouli/spec-kit-extensions.git specify-extend --all
 
 # Method 3: Run directly with Python
-python -m specify_extend --all
+python specify_extend.py --all
 ```
 
 ## Quick Start
@@ -25,7 +26,7 @@ python -m specify_extend --all
 After running `specify init` in your project:
 
 ```bash
-# Install all extensions (auto-detects your agent, downloads latest from GitHub)
+# Install all extensions (auto-detects your agent)
 specify-extend --all
 
 # Install specific extensions
@@ -33,6 +34,9 @@ specify-extend bugfix modify refactor
 
 # Preview what would be installed
 specify-extend --dry-run --all
+
+# Install from a local checkout during development
+specify-extend --all --extension-source /path/to/spec-kit-extensions
 ```
 
 ## How It Works
@@ -44,14 +48,14 @@ specify-extend --dry-run --all
 | Agent | Detection Marker | Installed To |
 |-------|-----------------|--------------|
 | **Claude Code** | `.claude/commands/` directory | `.claude/commands/speckit.*.md` |
-| **GitHub Copilot** | `.github/agents/` directory | `.github/agents/speckit.{extension}.md` + `.github/prompts/speckit.{extension}.prompt.md` |
+| **GitHub Copilot** | `.github/agents/` directory or `.github/copilot-instructions.md` | `.github/agents/speckit.{extension}.agent.md` + `.github/prompts/speckit.{extension}.prompt.md` |
 | **Cursor** | `.cursor/commands/` directory | `.cursor/commands/speckit.{extension}.md` |
-| **Gemini CLI** | `.gemini/commands/` directory | `.gemini/commands/speckit.{extension}.toml` |
-| **Qwen Code** | `.qwen/commands/` directory | `.qwen/commands/speckit.{extension}.toml` |
+| **Gemini CLI** | `.gemini/commands/` directory | `.gemini/commands/speckit.{extension}.md` |
+| **Qwen Code** | `.qwen/commands/` directory | `.qwen/commands/speckit.{extension}.md` |
 | **opencode** | `.opencode/commands/` directory | `.opencode/commands/speckit.{extension}.md` |
 | **Codex CLI** | `.codex/commands/` directory | `.codex/commands/speckit.{extension}.md` |
 | **Amazon Q** | `.q/commands/` directory | `.q/commands/speckit.{extension}.md` |
-| **Windsurf** | `.windsurf/` directory | `.windsurf/workflows/speckit.{extension}.md` (coming soon) |
+| **Windsurf** | `.windsurf/` directory | `.windsurf/workflows/speckit.{extension}.md` |
 | **Manual/Generic** | None of the above | Scripts only (use manually) |
 
 ### 2. Installs Extensions
@@ -59,20 +63,21 @@ specify-extend --dry-run --all
 Based on detected agent, it installs:
 
 **Always installed:**
-- Extension workflow templates → `.specify/extensions/workflows/{extension}/`
-- Bash scripts → `.specify/scripts/bash/create-{extension}.sh`
-- Quality gates → `.specify/memory/constitution.md` (appended)
+- The workflows extension via native `specify extension add`
+- Extension workflow templates under `.specify/extensions/workflows/`
+- Workflow creation scripts under `.specify/scripts/{bash|powershell}/`
+- Constitution updates and enabled workflow configuration
 
 **Agent-specific:**
 - **Claude Code**: Command files → `.claude/commands/speckit.{extension}.md`
-- **GitHub Copilot**: Agent files → `.github/agents/speckit.{extension}.md` + Prompt files → `.github/prompts/speckit.{extension}.prompt.md`
+- **GitHub Copilot**: Agent files → `.github/agents/speckit.{extension}.agent.md` + Prompt files → `.github/prompts/speckit.{extension}.prompt.md`
 - **Cursor**: Command files → `.cursor/commands/speckit.{extension}.md`
-- **Gemini CLI**: Command files → `.gemini/commands/speckit.{extension}.toml`
-- **Qwen Code**: Command files → `.qwen/commands/speckit.{extension}.toml`
+- **Gemini CLI**: Command files → `.gemini/commands/speckit.{extension}.md`
+- **Qwen Code**: Command files → `.qwen/commands/speckit.{extension}.md`
 - **opencode**: Command files → `.opencode/commands/speckit.{extension}.md`
 - **Codex CLI**: Command files → `.codex/commands/speckit.{extension}.md`
 - **Amazon Q**: Command files → `.q/commands/speckit.{extension}.md`
-- **Windsurf**: Command files → `.windsurf/workflows/` (coming soon)
+- **Windsurf**: Command files → `.windsurf/workflows/`
 - **Manual**: Usage instructions printed to console
 
 ### 3. Validates Installation
@@ -96,8 +101,18 @@ specify-extend [OPTIONS] [EXTENSIONS...]
 | `-v, --version` | Show version number |
 | `--list` | List all available extensions |
 | `--all` | Install all available extensions |
-| `--agent AGENT` | Force specific agent configuration |
+| `--ai AGENT` | Force a specific agent configuration |
+| `--ai-commands-dir PATH` | Command directory for `--ai generic` |
+| `--agents AGENTS` | Install for multiple agents in one repo |
+| `--link` | Symlink agent command files instead of copying |
 | `--dry-run` | Preview installation without making changes |
+| `--with-community PROFILE` | Install curated companion extensions |
+| `--with-workflows PROFILE` | Install curated workflow packages |
+| `--extension-source PATH` | Install from a local extension source using a staged `--dev` copy |
+| `--script {sh,ps}` | Install bash or PowerShell scripts |
+| `--github-integration` | Install optional GitHub workflows and templates |
+| `--hooks` | Install git hooks such as `commit-msg` |
+| `--patch` | Only patch spec-kit's `common.sh` for extension branch support |
 | `--llm-enhance` | Create one-time command for LLM-enhanced constitution update |
 
 ### Available Extensions
@@ -109,6 +124,14 @@ specify-extend [OPTIONS] [EXTENSIONS...]
 | `refactor` | Improve code quality while preserving behavior | Tests pass after EVERY change |
 | `hotfix` | Emergency production fixes | Post-mortem within 48hrs |
 | `deprecate` | Planned feature sunset with 3-phase rollout | Follow 3-phase process |
+
+### Curated Bundle Options
+
+`specify-extend` can also install curated add-on bundles:
+
+- `--with-community recommended|all|none|...` installs companion extensions curated in this repo
+- `--with-workflows recommended|all|none|...` installs standalone workflow packages curated in this repo
+- `--extension-source PATH` stages a local checkout and installs it through native `specify extension add --dev`
 
 ## Usage Examples
 
@@ -138,13 +161,25 @@ specify-extend --agents claude,copilot,cursor-agent --all
 specify-extend --agents claude,cursor-agent --all --link
 
 # Force Claude Code configuration even if not detected
-specify-extend --agent claude --all
+specify-extend --ai claude --all
 
 # Install only bug-related workflows
 specify-extend bugfix hotfix
 
 # See all available extensions
 specify-extend --list
+
+# Install the local checkout instead of the published archive
+specify-extend --all --extension-source /path/to/spec-kit-extensions
+
+# Add curated bundles
+specify-extend --all --with-community recommended --with-workflows recommended
+
+# Install PowerShell scripts and optional git/GitHub extras
+specify-extend --all --script ps --hooks --github-integration
+
+# Only patch spec-kit's common.sh after native extension installation
+specify-extend --patch
 ```
 
 ### LLM-Enhanced Constitution Updates
@@ -159,7 +194,7 @@ specify-extend --all --llm-enhance
 **How it works:**
 
 1. **Creates a one-time prompt/command**:
-   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.md` and `.github/prompts/speckit.enhance-constitution.prompt.md` (matching spec-kit pattern)
+   - For **GitHub Copilot**: Creates both `.github/agents/speckit.enhance-constitution.agent.md` and `.github/prompts/speckit.enhance-constitution.prompt.md` (matching spec-kit pattern)
    - For **other agents** (Claude, Cursor, etc.): Creates a command like `/speckit.enhance-constitution`
 2. **You invoke it**:
    - **GitHub Copilot**: Reference the prompt in Copilot Chat or use as agent
@@ -171,7 +206,7 @@ specify-extend --all --llm-enhance
    - Continue existing section numbering schemes
    - Avoid duplicating content
 4. **Self-destructs**: The prompt/command includes instructions to delete itself after use to prevent confusion
-   - **GitHub Copilot**: Delete both `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.md`
+   - **GitHub Copilot**: Delete both `.github/prompts/speckit.enhance-constitution.prompt.md` and `.github/agents/speckit.enhance-constitution.agent.md`
 
 **When to use `--llm-enhance`:**
 
@@ -196,7 +231,7 @@ specify-extend --all --llm-enhance
 # In Copilot Chat, reference the prompt:
 # "Review and apply .github/prompts/speckit.enhance-constitution.prompt.md"
 # Then delete both .github/prompts/speckit.enhance-constitution.prompt.md
-# and .github/agents/speckit.enhance-constitution.md
+# and .github/agents/speckit.enhance-constitution.agent.md
 
 # For Claude Code users:
 /speckit.enhance-constitution
@@ -227,7 +262,7 @@ specify-extend --all
 specify-extend --all
 
 # In Copilot Chat
-/bugfix "test bug"
+/speckit.bugfix "test bug"
 ```
 
 #### Cursor
@@ -237,7 +272,7 @@ specify-extend --all
 specify-extend --all
 
 # Ask Cursor
-/bugfix "test bug"
+/speckit.bugfix "test bug"
 ```
 
 #### Manual/Generic
@@ -274,6 +309,12 @@ your-project/
 │   │   ├── create-refactor.sh
 │   │   ├── create-hotfix.sh
 │   │   └── create-deprecate.sh
+│   ├── scripts/powershell/      # ← Optional when --script ps is used
+│   │   ├── create-bugfix.ps1
+│   │   ├── create-modification.ps1
+│   │   ├── create-refactor.ps1
+│   │   ├── create-hotfix.ps1
+│   │   └── create-deprecate.ps1
 │   └── memory/
 │       └── constitution.md      # ← Updated with quality gates
 ├── .claude/commands/            # ← If using Claude Code
@@ -284,11 +325,11 @@ your-project/
 │   └── speckit.deprecate.md
 └── .github/                     # ← If using GitHub Copilot
     ├── agents/
-    │   ├── speckit.bugfix.agent.md
-    │   ├── speckit.modify.agent.md
-    │   ├── speckit.refactor.agent.md
-    │   ├── speckit.hotfix.agent.md
-    │   └── speckit.deprecate.agent.md
+   │   ├── speckit.bugfix.agent.md
+   │   ├── speckit.modify.agent.md
+   │   ├── speckit.refactor.agent.md
+   │   ├── speckit.hotfix.agent.md
+   │   └── speckit.deprecate.agent.md
     └── prompts/
         ├── speckit.bugfix.prompt.md
         ├── speckit.modify.prompt.md
@@ -318,21 +359,17 @@ specify init .
 chmod +x specify-extend
 ```
 
-### "Extensions directory not found"
+### "Extensions directory not found" or local source validation errors
 
-**Problem**: Running specify-extend from wrong location
+**Problem**: The local checkout passed to `--extension-source` is missing required files such as `extension.yml`, `commands/`, or `scripts/`.
 
 **Solution**:
 ```bash
-# Option 1: Install specify-extend globally
-cp specify-extend /usr/local/bin/
-chmod +x /usr/local/bin/specify-extend
+# Point to the repository root
+specify-extend --all --extension-source /path/to/spec-kit-extensions
 
-# Option 2: Use full path
-/path/to/spec-kit-extensions/specify-extend --all
-
-# Option 3: Add to PATH
-export PATH="/path/to/spec-kit-extensions:$PATH"
+# Or install the published archive instead
+specify-extend --all
 ```
 
 ### Agent Not Detected Correctly
@@ -341,9 +378,9 @@ export PATH="/path/to/spec-kit-extensions:$PATH"
 
 **Solution**: Force the agent:
 ```bash
-specify-extend --agent claude --all
-specify-extend --agent copilot --all
-specify-extend --agent cursor --all
+specify-extend --ai claude --all
+specify-extend --ai copilot --all
+specify-extend --ai cursor-agent --all
 ```
 
 ### Already Existing Files
@@ -358,12 +395,13 @@ If you want to start fresh:
 ```bash
 # Remove extensions
 rm -rf .specify/extensions/
-rm .specify/scripts/bash/create-{bugfix,modification,refactor,hotfix,deprecate}.sh
+rm -f .specify/scripts/bash/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.sh
+rm -f .specify/scripts/powershell/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.ps1
 
 # Remove agent config (choose one)
 rm -rf .claude/commands/speckit.*.md  # Claude
-# or manually edit .github/copilot-instructions.md  # Copilot
-# or manually edit .cursorrules  # Cursor
+# or remove generated .github/agents/speckit.* and .github/prompts/speckit.*  # Copilot
+# or rm -rf .cursor/commands/speckit.*.md  # Cursor
 
 # Reinstall
 specify-extend --all
@@ -374,13 +412,11 @@ specify-extend --all
 To update to newer versions:
 
 ```bash
-# Get latest spec-kit-extensions
-cd /path/to/spec-kit-extensions
-git pull
+# Reinstall from the published source
+specify-extend --all
 
-# Reinstall (overwrites templates and scripts)
-cd your-project
-/path/to/spec-kit-extensions/specify-extend --all
+# Or reinstall from an updated local checkout
+specify-extend --all --extension-source /path/to/spec-kit-extensions
 ```
 
 **Note**: This will overwrite workflow templates and scripts but preserve your:
@@ -395,23 +431,26 @@ To remove extensions:
 ```bash
 # Remove extension files
 rm -rf .specify/extensions/
-rm .specify/scripts/bash/create-{bugfix,modification,refactor,hotfix,deprecate}.sh
+rm -f .specify/scripts/bash/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.sh
+rm -f .specify/scripts/powershell/create-{baseline,bugfix,cleanup,deprecate,enhance,hotfix,modification,refactor}.ps1
 
 # Remove agent-specific files
 rm .claude/commands/speckit.*.md  # Claude Code
+rm .github/agents/speckit.*.agent.md .github/prompts/speckit.*.prompt.md  # GitHub Copilot
+rm .cursor/commands/speckit.*.md  # Cursor
 
 # Manually edit these to remove extension sections:
-# - .github/copilot-instructions.md (Copilot)
-# - .cursorrules (Cursor)
 # - .specify/memory/constitution.md (all)
 
 # Remove workflow directories (optional)
+rm -rf specs/baseline
 rm -rf specs/bugfix
-rm -rf specs/refactor
+rm -rf specs/cleanup
+rm -rf specs/enhance
 rm -rf specs/hotfix
+rm -rf specs/refactor
 rm -rf specs/deprecate
-# Keep feature modifications
-# rm -rf specs/*/modifications/
+rm -rf specs/modify
 ```
 
 ## Integration with specify init
@@ -466,11 +505,13 @@ specify-extend --all
 
 ## Environment Variables
 
-Currently, `specify-extend` doesn't use environment variables, but you can configure behavior via options.
+`specify-extend` accepts a GitHub token through either the CLI or environment:
 
-Future versions may support:
-- `SPECIFY_EXTEND_AGENT` - Default agent
-- `SPECIFY_EXTEND_EXTENSIONS_PATH` - Custom extensions path
+- `--github-token`
+- `GH_TOKEN`
+- `GITHUB_TOKEN`
+
+This is mainly used when downloading the published archive or avoiding GitHub API rate limits.
 
 ## Exit Codes
 
@@ -481,40 +522,7 @@ Future versions may support:
 
 ## Version History
 
-### 1.1.1 (2025-12-08)
-- **GitHub Copilot Prompt File Naming**: Corrected prompt file naming pattern to `speckit.*.prompt.md` to match GitHub Copilot's expected convention
-- **Removed Unsupported Scripts Section**: Removed `scripts:` frontmatter from all command files (GitHub Copilot does not support it)
-- **Explicit Script Paths**: Replaced `{SCRIPT}` template variables with explicit script paths in command files
-
-### 1.1.0 (2025-12-08)
-- **LLM-Enhanced Constitution Updates**: New `--llm-enhance` flag for intelligent constitution merging using AI
-  - Creates one-time prompt/command that leverages AI to intelligently merge quality gates
-  - For GitHub Copilot: Creates both `.github/agents/` and `.github/prompts/` files
-  - For other agents: Creates command file for invocation
-  - Self-destruct instructions to prevent accidental re-use
-- **GitHub Copilot Agent + Prompt Support**: Proper dual-file installation matching spec-kit pattern
-  - All workflow commands create both agent and prompt files for Copilot
-  - Prompt files are lightweight pointers (`agent: speckit.{workflow}`)
-  - Follows spec-kit's implementation for better integration
-- **Documentation**: Comprehensive guide for `--llm-enhance` feature and Copilot-specific patterns
-
-### 1.0.1 (2025-12-08)
-- **Intelligent Section Numbering**: Auto-detects and continues Roman numeral (I, II, III) or numeric (1, 2, 3) section numbering in constitutions
-- **Edge Case Handling**: Improved section detection and parsing robustness for malformed constitution files
-- **Code Quality**: Refactored with named constants and enhanced documentation
-- **Bug Fixes**: More reliable section insertion logic with better error handling
-
-### 1.0.0 (2025-12-06)
-- **Python CLI tool**: Built with `typer` framework, installable via pip, uvx, or runnable directly
-- **GitHub Download**: Automatically downloads latest extensions from GitHub releases
-- **Multi-agent Support**: Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Amazon Q, Windsurf
-- **Auto-detection**: Identifies agent by examining project structure
-- **Agent-specific installation**: Installs commands matching detected agent format
-- **Features**: `--all`, `--dry-run`, `--agent` options
-- **Validation**: Extension name and agent validation with clear error messages
-- **Compatibility**: Python 3.11+
-- Note: Windsurf support marked as "coming soon" pending full implementation
-- Note: Gemini and Qwen use markdown files as fallback (TOML generation coming soon)
+See [CHANGELOG.md](../CHANGELOG.md) for the current release history. This document focuses on how to use the CLI rather than duplicating release notes.
 
 ## Contributing
 
