@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-16T01:17:56.921Z",
+  "generatedAt": "2026-04-16T02:18:50.754Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,11 +11,11 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "1f9b3c69c195eecced5d33e565804e12148c8389"
+    "commit": "66a665b6decb25aebbc3df8c27e1dcf82964c777"
   },
   "dependencies": [
     {
-      "id": "db129581-4b2e-407c-8dd7-c11ec944dd1f",
+      "id": "34a9263a-33c4-4592-910b-762ec1ddf8df",
       "url": "https://keepachangelog.com/en/1.0.0/",
       "type": "schema",
       "accessMethod": "http",
@@ -23,8 +23,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:53.218Z",
-      "lastChecked": "2026-04-16T01:17:53.218Z",
+      "detectedAt": "2026-04-16T02:18:40.804Z",
+      "lastChecked": "2026-04-16T02:18:40.804Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
@@ -35,7 +35,7 @@
       "changeHistory": []
     },
     {
-      "id": "1d2ea8ec-e84b-408c-8f20-a7d084429275",
+      "id": "dc518d09-87ab-40e9-bea4-e1d65ed96c0e",
       "url": "https://semver.org/spec/v2.0.0.html",
       "type": "schema",
       "accessMethod": "http",
@@ -43,8 +43,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:55.073Z",
-      "lastChecked": "2026-04-16T01:17:55.073Z",
+      "detectedAt": "2026-04-16T02:18:42.793Z",
+      "lastChecked": "2026-04-16T02:18:42.793Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
@@ -55,7 +55,7 @@
       "changeHistory": []
     },
     {
-      "id": "e121fcbf-4d5c-41fc-8d8e-909df1318cfa",
+      "id": "a997da24-128e-47a8-a7af-d8bd3e639da8",
       "url": "https://agentskills.io/specification",
       "type": "schema",
       "accessMethod": "http",
@@ -63,19 +63,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 126,
+          "line": 147,
           "context": "agentskills.io"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "947caf79-329f-4c46-9307-1f0692ae1d01",
+      "id": "487e6d36-f064-4924-828f-b615f67af00e",
       "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -83,19 +83,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 1593,
+          "line": 1614,
           "context": "2.0.0"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "d18f19ac-7bc4-4c34-93da-0b4f950ce28b",
+      "id": "60ecaa62-78b3-49d2-9881-bd21f2b4a0d3",
       "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -103,19 +103,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 1594,
+          "line": 1615,
           "context": "1.0.0"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "a772bffe-41c5-4389-bd9d-ee720bc5a49f",
+      "id": "04532461-b548-41ba-9377-db94055d7519",
       "url": "https://github.com/github/spec-kit",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -123,11 +123,16 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "README.md",
+          "line": 3,
+          "context": "spec-kit"
+        },
+        {
+          "file": "docs/specify-extend.md",
           "line": 3,
           "context": "spec-kit"
         }
@@ -135,7 +140,7 @@
       "changeHistory": []
     },
     {
-      "id": "2c3d2e3c-84cf-4d90-8804-5404661fa431",
+      "id": "2125a8c4-ac31-4f8d-865c-0162648ce5e1",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -143,8 +148,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "README.md",
@@ -155,7 +160,7 @@
       "changeHistory": []
     },
     {
-      "id": "0f6c23ba-5383-4676-9756-76b39f3b7dba",
+      "id": "b425b039-82e3-4293-a36f-f6452cbc8a7b",
       "url": "https://github.com/github/spec-kit.git\"`",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -163,8 +168,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "README.md",
@@ -175,7 +180,7 @@
       "changeHistory": []
     },
     {
-      "id": "c07a4293-ac31-4d88-8a6c-a3d00da5abfb",
+      "id": "283af571-8c0d-49e2-8c45-040fd99b5a52",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/issues",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -183,8 +188,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "README.md",
@@ -195,7 +200,7 @@
       "changeHistory": []
     },
     {
-      "id": "2da633d6-f59b-418d-a47e-ee358c9d6c85",
+      "id": "a542610f-6d66-4276-b59e-722e469d6a17",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/discussions",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -203,8 +208,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T01:17:56.920Z",
-      "lastChecked": "2026-04-16T01:17:56.920Z",
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
       "referencedIn": [
         {
           "file": "README.md",
@@ -213,21 +218,422 @@
         }
       ],
       "changeHistory": []
+    },
+    {
+      "id": "21bf85c5-9ca1-4315-ab8d-ce309693fc88",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#commands",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 53,
+          "context": "Claude Code Commands Spec"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "b9abaede-e8ef-4646-b9d8-fdd906fde32f",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#agents",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 82,
+          "context": "Claude Code Agents"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "c06ec067-2708-4709-97ab-e52ac828fc1d",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#skills",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 111,
+          "context": "Claude Code Skills"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "26fafc5f-06e9-4c38-a95e-4e09393b1b74",
+      "url": "https://docs.anthropic.com/claude/docs/claude-code#instructions",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "claude-code",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:44.742Z",
+      "lastChecked": "2026-04-16T02:18:44.742Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 133,
+          "context": "Claude Code Instructions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "ca7571ba-b6b5-4e97-8a56-3b67a2671bab",
+      "url": "https://modelcontextprotocol.io/",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "modelcontextprotocol.io",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 145,
+          "context": "Model Context Protocol"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "6da9c356-fcda-452a-b40d-422dc8dc9004",
+      "url": "https://docs.anthropic.com/claude/docs/model-context-protocol",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "model-context-protocol",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 146,
+          "context": "Claude MCP Integration"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "52b91e3a-5bf9-4797-b8cc-16b3424dd8e5",
+      "url": "https://docs.github.com/en/copilot/customizing-copilot/using-github-copilot-agents",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "using-github-copilot-agents",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 168,
+          "context": "GitHub Copilot Extensions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "babb64a8-b19b-4d0c-b06d-ff8370b0f887",
+      "url": "https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot",
+      "type": "documentation",
+      "accessMethod": "github-api",
+      "name": "adding-custom-instructions-for-github-copilot",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 201,
+          "context": "GitHub Copilot Custom Instructions"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "dc4a64a2-ea95-4c0d-a9b9-3169ed352979",
+      "url": "https://docs.cursor.com/context/rules-for-ai#composer",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "rules-for-ai",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 228,
+          "context": "Cursor Composer"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "219c036f-4a88-4f4e-80f2-39b76f2ab31b",
+      "url": "https://docs.cursor.com/context/rules-for-ai",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "rules-for-ai",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 242,
+          "context": "Cursor Rules"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "0b2be483-e2d3-4a1b-918e-2ce04864693e",
+      "url": "https://docs.cursor.com/",
+      "type": "documentation",
+      "accessMethod": "http",
+      "name": "docs.cursor.com",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 264,
+          "context": "Cursor MCP Support"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "98f7f8fb-e173-4347-ba9b-f18fe82ec831",
+      "url": "https://github.com/google/generative-ai-cli",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "generative-ai-cli",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 281,
+          "context": "Gemini CLI"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "a1effb8e-be03-48f2-8bf7-bbe5111a8709",
+      "url": "https://github.com/QwenLM/Qwen-Code",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "Qwen-Code",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 311,
+          "context": "Qwen Code"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "3b21bde2-b464-4994-b7ce-036e396149fb",
+      "url": "https://github.com/codex-cli/codex",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "codex",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 331,
+          "context": "Codex CLI"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "13616c40-a344-465c-8eaa-a4af660bc660",
+      "url": "https://github.com/codex-cli/codex#skills",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "codex",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 350,
+          "context": "Codex Skills"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "7c5ca2ec-046d-4749-a88c-8d431a6687a0",
+      "url": "https://github.com/opencode/opencode",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "opencode",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:46.929Z",
+      "lastChecked": "2026-04-16T02:18:46.929Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 379,
+          "context": "OpenCode"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "5060e92a-44b1-4593-81a4-4da201f32ea8",
+      "url": "https://codeium.com/windsurf",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "windsurf",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:48.853Z",
+      "lastChecked": "2026-04-16T02:18:48.853Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 397,
+          "context": "Windsurf"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "4f0d9b13-7489-48cc-ae7c-70d05799ec11",
+      "url": "https://aws.amazon.com/q/developer/",
+      "type": "schema",
+      "accessMethod": "http",
+      "name": "developer",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:50.754Z",
+      "lastChecked": "2026-04-16T02:18:50.754Z",
+      "referencedIn": [
+        {
+          "file": "docs/agent-tool-matrix.md",
+          "line": 414,
+          "context": "Amazon Q Developer"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "9904420a-97f3-4b5d-bf8b-c8c937f8b33d",
+      "url": "https://github.com/pradeepmouli/spec-kit-extensions.git",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit-extensions",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:50.754Z",
+      "lastChecked": "2026-04-16T02:18:50.754Z",
+      "referencedIn": [
+        {
+          "file": "docs/specify-extend.md",
+          "line": 15,
+          "context": "pip install git+https://github.com/pradeepmouli/spec-kit-extensions.git"
+        }
+      ],
+      "changeHistory": []
+    },
+    {
+      "id": "bb1316d5-1efe-4e9a-acf2-0178894411f4",
+      "url": "https://github.com/github/spec-kit.git",
+      "type": "reference-implementation",
+      "accessMethod": "github-api",
+      "name": "spec-kit",
+      "currentStateHash": "sha256:pending",
+      "detectionMethod": "llm-analysis",
+      "detectionConfidence": 0.85,
+      "detectedAt": "2026-04-16T02:18:50.754Z",
+      "lastChecked": "2026-04-16T02:18:50.754Z",
+      "referencedIn": [
+        {
+          "file": "docs/specify-extend.md",
+          "line": 349,
+          "context": "uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
+        }
+      ],
+      "changeHistory": []
     }
   ],
   "statistics": {
-    "totalDependencies": 10,
+    "totalDependencies": 30,
     "byType": {
-      "schema": 3,
-      "reference-implementation": 7
+      "schema": 6,
+      "reference-implementation": 14,
+      "documentation": 10
     },
     "byAccessMethod": {
-      "http": 3,
-      "github-api": 7
+      "http": 14,
+      "github-api": 16
     },
     "byDetectionMethod": {
-      "llm-analysis": 10
+      "llm-analysis": 30
     },
-    "averageConfidence": 0.8499999999999999
+    "averageConfidence": 0.8500000000000003
   }
 }
