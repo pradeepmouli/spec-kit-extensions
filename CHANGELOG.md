@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New `--list-community` option to view curated companion extensions
   - New `--with-community` option to install `recommended`, `all`, or selected companion keys
   - Companion installs run via native spec-kit command: `specify extension add <id> --from <url>`
+- **Standalone workflow-engine assets for spec-kit 0.7.0+**
+  - Added local workflow definitions for `bugfix`, `modify`, `refactor`, and `deprecate`
+  - Each workflow orchestrates the existing extension commands with explicit review gates and an optional implement step
+  - Workflows are shipped as standalone assets under `workflows/` because the current extension system does not yet install workflow packages
 
 #### 🔧 Changed/Improved
 
@@ -37,10 +41,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic legacy alias shim writes dotted skill names under `.kimi/skills` when missing
 - **Issue sync lifecycle hooks are mandatory**
   - Hook events `before_*`/`after_*` for specify/plan/tasks/implement are now non-optional in `extension.yml`
+- **Canonical extension command namespaces for spec-kit 0.7.0**
+  - Renamed noncanonical primary command ids in `extension.yml` under the `speckit.workflows.*` namespace
+  - Preserved legacy `speckit.issuesync.*` and `speckit.ultraplan.tasks` names as aliases for backward compatibility
+  - Updated hook references to point at canonical command ids expected by newer spec-kit validation
 
 #### 📦 Compatibility
 
-- **Tested Spec Kit Versions**: v0.5.1, v0.6.0
+- **Tested Spec Kit Versions**: v0.5.1, v0.6.0, v0.7.0
 
 
 ### [2.2.1] - 2026-03-18
