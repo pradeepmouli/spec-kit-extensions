@@ -106,7 +106,7 @@ jobs:
           EOF
           )
 
-          # Create the issue and assign to Copilot
+          # Create the issue
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
@@ -117,8 +117,7 @@ jobs:
               '{
                 title: $title,
                 body: $body,
-                labels: ["enhancement", "spec-kit-compatibility", "automation"],
-                assignees: ["copilot"]
+                labels: ["enhancement", "spec-kit-compatibility", "automation"]
               }')"
 
           echo "✅ Created issue for spec-kit ${RELEASE_TAG}"

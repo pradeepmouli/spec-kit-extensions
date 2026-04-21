@@ -46,7 +46,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.5.1"
+__version__ = "2.5.2"
 
 # Initialize Rich console
 console = Console()
@@ -212,7 +212,7 @@ AGENT_CONFIG = {
     },
     "agy": {
         "name": "Antigravity",
-        "folder": ".agent/workflows",
+        "folder": ".agents/workflows",
         "file_extension": "md",
         "requires_cli": False,
         "deprecated": True,  # Deprecated in spec-kit 0.3.0
@@ -789,6 +789,69 @@ def install_extension_bundle_compat(
 
 
 def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
+    def _run_fresh_extension_add(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
+        """Run `specify extension add` for a fresh (first-time) install."""
+        if dry_run:
+            console.print("  [dim]Would run: specify extension add[/dim]")
+            return
+        result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
+        if result.returncode != 0:
+            console.print("[red]✗[/red] specify extension add failed:", style="red bold")
+            if result.stderr:
+                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+            if result.stdout:
+                console.print(f"  [dim]{result.stdout.strip()}[/dim]")
+            raise typer.Exit(1)
+        if result.stdout:
+            console.print(result.stdout.strip())
+        console.print("[green]✓[/green] Extension installed via spec-kit native system")
+
+
+    def _try_extension_update(repo_root: Path, dry_run: bool) -> bool:
+        """Attempt `specify extension update workflows`.
+
+        Returns True when the update succeeded (or dry_run mode was active).
+        Returns False when the command is not available or fails.
+        """
+        if dry_run:
+            console.print("  [dim]Would run: specify extension update workflows[/dim]")
+            return True
+        result = subprocess.run(
+            ["specify", "extension", "update", "workflows"],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            if result.stdout:
+                console.print(result.stdout.strip())
+            console.print("[green]✓[/green] Workflows extension updated via spec-kit native system")
+            return True
+        # Non-zero exit: command may not exist in older spec-kit or may have failed
+        console.print(f"  [dim]specify extension update exited {result.returncode}[/dim]")
+        return False
+
+
+    def _run_extension_reinstall(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
+        """Force remove + re-add the workflows extension (--reinstall mode)."""
+        if dry_run:
+            console.print("  [dim]Would run: specify extension remove workflows --force[/dim]")
+            console.print("  [dim]Would run: specify extension add[/dim]")
+            return
+        rm_result = subprocess.run(
+            ["specify", "extension", "remove", "workflows", "--force"],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+        if rm_result.returncode != 0:
+            console.print("[yellow]⚠[/yellow] specify extension remove failed (continuing anyway):")
+            if rm_result.stderr:
+                console.print(f"  [dim]{rm_result.stderr.strip()}[/dim]")
+        _run_fresh_extension_add(specify_cmd, repo_root, dry_run)
+
+
+def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
     """Build the upstream spec-kit integration install command for an agent."""
     cmd = ["specify", "integration", "install", agent_key]
     if dry_run:
@@ -1243,7 +1306,8 @@ def detect_agent(repo_root: Path) -> str:
         return "tabnine"
 
     # Check for Antigravity (agy)
-    if (repo_root / ".agent" / "workflows").exists():
+    # spec-kit v0.7.4 migrated agy layout under .agents/
+    if (repo_root / ".agent" / "workflows").exists() or (repo_root / ".agents" / "workflows").exists():
         return "agy"
 
     # Check for IBM Bob
@@ -2826,6 +2890,11 @@ def main(
         "--patch",
         help="Only patch spec-kit's common.sh for extension branch support (use after 'specify extension add')",
     ),
+    reinstall: bool = typer.Option(
+        False,
+        "--reinstall",
+        help="Force remove + re-add the workflows extension when upgrading (use to recover from broken installs)",
+    ),
 ) -> None:
     """
     Installation tool for spec-kit-extensions that detects your existing
@@ -3120,10 +3189,10 @@ def main(
 
     compatibility_source_root = workflow_source_root or Path(__file__).resolve().parent
 
-    if existing_workflows_install:
-        console.print(
-            "[blue]ℹ[/blue] Existing workflows extension detected; upgrading in place via compatibility installer"
-        )
+    if existing_workflows_install and reinstall:
+        console.print("[blue]ℹ[/blue] --reinstall: removing and re-adding workflows extension")
+    elif existing_workflows_install:
+        console.print("[blue]ℹ[/blue] Existing workflows extension detected; will try spec-kit native update first")
     else:
         console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
 
@@ -3131,30 +3200,21 @@ def main(
         if explicit_agent_selection:
             install_agent_integrations(repo_root, resolved_agents, dry_run=dry_run)
 
-        if existing_workflows_install:
-            install_extension_bundle_compat(
-                repo_root,
-                compatibility_source_root,
-                workflows_to_enable,
-                dry_run=dry_run,
-            )
+        if existing_workflows_install and reinstall:
+            _run_extension_reinstall(specify_cmd, repo_root, dry_run)
+            update_enabled_conf(repo_root, workflows_to_enable, dry_run)
+        elif existing_workflows_install:
+            upgraded = _try_extension_update(repo_root, dry_run)
+            if not upgraded:
+                console.print("[yellow]⚠[/yellow] spec-kit extension update unavailable; falling back to compatibility installer")
+                install_extension_bundle_compat(
+                    repo_root,
+                    compatibility_source_root,
+                    workflows_to_enable,
+                    dry_run=dry_run,
+                )
         else:
-            if not dry_run:
-                result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
-                if result.returncode != 0:
-                    console.print(f"[red]✗[/red] specify extension add failed:", style="red bold")
-                    if result.stderr:
-                        console.print(f"  [dim]{result.stderr.strip()}[/dim]")
-                    if result.stdout:
-                        console.print(f"  [dim]{result.stdout.strip()}[/dim]")
-                    raise typer.Exit(1)
-                if result.stdout:
-                    console.print(result.stdout.strip())
-                console.print("[green]✓[/green] Extension installed via spec-kit native system")
-            else:
-                console.print("  [dim]Would run: specify extension add[/dim]")
-
-        if not existing_workflows_install:
+            _run_fresh_extension_add(specify_cmd, repo_root, dry_run)
             update_enabled_conf(repo_root, workflows_to_enable, dry_run)
 
         # Patch common.sh for extension branch pattern support

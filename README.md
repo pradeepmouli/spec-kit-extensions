@@ -69,8 +69,10 @@ These extensions bring spec-kit's structured approach to all development activit
 
 **Step 1: Initialize spec-kit** (if not already done):
 ```bash
-specify init --here --ai claude
+specify init --here --integration claude
 ```
+
+`--ai` remains accepted for compatibility on current releases, but newer spec-kit versions prefer `--integration`.
 
 **Step 2: Install extensions** (recommended):
 ```bash
@@ -377,7 +379,7 @@ specify workflow run workflows/bugfix-lifecycle/workflow.yml --input request="lo
 ### spec-kit Versions
 
 - **Required**: spec-kit v0.3.1+ (with extension system support)
-- **Tested**: spec-kit v0.5.1, v0.6.0, and v0.7.0
+- **Tested**: spec-kit v0.5.1, v0.6.0, v0.7.0, and v0.7.4
 - Install from source: `uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git"`
 
 ### AI Agents
