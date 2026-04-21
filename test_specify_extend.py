@@ -564,6 +564,19 @@ check_feature_branch() {
     print("✓ Test passed: common.sh patch wraps upstream logic instead of replacing it")
 
 
+def test_detect_agent_supports_new_agy_layout_under_agents():
+    """Test agy detection for newer spec-kit layout under .agents/workflows."""
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_root = Path(temp_dir)
+        (repo_root / ".agents" / "workflows").mkdir(parents=True, exist_ok=True)
+
+        detected = specify_extend.detect_agent(repo_root)
+        assert detected == "agy", f"Expected agy, got {detected}"
+
+    print("✓ Test passed: agy detection supports .agents/workflows layout")
+
+
 if __name__ == "__main__":
     print("Running specify_extend tests...\n")
 
@@ -592,6 +605,7 @@ if __name__ == "__main__":
         test_is_workflows_extension_installed_detects_existing_install()
         test_install_extension_bundle_compat_copies_current_bundle_layout()
         test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it()
+        test_detect_agent_supports_new_agy_layout_under_agents()
 
         print("\n✅ All tests passed!")
         sys.exit(0)

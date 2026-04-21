@@ -7,11 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v2.5.1
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.2
 
 ## CLI Tool (`specify-extend`)
 
-### [Unreleased]
+### [2.5.2] - 2026-04-21
+
+#### 🚀 Added
+
+- **Three-tier upgrade strategy for existing installs**
+  - When an existing workflows extension is detected, `specify-extend --all` now tries `specify extension update workflows` first (native spec-kit path)
+  - Falls back automatically to the in-place compatibility copier when `extension update` is unavailable or fails
+  - Added `--reinstall` flag for forced remove + re-add recovery (use when an install is broken and the above two paths cannot fix it)
+
+#### 🔧 Changed/Improved
+
+- **spec-kit v0.7.4 compatibility**
+  - Updated Antigravity (`agy`) detection to recognize the newer `.agents/workflows` layout while preserving legacy `.agent/workflows` support
+  - Improved automated release-monitor issue creation by removing an invalid hardcoded issue assignee that could cause API failures
+  - Refreshed README guidance to prefer `specify init --integration ...` and updated tested-version notes through `v0.7.4`
 
 ### [2.5.1] - 2026-04-15
 
