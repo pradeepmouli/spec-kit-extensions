@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-16T02:22:49.721Z",
+  "generatedAt": "2026-04-21T20:30:24.709Z",
   "generatedBy": {
     "action": "dependabit-update",
     "version": "1.0.0",
@@ -11,11 +11,11 @@
     "owner": "pradeepmouli",
     "name": "spec-kit-extensions",
     "branch": "main",
-    "commit": "133f1bd427e52dbfddbfdb0889344feee6126ec7"
+    "commit": "b3debf9d688397380e4ecb620db12b05785e2eef"
   },
   "dependencies": [
     {
-      "id": "586c943e-c12b-44ac-b230-fbfcde755891",
+      "id": "b9dd777b-c3f2-46db-8d40-f94169fcffd0",
       "url": "https://keepachangelog.com/en/1.0.0/",
       "type": "schema",
       "accessMethod": "http",
@@ -23,8 +23,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:45.047Z",
-      "lastChecked": "2026-04-16T02:22:45.047Z",
+      "detectedAt": "2026-04-21T20:30:21.099Z",
+      "lastChecked": "2026-04-21T20:30:21.099Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
@@ -35,7 +35,7 @@
       "changeHistory": []
     },
     {
-      "id": "87a7666f-6041-4248-8190-9cb4575dd2bb",
+      "id": "f7817471-4f64-4c1c-b23b-03c387df8944",
       "url": "https://semver.org/spec/v2.0.0.html",
       "type": "schema",
       "accessMethod": "http",
@@ -43,8 +43,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:47.393Z",
-      "lastChecked": "2026-04-16T02:22:47.393Z",
+      "detectedAt": "2026-04-21T20:30:22.982Z",
+      "lastChecked": "2026-04-21T20:30:22.982Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
@@ -55,7 +55,7 @@
       "changeHistory": []
     },
     {
-      "id": "9d799412-cba1-4b44-bc2a-48a113f76987",
+      "id": "0a9af237-f2c9-49e1-8802-e1524cd4089a",
       "url": "https://agentskills.io/specification",
       "type": "schema",
       "accessMethod": "http",
@@ -63,19 +63,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 147,
+          "line": 161,
           "context": "agentskills.io"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "c1f8d898-3640-4198-8054-3f66c248be53",
+      "id": "f4b6db1d-06bb-416b-a16e-a3a3918874e6",
       "url": "https://github.com/martybonacci/spec-kit-extensions/compare/v1.0.0...v2.0.0",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -83,19 +83,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 1631,
+          "line": 1645,
           "context": "2.0.0"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "f1d7d75b-b350-4a65-b799-87f22eb65425",
+      "id": "6b3e9fe7-6a27-4d55-8c26-16584bc14aa6",
       "url": "https://github.com/martybonacci/spec-kit-extensions/releases/tag/v1.0.0",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -103,19 +103,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "CHANGELOG.md",
-          "line": 1632,
+          "line": 1646,
           "context": "1.0.0"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "73a42b1b-258b-4f6e-920f-038797986f61",
+      "id": "5fad4e54-0480-4dc1-a2e1-13f9333071cd",
       "url": "https://github.com/github/spec-kit",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -123,8 +123,8 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "README.md",
@@ -135,7 +135,7 @@
       "changeHistory": []
     },
     {
-      "id": "8ccd84d5-5570-441e-b7a7-de988140e1ba",
+      "id": "913f4e49-e2c4-4b46-adab-c680d32d51d3",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -143,19 +143,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "README.md",
-          "line": 99,
+          "line": 101,
           "context": "specify extension add workflows --from https://github.com/pradeepmouli/spec-kit-extensions/archive/refs/heads/main.zip"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "82d53d5a-a589-410b-95fe-5c24f8d0b792",
+      "id": "6375c58f-46f6-464f-b227-4d334047b630",
       "url": "https://github.com/github/spec-kit.git\"`",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -163,19 +163,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "README.md",
-          "line": 381,
+          "line": 383,
           "context": "- Install from source: `uv tool install specify-cli --from \"git+https://github.com/github/spec-kit.git\"`"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "a4fc2631-f624-41d3-97a1-6e5b630f3572",
+      "id": "291ad382-1264-4908-a704-8a82aefa596c",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/issues",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -183,19 +183,19 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.720Z",
-      "lastChecked": "2026-04-16T02:22:49.720Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.708Z",
       "referencedIn": [
         {
           "file": "README.md",
-          "line": 440,
+          "line": 442,
           "context": "GitHub Issues"
         }
       ],
       "changeHistory": []
     },
     {
-      "id": "a38efe40-0e49-4141-a6ce-3630ae2e7651",
+      "id": "d12f19b8-cdf9-4e3a-9d47-3cbd76fec8e3",
       "url": "https://github.com/pradeepmouli/spec-kit-extensions/discussions",
       "type": "reference-implementation",
       "accessMethod": "github-api",
@@ -203,12 +203,12 @@
       "currentStateHash": "sha256:pending",
       "detectionMethod": "llm-analysis",
       "detectionConfidence": 0.85,
-      "detectedAt": "2026-04-16T02:22:49.721Z",
-      "lastChecked": "2026-04-16T02:22:49.721Z",
+      "detectedAt": "2026-04-21T20:30:24.708Z",
+      "lastChecked": "2026-04-21T20:30:24.709Z",
       "referencedIn": [
         {
           "file": "README.md",
-          "line": 441,
+          "line": 443,
           "context": "GitHub Discussions"
         }
       ],
