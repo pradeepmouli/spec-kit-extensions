@@ -7,9 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v2.5.2
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.3
 
 ## CLI Tool (`specify-extend`)
+
+### [2.5.3] - 2026-04-21
+
+#### 🐛 Fixed
+
+- **`specify-extend --all` crashed with `NameError: name '_run_fresh_extension_add' is not defined`**
+  - In v2.5.2, the three integration-install helpers (`_run_fresh_extension_add`, `_try_extension_update`, `_run_extension_reinstall`) were accidentally defined inside a stub `build_integration_install_command` wrapper that was immediately redefined on the next line
+  - The first wrapper (with its nested helpers) was unreachable dead code; call sites at module scope raised `NameError` at install time
+  - Dedented all three helpers to module scope and removed the dead wrapper; extension installation now succeeds end-to-end
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.5.3
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v3.4.1
+
+---
 
 ### [2.5.2] - 2026-04-21
 
