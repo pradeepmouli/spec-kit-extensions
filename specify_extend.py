@@ -788,67 +788,66 @@ def install_extension_bundle_compat(
     console.print("[green]✓[/green] Workflows extension installed via compatibility copier")
 
 
-def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
-    def _run_fresh_extension_add(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
-        """Run `specify extension add` for a fresh (first-time) install."""
-        if dry_run:
-            console.print("  [dim]Would run: specify extension add[/dim]")
-            return
-        result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
-        if result.returncode != 0:
-            console.print("[red]✗[/red] specify extension add failed:", style="red bold")
-            if result.stderr:
-                console.print(f"  [dim]{result.stderr.strip()}[/dim]")
-            if result.stdout:
-                console.print(f"  [dim]{result.stdout.strip()}[/dim]")
-            raise typer.Exit(1)
+def _run_fresh_extension_add(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
+    """Run `specify extension add` for a fresh (first-time) install."""
+    if dry_run:
+        console.print("  [dim]Would run: specify extension add[/dim]")
+        return
+    result = subprocess.run(specify_cmd, cwd=str(repo_root), capture_output=True, text=True)
+    if result.returncode != 0:
+        console.print("[red]✗[/red] specify extension add failed:", style="red bold")
+        if result.stderr:
+            console.print(f"  [dim]{result.stderr.strip()}[/dim]")
+        if result.stdout:
+            console.print(f"  [dim]{result.stdout.strip()}[/dim]")
+        raise typer.Exit(1)
+    if result.stdout:
+        console.print(result.stdout.strip())
+    console.print("[green]✓[/green] Extension installed via spec-kit native system")
+
+
+def _try_extension_update(repo_root: Path, dry_run: bool) -> bool:
+    """Attempt `specify extension update workflows`.
+
+    Returns True when the update succeeded (or dry_run mode was active).
+    Returns False when the command is not available or fails.
+    """
+    if dry_run:
+        console.print("  [dim]Would run: specify extension update workflows[/dim]")
+        return True
+    result = subprocess.run(
+        ["specify", "extension", "update", "workflows"],
+        cwd=str(repo_root),
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
         if result.stdout:
             console.print(result.stdout.strip())
-        console.print("[green]✓[/green] Extension installed via spec-kit native system")
+        console.print("[green]✓[/green] Workflows extension updated via spec-kit native system")
+        return True
+    # Non-zero exit: command may not exist in older spec-kit or may have failed
+    console.print(f"  [dim]specify extension update exited {result.returncode}[/dim]")
+    return False
 
 
-    def _try_extension_update(repo_root: Path, dry_run: bool) -> bool:
-        """Attempt `specify extension update workflows`.
-
-        Returns True when the update succeeded (or dry_run mode was active).
-        Returns False when the command is not available or fails.
-        """
-        if dry_run:
-            console.print("  [dim]Would run: specify extension update workflows[/dim]")
-            return True
-        result = subprocess.run(
-            ["specify", "extension", "update", "workflows"],
-            cwd=str(repo_root),
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode == 0:
-            if result.stdout:
-                console.print(result.stdout.strip())
-            console.print("[green]✓[/green] Workflows extension updated via spec-kit native system")
-            return True
-        # Non-zero exit: command may not exist in older spec-kit or may have failed
-        console.print(f"  [dim]specify extension update exited {result.returncode}[/dim]")
-        return False
-
-
-    def _run_extension_reinstall(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
-        """Force remove + re-add the workflows extension (--reinstall mode)."""
-        if dry_run:
-            console.print("  [dim]Would run: specify extension remove workflows --force[/dim]")
-            console.print("  [dim]Would run: specify extension add[/dim]")
-            return
-        rm_result = subprocess.run(
-            ["specify", "extension", "remove", "workflows", "--force"],
-            cwd=str(repo_root),
-            capture_output=True,
-            text=True,
-        )
-        if rm_result.returncode != 0:
-            console.print("[yellow]⚠[/yellow] specify extension remove failed (continuing anyway):")
-            if rm_result.stderr:
-                console.print(f"  [dim]{rm_result.stderr.strip()}[/dim]")
-        _run_fresh_extension_add(specify_cmd, repo_root, dry_run)
+def _run_extension_reinstall(specify_cmd: List[str], repo_root: Path, dry_run: bool) -> None:
+    """Force remove + re-add the workflows extension (--reinstall mode)."""
+    if dry_run:
+        console.print("  [dim]Would run: specify extension remove workflows --force[/dim]")
+        console.print("  [dim]Would run: specify extension add[/dim]")
+        return
+    rm_result = subprocess.run(
+        ["specify", "extension", "remove", "workflows", "--force"],
+        cwd=str(repo_root),
+        capture_output=True,
+        text=True,
+    )
+    if rm_result.returncode != 0:
+        console.print("[yellow]⚠[/yellow] specify extension remove failed (continuing anyway):")
+        if rm_result.stderr:
+            console.print(f"  [dim]{rm_result.stderr.strip()}[/dim]")
+    _run_fresh_extension_add(specify_cmd, repo_root, dry_run)
 
 
 def build_integration_install_command(agent_key: str, dry_run: bool = False) -> List[str]:
