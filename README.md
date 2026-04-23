@@ -379,7 +379,7 @@ specify workflow run workflows/bugfix-lifecycle/workflow.yml --input request="lo
 ### spec-kit Versions
 
 - **Required**: spec-kit v0.3.1+ (with extension system support)
-- **Tested**: spec-kit v0.5.1, v0.6.0, v0.7.0, and v0.7.4
+- **Tested**: spec-kit v0.5.1, v0.6.0, v0.7.0, v0.7.4, and v0.8.0
 - Install from source: `uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git"`
 
 ### AI Agents
@@ -399,7 +399,7 @@ Commands are registered by spec-kit's extension system and work with any support
 ### Component Versions
 
 - **Extension** (v3.4.1) — Workflows, commands, templates, and scripts
-- **CLI Tool** (v2.5.1) — `specify-extend` installation and patching tool
+- **CLI Tool** (v2.5.3) — `specify-extend` installation and patching tool
 
 ## FAQ
 

@@ -7,9 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v2.5.3
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.4
 
 ## CLI Tool (`specify-extend`)
+
+### [2.5.4] - 2026-04-23
+
+#### ✅ Compatibility
+
+- **spec-kit v0.8.0 compatibility verified**
+  - Tested `specify-extend --all` with spec-kit v0.8.0 (released 2026-04-23)
+  - No code changes required; extension system and commands remain fully compatible
+  - New agents (`vibe`, `codebuddy`, `gemini`) in v0.8.0 are supported via spec-kit's agent detection
+  - New flags (`--ai-skills`, `--preset`, `--branch-numbering`) in v0.8.0 don't affect extension installation
+  - Note: `--integration` flag introduced in v0.8.0 as new agent setup path; `--ai` remains supported
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.5.4 (doc-only release)
+- **Compatible Spec Kit Version**: v0.3.1 through v0.8.0+
+- **Extension Templates Version**: v3.4.1
+
+---
 
 ### [2.5.3] - 2026-04-21
 

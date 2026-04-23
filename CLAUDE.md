@@ -38,8 +38,8 @@ specify-extend --all
 
 **IMPORTANT**: This project has TWO version numbers that must be kept in sync:
 
-1. **CLI version** in `pyproject.toml` (`version = "2.5.1"`)
-2. **CLI version** in `specify_extend.py` (`__version__ = "2.5.1"`)
+1. **CLI version** in `pyproject.toml` (`version = "2.5.4"`)
+2. **CLI version** in `specify_extend.py` (`__version__ = "2.5.4"`)
 3. **Extension templates version** documented in `CHANGELOG.md`
 
 When updating versions:
