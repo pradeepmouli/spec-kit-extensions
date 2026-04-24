@@ -7,9 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Note**: This project has two versioned components:
 - **Extension Templates** (workflows, commands, scripts) - Currently at v3.4.1
-- **CLI Tool** (`specify-extend`) - Currently at v2.5.4
+- **CLI Tool** (`specify-extend`) - Currently at v2.5.5
 
 ## CLI Tool (`specify-extend`)
+
+### [2.5.5] - 2026-04-23
+
+#### 🚀 Added
+
+- **Extension-first branch handling**: `has_native_branch_support_extensions()` detects when `git-core` + `branch-convention` companion extensions are selected, enabling native subpath branch validation instead of monkey patching
+- **`--legacy-patch` flag** to force monkey patching of `common.sh` as an opt-in fallback (replaces the previous unconditional patching behavior)
+- **Automatic integration reconciliation**: install/upgrade runs now call `specify integration install` for all reconcilable agents by default, eliminating the need for a separate manual step
+- **`--no-reconcile-integrations` flag** to opt out of automatic integration reconciliation
+- **`get_reconcilable_agents()` helper** that filters out non-reconcilable agent types (e.g., `manual`, `generic`) before attempting upstream reconciliation
+- **Graceful degradation** when the `specify` CLI doesn't support integration commands (warns user instead of failing)
+
+#### 📦 Components
+
+- **CLI Tool Version**: v2.5.5
+- **Compatible Spec Kit Version**: v0.0.80+
+- **Extension Templates Version**: v3.4.1
+
+---
 
 ### [2.5.4] - 2026-04-23
 

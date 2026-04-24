@@ -412,7 +412,11 @@ No! Use only what you need. Common combinations:
 
 ### Why use `specify-extend --all` instead of `specify extension add`?
 
-`specify-extend --all` additionally patches spec-kit's `common.sh` to support extension branch patterns (`bugfix/`, `hotfix/`, `refactor/`, etc.). Without this patch, spec-kit's branch validation will reject these branch names. Once spec-kit natively supports alternate branch patterns, `specify extension add` alone will be sufficient.
+`specify-extend --all` installs the workflows extension and companion extensions that handle branch behavior natively (`git-core` + `branch-convention`) so extension subpaths like `bugfix/` and `hotfix/` are accepted without monkey patching.
+
+It also reconciles upstream spec-kit integrations for resolved agents in the same run (so you don't need a second `specify integration install ...` step). Use `--no-reconcile-integrations` to opt out.
+
+For older or custom installs, you can still force legacy monkey patching with `--legacy-patch`.
 
 ### Can I customize the workflows?
 

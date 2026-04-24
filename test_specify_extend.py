@@ -392,14 +392,26 @@ def test_build_integration_install_command():
     print("✓ Test passed: integration install command built correctly")
 
 
-def test_should_reconcile_integrations_only_for_explicit_agent_selection():
-    """Test integration reconciliation is only enabled for explicit --ai/--agents usage."""
+def test_should_reconcile_integrations_respects_flag():
+    """Test integration reconciliation can be enabled/disabled via flag."""
 
-    assert specify_extend.should_reconcile_integrations(None, None) is False
-    assert specify_extend.should_reconcile_integrations("claude", None) is True
-    assert specify_extend.should_reconcile_integrations(None, "claude,copilot") is True
+    assert specify_extend.should_reconcile_integrations(True) is True
+    assert specify_extend.should_reconcile_integrations(False) is False
 
-    print("✓ Test passed: integration reconciliation gating matches explicit agent selection")
+    print("✓ Test passed: integration reconciliation gating respects opt-out flag")
+
+
+def test_get_reconcilable_agents_filters_manual_and_generic():
+    """`manual` and `generic` should not be sent to upstream integration install."""
+
+    assert specify_extend.get_reconcilable_agents(["claude", "copilot"]) == ["claude", "copilot"]
+    assert specify_extend.get_reconcilable_agents(["manual", "generic"]) == []
+    assert specify_extend.get_reconcilable_agents(["manual", "claude", "generic", "copilot"]) == [
+        "claude",
+        "copilot",
+    ]
+
+    print("✓ Test passed: reconcilable agents filter works")
 
 
 def test_install_agent_integrations_invokes_specify_integration_install():
@@ -577,6 +589,17 @@ def test_detect_agent_supports_new_agy_layout_under_agents():
     print("✓ Test passed: agy detection supports .agents/workflows layout")
 
 
+def test_has_native_branch_support_extensions_requires_git_core_and_branch_convention():
+    """Native branch support requires both git-core and branch-convention companions."""
+
+    assert specify_extend.has_native_branch_support_extensions(["git-core", "branch-convention"])
+    assert not specify_extend.has_native_branch_support_extensions(["git-core"])
+    assert not specify_extend.has_native_branch_support_extensions(["branch-convention"])
+    assert not specify_extend.has_native_branch_support_extensions([])
+
+    print("✓ Test passed: native branch support companion detection works")
+
+
 if __name__ == "__main__":
     print("Running specify_extend tests...\n")
 
@@ -598,7 +621,8 @@ if __name__ == "__main__":
         test_install_workflow_packages_invokes_specify_workflow_add()
         test_install_workflow_packages_uses_local_workflow_source_when_provided()
         test_build_integration_install_command()
-        test_should_reconcile_integrations_only_for_explicit_agent_selection()
+        test_should_reconcile_integrations_respects_flag()
+        test_get_reconcilable_agents_filters_manual_and_generic()
         test_install_agent_integrations_invokes_specify_integration_install()
         test_install_agent_integrations_dry_run_skips_subprocess()
         test_stage_local_extension_source_excludes_generated_state()
@@ -606,6 +630,7 @@ if __name__ == "__main__":
         test_install_extension_bundle_compat_copies_current_bundle_layout()
         test_patch_common_sh_wraps_upstream_function_instead_of_replacing_it()
         test_detect_agent_supports_new_agy_layout_under_agents()
+        test_has_native_branch_support_extensions_requires_git_core_and_branch_convention()
 
         print("\n✅ All tests passed!")
         sys.exit(0)

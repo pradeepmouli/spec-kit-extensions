@@ -46,7 +46,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-__version__ = "2.5.4"
+__version__ = "2.5.5"
 
 # Initialize Rich console
 console = Console()
@@ -636,6 +636,12 @@ def parse_community_extension_selection(selection: Optional[str]) -> List[str]:
     return keys
 
 
+def has_native_branch_support_extensions(selected_keys: List[str]) -> bool:
+    """Return True when native companion extensions can handle branch subpaths."""
+    selected = set(selected_keys)
+    return "git-core" in selected and "branch-convention" in selected
+
+
 def parse_workflow_package_selection(selection: Optional[str]) -> List[str]:
     """Parse --with-workflows value into curated workflow package keys."""
     if not selection:
@@ -858,9 +864,18 @@ def build_integration_install_command(agent_key: str, dry_run: bool = False) -> 
     return cmd
 
 
-def should_reconcile_integrations(ai_value: Optional[str], agents_value: Optional[str]) -> bool:
-    """Return True only when the user explicitly requested integration reconciliation."""
-    return bool(ai_value or agents_value)
+def should_reconcile_integrations(reconcile_integrations: bool) -> bool:
+    """Return True when integration reconciliation should run."""
+    return reconcile_integrations
+
+
+def get_reconcilable_agents(selected_agents: List[str]) -> List[str]:
+    """Return agents that can be reconciled via `specify integration install`.
+
+    `manual` and `generic` are local/bring-your-own flows and are not valid
+    upstream integration targets.
+    """
+    return [a for a in selected_agents if a not in {"manual", "generic"}]
 
 
 def validate_integration_support(repo_root: Path) -> bool:
@@ -2844,6 +2859,14 @@ def main(
         "--with-workflows",
         help="Workflow package profile: recommended | all | none | comma-separated keys",
     ),
+    reconcile_integrations: bool = typer.Option(
+        True,
+        "--reconcile-integrations/--no-reconcile-integrations",
+        help=(
+            "Automatically install/upgrade upstream spec-kit integrations for resolved agents. "
+            "Disable to manage integrations manually."
+        ),
+    ),
     extension_source: Optional[str] = typer.Option(
         None,
         "--extension-source",
@@ -2888,6 +2911,14 @@ def main(
         False,
         "--patch",
         help="Only patch spec-kit's common.sh for extension branch support (use after 'specify extension add')",
+    ),
+    legacy_patch: bool = typer.Option(
+        False,
+        "--legacy-patch",
+        help=(
+            "Apply legacy monkey patches to common.sh/common.ps1. "
+            "Prefer native branch handling through --with-community git-core,branch-convention."
+        ),
     ),
     reinstall: bool = typer.Option(
         False,
@@ -3139,14 +3170,21 @@ def main(
         # Non-interactive: enable what's being installed + keep current
         workflows_to_enable = currently_enabled | set(extensions_to_install)
 
-    explicit_agent_selection = should_reconcile_integrations(effective_ai, agents)
+    integration_reconciliation_enabled = should_reconcile_integrations(reconcile_integrations)
+    reconcilable_agents = get_reconcilable_agents(resolved_agents)
 
     if selected_workflow_packages and not dry_run:
         if not validate_workflow_support(repo_root):
             raise typer.Exit(1)
 
-    if explicit_agent_selection and not validate_integration_support(repo_root):
-        raise typer.Exit(1)
+    if integration_reconciliation_enabled and reconcilable_agents and not validate_integration_support(repo_root):
+        console.print(
+            "[yellow]⚠[/yellow] Skipping integration reconciliation because this specify CLI does not support integration commands."
+        )
+        console.print(
+            "  [dim]Continue with extension install, or upgrade specify CLI to enable integrated reconciliation.[/dim]"
+        )
+        integration_reconciliation_enabled = False
 
     # Install via spec-kit native extension system
     console.print(f"\n[bold]Installing extensions via spec-kit:[/bold] {', '.join(extensions_to_install)}")
@@ -3196,8 +3234,10 @@ def main(
         console.print(f"[blue]ℹ[/blue] Running: {' '.join(specify_cmd)}")
 
     try:
-        if explicit_agent_selection:
-            install_agent_integrations(repo_root, resolved_agents, dry_run=dry_run)
+        if integration_reconciliation_enabled and reconcilable_agents:
+            install_agent_integrations(repo_root, reconcilable_agents, dry_run=dry_run)
+        elif integration_reconciliation_enabled and not reconcilable_agents:
+            console.print("[blue]ℹ[/blue] No reconcilable upstream agents selected; skipping integration reconciliation")
 
         if existing_workflows_install and reinstall:
             _run_extension_reinstall(specify_cmd, repo_root, dry_run)
@@ -3216,9 +3256,20 @@ def main(
             _run_fresh_extension_add(specify_cmd, repo_root, dry_run)
             update_enabled_conf(repo_root, workflows_to_enable, dry_run)
 
-        # Patch common.sh for extension branch pattern support
-        patch_common_sh(repo_root, dry_run)
-        patch_common_ps1(repo_root, dry_run)
+        # Prefer native branch handling via companion extensions.
+        # Keep monkey patching as an explicit fallback for older/custom installs.
+        native_branch_support = has_native_branch_support_extensions(selected_community_extensions)
+        if legacy_patch:
+            console.print("[yellow]⚠[/yellow] --legacy-patch enabled; applying common.sh/common.ps1 monkey patches")
+            patch_common_sh(repo_root, dry_run)
+            patch_common_ps1(repo_root, dry_run)
+        elif native_branch_support:
+            console.print("[blue]ℹ[/blue] Using native branch handling via git-core + branch-convention (no monkey patching)")
+        else:
+            console.print("[yellow]⚠[/yellow] Native branch companion extensions not selected; skipping monkey patching by default")
+            console.print(
+                "  [dim]If branch validation rejects extension subpaths, rerun with --legacy-patch or --with-community git-core,branch-convention[/dim]"
+            )
 
         # Install git hooks if requested
         if install_hooks:
